@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joe Orange - Speculative Fiction Author</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4em;
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            color: #ff8c42;
+            text-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 140, 66, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 140, 66, 0.8), 0 0 40px rgba(255, 140, 66, 0.6); }
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            color: #a0a0a0;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .about {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .about p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .newsletter-section {
+            background: rgba(255, 140, 66, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .newsletter-section h2 {
+            color: #ff8c42;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .newsletter-section p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #c0c0c0;
+        }
+
+        .newsletter-embed {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .newsletter-embed iframe {
+            border-radius: 10px;
+        }
+
+        .books-section {
+            padding: 60px 20px;
+        }
+
+        .books-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ff8c42;
+            margin-bottom: 50px;
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+        }
+
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 140, 66, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .book-card:hover::before {
+            opacity: 1;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 140, 66, 0.6);
+            box-shadow: 0 20px 40px rgba(255, 140, 66, 0.2);
+        }
+
+        .book-cover-container {
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            width: 160px;
+        }
+
+        .book-cover {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        .book-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .book-card h3 {
+            color: #ff8c42;
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .book-series {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .book-card p {
+            margin-bottom: 15px;
+            color: #c0c0c0;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .review-quote {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #ff8c42;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #d0d0d0;
+            font-size: 0.9em;
+        }
+
+        .review-source {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .buy-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .buy-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 140, 66, 0.3);
+        }
+
+        footer p {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ff6b35;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+                letter-spacing: 4px;
+            }
+
+            .books-section h2 {
+                font-size: 2em;
+            }
+
+            .about {
+                padding: 25px;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .book-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .book-cover {
+                width: 200px;
+            }
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <h1>JOE ORANGE</h1>
+            <p class="tagline">Speculative Fiction Author</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="about">
+            <p>Speculative fiction author weaving tales of wonder and dread through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary—and terrifying—circumstances.</p>
+        </div>
+
+        <div class="newsletter-section">
+            <h2>Stay Updated</h2>
+            <p>Subscribe to get notified about new releases and stories</p>
+            <a href="https://joeorange.substack.com/subscribe" class="buy-button" target="_blank">Subscribe to Newsletter</a>
+        </div>
+
+        <div class="about">
+            <h2 style="text-align: center; color: #ff8c42; font-size: 2em; margin-bottom: 30px; font-weight: 300; letter-spacing: 2px;">What Readers Are Saying</h2>
+            <div class="review-quote">
+                "Ought to be made into a movie. Little bits of every emotional-filled moments with surprising twists and turns. Terrifying yet funny."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+            <div class="review-quote">
+                "I could not put it down! I had to know what happens next at the end of every chapter."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+            <div class="review-quote">
+                "Brain bending twists that would give Rod Serling a migraine, but very easy to imagine and follow."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+        </div>
+
+        <div class="books-section">
+            <h2>THE STRANGE DETROIT SERIES</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <div class="book-cover-container">
+                        <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox book cover" class="book-cover">
+                    </div>
+                    <div class="book-content">
+                        <h3>The Bootstrap Paradox</h3>
+                        <p class="book-series">Strange Detroit #1</p>
+                        <p>A retired thief puts his criminal past behind him to start a new life renovating houses. Everything goes according to plan until, while fixing up an old weathered townhouse in Detroit, he discovers something hidden for half a century—a secret waiting within the walls. But as he gradually unravels the mystery, he soon realizes that he is not only in a battle for his life and sanity, but also for the very nature of existence itself.</p>
+                        <div class="review-quote">
+                            "Like Stephen King meets Twilight Zone"
+                            <div class="review-source">— Amazon Reader</div>
+                        </div>
+                        <div class="button-container">
+                            <a href="https://www.amazon.com/dp/B0CGJ6VVYR" class="buy-button" target="_blank">Available on Amazon</a>
+                            <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEAy7hyuPM" class="buy-button" target="_blank">Google Play Audiobook</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-cover-container">
+                        <img src="lift-cover.jpg" alt="The Lift book cover" class="book-cover">
+                    </div>
+                    <div class="book-content">
+                        <h3>The Lift</h3>
+                        <p class="book-series">Strange Detroit #2</p>
+                        <p>Max needs the money. The job is simple enough: night shift, dispose of hazardous waste, no questions asked. Just him, a forklift, and sealed drums in a warehouse in Detroit's abandoned industrial district. But simple jobs have a way of becoming complicated. At the center stands a black sphere his supervisor calls the lift. When the sphere begins to vibrate and the doors open, a blinding light pours through. Some lifts don't take you up or down—they take you somewhere else entirely.</p>
+                        <div class="review-quote">
+                            "This is just like science fiction used to be"
+                            <div class="review-source">— Amazon Reader</div>
+                        </div>
+                        <div class="button-container">
+                            <a href="https://www.amazon.com/dp/B0DQKC6GQR" class="buy-button" target="_blank">Available on Amazon</a>
+                            <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEDyfTI90M" class="buy-button" target="_blank">Google Play Audiobook</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Joe Orange. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank">Amazon</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Create animated stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
