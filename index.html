@@ -51,10 +51,10 @@
         }
 
         h1 {
-            font-size: 4em;
+            font-size: 5em;
             font-weight: 300;
-            letter-spacing: 8px;
-            margin-bottom: 10px;
+            letter-spacing: 10px;
+            margin-bottom: 15px;
             color: #ff8c42;
             text-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
             animation: glow 3s ease-in-out infinite;
@@ -70,6 +70,27 @@
             color: #a0a0a0;
             font-style: italic;
             letter-spacing: 2px;
+        }
+
+        nav {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 25px;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            color: #ff6b35;
+            transform: translateY(-2px);
         }
 
         .about {
@@ -508,6 +529,11 @@
         <div class="container">
             <h1>JOE ORANGE</h1>
             <p class="tagline">Speculative Fiction Author</p>
+            <nav>
+                <a href="#books">Books</a>
+                <a href="#about">About</a>
+                <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" target="_blank">Newsletter</a>
+            </nav>
         </div>
     </header>
 
@@ -522,7 +548,7 @@
             <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" class="buy-button" target="_blank">Subscribe to Newsletter</a>
         </div>
 
-        <div class="books-section" style="padding-top: 40px;">
+        <div class="books-section" id="books" style="padding-top: 40px;">
             <h2 style="color: #ff8c42;">COMING SOON</h2>
             <div class="books-grid" style="max-width: 800px; margin: 0 auto;">
                 <div class="book-card" style="background: rgba(255, 140, 66, 0.08); border-color: rgba(255, 140, 66, 0.5);">
@@ -570,6 +596,7 @@
                     <div class="book-content">
                         <h3>The Bootstrap Paradox</h3>
                         <p class="book-series">Strange Detroit #1</p>
+                        <p style="font-size: 0.95em; color: #ff8c42; font-weight: bold; margin-bottom: 15px;">📖 Ebook | 🎧 Audiobook Available</p>
                         <p>The wall in front of you is solid. You've measured it. You know its dimensions. But what if you were wrong?</p>
                         <p>For Fredrick, it was just a house flip. A derelict property hiding a secret door. But behind that door is a room that breaks the laws of physics, a space that shouldn't exist. And it leads to a darkness that stretches into forever.</p>
                         <p>He has a choice. Board it up, walk away, and convince himself it was a dream. Or step through the hole in his reality and discover what's waiting on the other side.</p>
@@ -612,7 +639,7 @@
             </div>
         </div>
 
-        <div class="author-bio">
+        <div class="author-bio" id="about">
             <h2>About the Author</h2>
             <p>I miss the times when stories were just about entertainment. Every page I write is there to entertain you, the reader. And I never lose sight of that.</p>
             <p>Raised on a steady diet of The Twilight Zone and The Outer Limits, I developed an enduring fascination with stories where ordinary people stumble into extraordinary circumstances. This influence shines through in my work, including my debut novel The Bootstrap Paradox, where house renovators discover a gateway to the past in an old house. I write stories where my characters keep a firm foot in reality while another foot rests in the unknown.</p>
