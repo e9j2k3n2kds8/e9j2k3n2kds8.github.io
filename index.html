@@ -243,6 +243,24 @@
             box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5);
         }
 
+        .read-sample-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .read-sample-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
         .author-bio {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -359,6 +377,105 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
+
+        /* Modal styles for Read Sample popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            margin: 3% auto;
+            padding: 0;
+            border: 2px solid rgba(255, 140, 66, 0.5);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 140, 66, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: #ff8c42;
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .close {
+            color: #ff8c42;
+            font-size: 35px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #ff6b35;
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+            color: #d0d0d0;
+            line-height: 1.8;
+        }
+
+        .modal-body p {
+            margin-bottom: 1.2em;
+            font-size: 1.05em;
+        }
+
+        .modal-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Custom scrollbar for modal */
+        .modal-body::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 140, 66, 0.5);
+            border-radius: 5px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 140, 66, 0.7);
+        }
     </style>
 </head>
 <body>
@@ -373,7 +490,7 @@
 
     <div class="container">
         <div class="about">
-            <p>Speculative fiction author weaving tales of wonder and dread through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
+            <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
         </div>
 
         <div class="newsletter-section">
@@ -410,12 +527,13 @@
                         <p class="book-series">Strange Detroit #1</p>
                         <p>The wall in front of you is solid. You've measured it. You know its dimensions. But what if you were wrong?</p>
                         <p>For Fredrick, it was just a house flip. A derelict property hiding a secret door. But behind that door is a room that breaks the laws of physics, a space that shouldn't exist. And it leads to a darkness that stretches into forever.</p>
-                        <p>He has a choice. Board it up, walk away, and pretend it's just bad wiring. Or step through the hole in his reality and discover what's waiting on the other side.</p>
+                        <p>He has a choice. Board it up, walk away, and convince himself it was a dream. Or step through the hole in his reality and discover what's waiting on the other side.</p>
                         <div class="review-quote">
                             "Like Stephen King meets Twilight Zone"
                             <div class="review-source">— Amazon Reader</div>
                         </div>
                         <div class="button-container">
+                            <a href="#" class="read-sample-button" onclick="openModal('bootstrapModal'); return false;">Read Sample</a>
                             <a href="https://www.amazon.com/dp/B0CGJ6VVYR" class="buy-button" target="_blank">Available on Amazon</a>
                             <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEAy7hyuPM" class="buy-button" target="_blank">Google Play Audiobook</a>
                         </div>
@@ -430,18 +548,15 @@
                     <div class="book-content">
                         <h3>The Lift</h3>
                         <p class="book-series">Strange Detroit #2</p>
-                        <p>Max needs the money. The job is simple enough. Night shift, dispose of hazardous waste, no questions asked. Just him, a forklift, and sealed drums they want processed in a warehouse in Detroit's abandoned industrial district.</p>
-                        <p>But simple jobs have a way of becoming complicated.</p>
-                        <p>The building has no windows, only a wash of sickly purple UV light. Upstairs, an office sits frozen in time, untouched since Nixon left office.</p>
-                        <p>But it's on the lower floors where things get strange. At the center stands a black sphere his supervisor calls the lift. It doesn't look like any elevator Max has ever seen.</p>
-                        <p>When the sphere begins to vibrate, the doors of the lift open. A blinding light pours through, so intense Max can hardly see. A blazing heat follows, and it feels like he's inside a furnace.</p>
+                        <p>Max needs the money. The job is simple enough. Night shift, dispose of hazardous waste, no questions asked. Just him, a forklift, and sealed drums in a warehouse in Detroit's abandoned industrial district.</p>
+                        <p>But simple jobs have a way of becoming complicated. At the center stands a black sphere his supervisor calls the lift. When the sphere begins to vibrate, the doors open. A blinding light pours through, and it feels like he's inside a furnace.</p>
                         <p>Some lifts don't take you up or down. They take you somewhere else entirely.</p>
-                        <p>Find out where Max ends up in The Lift, a dark sci-fi thriller novella that pulls you past the bottom floor on a blazing hot ride into the unknown.</p>
                         <div class="review-quote">
                             "This is just like science fiction used to be"
                             <div class="review-source">— Amazon Reader</div>
                         </div>
                         <div class="button-container">
+                            <a href="#" class="read-sample-button" onclick="openModal('liftModal'); return false;">Read Sample</a>
                             <a href="https://www.amazon.com/dp/B0DQKC6GQR" class="buy-button" target="_blank">Available on Amazon</a>
                             <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEDyfTI90M" class="buy-button" target="_blank">Google Play Audiobook</a>
                         </div>
@@ -469,6 +584,185 @@
         </div>
     </footer>
 
+    <!-- Modal for Bootstrap Paradox -->
+    <div id="bootstrapModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>The Bootstrap Paradox - Chapter One</h2>
+                <span class="close" onclick="closeModal('bootstrapModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>"I lost my thermos," Sam said. "My girlfriend made me hot chocolate…"</p>
+                <p>"You know, most people in our line of work drink tea or coffee," I said, exiting our work van, the rundown Victorian two-story house before us.</p>
+                <p>"Why?"</p>
+                <p>"I can't explain it to you," I said. "It's just something that happens when you become an adult."</p>
+                <p>"Well, I can't find it."</p>
+                <p>I took the house in for the first time. It was engulfed in dark foliage on both sides—a two-story Victorian with little of its original blue paint left.</p>
+                <p>The fact that it hadn't been set on fire or had all its windows broken by squatters, when it was twenty feet from a suburban hellscape, was proof that miracles were still alive in Detroit.</p>
+                <p>"I remember putting it in the van," said Sam, searching.</p>
+                <p>"Don't take this the wrong way," I added. "But that pot you like smoking—you're not the type that can get away with that long-term. You don't have the same reservoir of brain cells, shall we say, that most normal people have."</p>
+                <p>"My mother says my brain is just the same as anyone else's."</p>
+                <p>"You see, it's the mere fact you have that reply on tap that proves my point."</p>
+                <p>"I found it," Sam said, searching the passenger seat of the van. "It was under the seat."</p>
+                <p>I walked to the end of the driveway, measuring with my hands how much fence I'd need to cover the apocalyptic view of the boarded-up muffler shop that sat across the road next to a bus stop. The shop's windows were gone, and there was a collection of rusted scrap metal out front.</p>
+                <p>The fence would need to be ten feet high, give or take…</p>
+                <p>The city had put a surveillance camera on top of the muffler shop, which looked down on the bus stop and everything around it, including, no doubt, the front yard of the house where I was now standing. Not that the camera had stopped someone from kicking in all three glass panels of the bus stop the night before. The camera might have even inspired them. It was that part of town, after all.</p>
+                <p>The front door opened on a shared living room and kitchen. Almost all the furniture was gone, and everything that was left was covered in thick dust.</p>
+                <p>Sam worked, bringing in our painting gear while I inspected an open floor safe in the kitchen. Its linoleum cover board was beside it. There were signs that someone had tried to drill the safe door years ago but had no luck.</p>
+                <p>I was no stranger to safes. I'd cracked my fair share in my former life as a professional thief years ago, before I'd learned how to enjoy the slow ride of being a straight shooter. This brand of safe could be opened in under a minute with a strong enough rare-earth magnet by manipulating the deadbolt inside with the magnet from the outside, therefore bypassing any need for a key or combination.</p>
+                <p>Every time I came across someone using a safe in their house, I felt like explaining to them that they were better off burying their valuables in the backyard in a jar. All a safe was good at was acting as a red herring. Anyone who said otherwise had either no understanding of how easy it was to crack a safe or liked signposting where they kept their valuables. I always buried anything of any real value I had. No one could steal something from you if they had no idea where it was. There was a reason Al Capone's vault was empty and Captain Kidd's treasure was never found.</p>
+                <p>I went out the back door, opened the fuse box, and turned on the power, then exited the back of the house and checked the backyard. Long grass covered everything except a toolshed, whose side was being gradually undermined by the thick roots of a walnut tree that shaded it. The sea of green went all the way to the backyard fence, which blocked the view of a railway line. In the distance, one of Detroit's cloud makers was puffing out streams of white.</p>
+                <p>The backyard would be all right once I cut the grass. The toolshed would need to come down, though.</p>
+                <p>"There are no lightbulbs anywhere," Sam told me as I returned to the hallway. And he was right—no bulbs anywhere.</p>
+                <p>"Remind me to buy some," I said, studying the ceiling. But then, remembering who I was talking to, I searched for my notebook and made a note with my pencil.</p>
+                <p>"Remind you to do what?"</p>
+                <p>"Nothing," I replied.</p>
+                <p>I went up the staircase to the second floor and walked down the hallway to the master bedroom. A mattress that had seen better days lay propped up against one wall. The bed base was gone. I went to the closet and opened the door, letting loose the strong smell of ancient mothballs. Nothing was inside except a stack of metal coat hangers with a very old pair of red 1950s bowling shoes on top—the leather as hard as rock.</p>
+                <p>I closed the door and found a lamp on a nightstand. I plugged it in and turned it on; it glowed with its small bulb, but there was a rhythmic flicker. I hoped it was something easy to fix, and not bad wiring. Although, given all the bulbs were missing from below, I guessed it was most likely the latter.</p>
+                <p>I turned off the lamp and went to the bedroom window, which had a less-than-spectacular view of the second story of the brick house next door. I pulled the thick green curtains back and forth on the curtain rails; they still had life in them.</p>
+                <p>My goal was just to get the house to livable standards. I wasn't trying to remodel it. If something still worked well enough, I was leaving it. At the moment, I saw no major issues apart from the wiring, which wouldn't be cheap.</p>
+                <p>I had bought the house at an estate auction last month when I'd learned from a little bird that the Mayor's sister had been buying up properties nearby. I'd smelled something in the works, and it turned out, given the news last week, I'd been right. A major community arts college was to be built on the city dime two blocks down. And although it was unlikely that it would 'revitalize the district' as the newspapers said, I hoped to turn a profit on the upswing.</p>
+                <p>Maybe the little bird had some more tips for me? I would have to ask Sam, since it was his grandmother who was the little bird, the secretary for the Mayor. She had let the detail slip to Sam and me when we were painting her fence. It had been lemonade, sandwiches, and a short conversation about how the Mayor's sister was investing in some lower-end district. A very nice old woman who had glasses about as thick as you could wear without toppling over.</p>
+                <p>It did show you the value of good information. Something I'd learned in my former life. You always had to be aware of what things were in play around you. The world was never static.</p>
+                <p>Across the hallway was a combined toilet and bathroom. I sat on the wooden seat of the toilet, which lay unconnected to any plumbing, and smoked a cigarette. Everything looked good, and even better when I brought up the water blaster to remove the yellowing between the tiles. The only problem was the toilet had, at one point, maybe with the best intentions, been moved from beside the bathroom sink to where it now sat. I could see where they had paved over the drain, but they hadn't connected any new plumbing to where the toilet now was; no closet flange to drain, no waterline to the tank.</p>
+                <p>Curry was off the menu, at least for a while. I would just open up the drain again on the other side and reconnect the toilet to where it had been. I was not out to make more work for myself than there needed to be.</p>
+                <p>I stood before the bathroom sink and tried the faucet. The water ran brown, and the pipes shook; a few seconds later, the water started to clear. Wetting my fingers, I ran them through my hair. Inside the medicine cabinet, I found a pocket knife that someone, for reasons only known to them, had submerged in an ancient bottle of mint Listerine.</p>
+                <p>I emptied the Listerine and removed the pocket knife. The pungent smell of mouthwash filled the air. The pocket knife was stainless steel, and the blade was still good, but it had led a hard, violent life; deep gashes traced the enamel siding where the faded lettering 'Luck's Grill 1949' was only barely visible.</p>
+                <p>My grandfather used to say that you could ignore many things, but not something that had come to you the hard way. After my father went to Vietnam and never came back, I spent a lot of time in his company while my mother worked. Many hours watching him work his craft in smoky pool rooms.</p>
+                <p>I decided to keep the pocket knife. I clipped it onto the loop of my keyring, and it fit perfectly.</p>
+                <p>Behind me, Sam came in. "The radio isn't working. It just makes a strange sound. Like popcorn."</p>
+                <p>"That reminds me," I said. "There may be something wrong with the wiring, so don't plug in your cell phone. It's all right for power tools, but any sensitive electronics are to be kept away from any outlets."</p>
+                <p>I wet my hair and combed it with my hand. "By the way, there is a large walnut tree out the back. Before we leave, fill one of those plastic bags in the van with as many as you can carry. But don't go wall-nut crazy, though. You eat too many, and you turn into a squirrel."</p>
+                <p>I was starting to realize that I had finally become one of those middle-aged men who had graduated to dad humor—jokes that had lost all edge and were perfect for any occasion, even daycare.</p>
+                <p>"I can't do any overtime tonight. It's my girlfriend's birthday. I am taking her to dinner."</p>
+                <p>"I don't have any extra money to pay you any overtime anyway, not with a baby on the way."</p>
+                <p>"You're having a baby?"</p>
+                <p>"I told you last week, and the week before that," I checked my teeth. My gums were still good, and so were my teeth. The trick was not to overbrush; if you did, you brushed away the enamel. "Where are you taking your girlfriend?"</p>
+                <p>"I'm taking her to that Thai restaurant. The one across from where we painted that motorcycle shop sign."</p>
+                <p>"Well, I believe your fine observation skills have led you astray once again."</p>
+                <p>"Why?"</p>
+                <p>"That place you call a restaurant is really a brothel."</p>
+                <p>"Really?"</p>
+                <p>"It is indeed. And I am not saying that from experience, just so you are not confused. It's open knowledge."</p>
+                <p>"But it looks like a restaurant."</p>
+                <p>"Well, they have tables, chairs, and a vending machine, so I guess that technically they might qualify." I waited. "Why don't you cook her something?"</p>
+                <p>"But I never cook anything."</p>
+                <p>"That's why it would be special. When I found out my wife was pregnant, I cooked her this Indian vegetarian curry. It had tofu in it. Now, I am far from a vegetarian and honestly, I hate tofu. But my wife likes it, and for that reason, it was special, you know, different."</p>
+                <p>Sam looked confused for a moment.</p>
+                <p>I asked him what was wrong. I wet my fingers and ran a hand again through my hair.</p>
+                <p>It was a second before the cogs in his brain started moving again. "You told me to tell you if I ever saw water damage. Not just this house, but any house…"</p>
+                <p>I froze, turning to him. "I did . . ."</p>
+                <p>"Well, I think there is bad water damage in the hallway."</p>
+                <p>Soon we were standing in the middle of the hallway studying a water stain at the base of the skirting board, the wallpaper peeling away and discolored around it. When I bent down, I could already smell dampness. Placing my hand against the skirting board, the wood felt soft—a bad sign, there was a lot of rot there. I removed my hand; my fingers coming away wet.</p>
+                <p>This was not some leak that occurred only when it rained, which would point to the roof. This was a constant dripping from something like a pipe. But there shouldn't have been any pipes behind the wall to cause any constant leaks. There was a master bedroom down from me and a bathroom across from that. And that was it.</p>
+                <p>I started tapping around the wall, and when I got to the middle, it had a completely different sound. I was not hitting early nineteenth-century pine anymore, but drywall. I stopped and pushed my blade a few inches into the wall. There was a layer of plaster, and behind it, drywall. My blade hit something hard behind. I dug around a little until I could see the varnished surface on the other side.</p>
+                <p>"What does that mean?" asked Sam.</p>
+                <p>"There's a hidden room behind there."</p>
+                <p>"A hidden room," said Sam, more to himself.</p>
+                <p>"Well, a door to a hidden room," I added, feeling the wall.</p>
+                <p>I stepped back and studied the wallpaper. Although old, it did not match the rooms. It was only a slight difference, both being green floral patterns, but the wallpaper in the rooms was early nineteenth-century. The wallpaper in the hallway was much later, maybe late 1980s.</p>
+                <p>"Why would someone try to hide a door to a room?"</p>
+                <p>"I can think of a few reasons," I stated. "Given it's Poletown East, Detroit, they're mostly bad ones."</p>
+                <p>"Should we call the police?"</p>
+                <p>"Why?"</p>
+                <p>"Maybe something bad is behind there."</p>
+                <p>"You know how you are allergic to lobster? Well, for me, just exchange lobster with the police, in regard to me."</p>
+                <p>"You don't like the police?"</p>
+                <p>"If there is a dead body behind there, then yes, I guess we will have to call in Detroit's finest. But short of that, I really need to look out for my allergy."</p>
+                <p>"Are you going to open it?"</p>
+                <p>"I thought I would wait a while. Maybe come back to it in a few days. Figure it out once we finish painting the house. You know, kind of draw out the mystery for as long as possible until I have a long enough cord to make a noose from. Then put it around my neck and hang myself. Maybe in front of this door. Then they can chalk it up to 'Death by Curiosity'."</p>
+                <p>"You're really not going to open it?"</p>
+                <p>I examined him for a long moment. "Get the crowbar."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for The Lift -->
+    <div id="liftModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>The Lift - Chapter One</h2>
+                <span class="close" onclick="closeModal('liftModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>He loved going fast. The problem was, the more you fell in love with going fast, the worse it felt being still.</p>
+                <p>Twenty-six-year-old Max sat there in his black leather jacket, blue jeans, and combat boots, mounted on his parked motorcycle—an ice blue 1975 Goldwing GL1000—with his black hair greased back. He studied the parking lot of the low lime-green concrete building before him.</p>
+                <p>He blew on his hands to warm them, rubbing them together, while his lone headlamp illuminated an anomaly: a dead Cairn Terrier lying frozen solid against the side of the building. It seemed as though it had been in a fight with something with teeth and lost.</p>
+                <p>There were wild dogs around here, a small pack that roamed in the night. He had seen them when he came speeding through the snow-peppered streets of Detroit's abandoned industrial district, their shadowy bodies darting about in the darkness as he went. He had even slowed down and watched them spring out of the shadows, only for him to speed down the street again as they came scampering after him, one only inches behind his back wheel.</p>
+                <p>If he stopped a moment longer, he might end up like the small terrier before him. Those dogs had a real wild streak in them.</p>
+                <p>He smoked two cigarettes while studying the dead dog, its fur frozen solid, its eyes glazed over, before the front door finally opened, spilling harsh fluorescent light onto the snow-covered steps. There in the doorway was a middle-aged, clean-shaven man with a small gray mustache and short hair.</p>
+                <p>"You must be the new guy, Max," the old man said, introducing himself as Lou.</p>
+                <p>"That's what they tell me," Max replied, killing his headlamp and dismounting. He climbed to the bottom of the steps where he met Lou with a handshake. Lou's hands felt like leather.</p>
+                <p>"Riding with no gloves in this weather. Either brave or stupid."</p>
+                <p>Max smiled. "My girlfriend, Natasha, laid them out for me on the kitchen table, but I forgot them. I guess I'm just stupid."</p>
+                <p>"At least you've got someone who cares. That's something. You can't be that stupid to win that lottery."</p>
+                <p>"Yeah," said Max. "She has been good for me."</p>
+                <p>"They tell you what you would be moving?"</p>
+                <p>"Waste," Max said with a shrug. "Hazardous stuff."</p>
+                <p>"And you're good with that? Because if you're not, this isn't going to work out."</p>
+                <p>"I don't care, as long as I get paid," said Max. "I need the money."</p>
+                <p>"All about the paycheck?"</p>
+                <p>"These days, pretty much."</p>
+                <p>"Sounds like the words of someone about to move up in the world."</p>
+                <p>"That's the only direction I want to move," said Max.</p>
+                <p>Lou took out a plastic bag and shook some air into it. He handed it to Max. "Well, the first bit of moving you can do is put that dog into this bag."</p>
+                <p>They walked down a cold hallway with Max carrying the dog wrapped in plastic under his arm. The flooring was decaying vinyl, and the walls were a cool paint-chipped blue. The first door they opened was a fire exit that came out on the back courtyard where a frozen dumpster sat. Lou collected the dog from Max, walked to the dumpster, and placed the dog inside.</p>
+                <p>Max saw a black Cadillac Escalade across the road, nestled at the corner of a crossroads.</p>
+                <p>Lou saw him looking. "They are with us. We have someone in the building out front, and then someone always in a vehicle out back." The latch of the dumpster was not closing correctly, and he walked around to inspect it. Something was caught in the hinge.</p>
+                <p>"You need help?" Max offered, coming down.</p>
+                <p>But Lou held up a hand. He found some stray wire stuck in the hinge and pulled it free, rolling it up in his hand as he inspected around the dumpster for any more problems. The lid of the dumpster now closed.</p>
+                <p>"I was wondering if my motorcycle was good out front," said Max. "But I guess if you have a set of eyes out there."</p>
+                <p>"Even if we did not have any muscle watching the front and the back, no one takes anything from around here anyway. They all know who owns this place." He paused, then added, "I take it that who owns it has been made crystal clear to you?"</p>
+                <p>"Yeah, I know who owns it," Max said, hands in his pockets. "Theodore Benson."</p>
+                <p>"I heard you worked for him, putting in a pond or something."</p>
+                <p>"Yeah," said Max with a smile. "Up at one of his properties in Indian Village. It was a weeklong job, but I never met him, though."</p>
+                <p>"If it were not for your former cellmate, just so you know," said Lou, climbing the steps to the door with Max stepping out of his way, "you would not be here. He vouched for you. And he happens to be my nephew."</p>
+                <p>"He was a good cellie," said Max. And he was. In jail, where Max had been locked up for working at one of Detroit's most infamous chop shops on the West Side, Gordon—whom Max used to call Gordie—had the two best qualities you could hope for in a cellmate. The first, and most important, was he was not a psychopath. And the second was he loved nothing more than the smell of burning rubber while he had control of the steering wheel.</p>
+                <p>"Gordon says you're into cars in a big way," said Lou, closing the back door once they were back in the hallway.</p>
+                <p>Max smiled widely. "I am. But really, it's anything with four wheels."</p>
+                <p>"Then why are you on a motorbike?"</p>
+                <p>Max reflected. "Judge said I can't own a motor vehicle for the next five years. He tacked it onto my parole. He said I have a problem that needs fixing."</p>
+                <p>"Must be some problem," Lou said, returning to the steps.</p>
+                <p>"Yeah, well, the judge thought so."</p>
+                <p>"Well, if you are wondering, the 1997 Toyota Corolla down the street is mine," said Lou as they went back inside. "It's got half a million miles on it and still runs fine."</p>
+                <p>"Toyota makes reliable cars."</p>
+                <p>When they were back in the hallway, Lou added, "As I always tell my wife, there is a reason why the Taliban drive them." Lou paused. "It's nightshift from now on, so I hope you're a night owl."</p>
+                <p>"Never been anything else," Max said.</p>
+                <p>"The job is five days a week. Monday to Friday. Your hours are midnight to seven in the morning, when all is said and done."</p>
+                <p>"Sounds good."</p>
+                <p>Lou showed Max the kitchen. Nothing much was inside apart from tins of coffee, a sink with two tan 60-ounce thermoses sitting inside, and a hot water dispenser.</p>
+                <p>They came to the office. A dusty electric typewriter from the early 1990s rested on the desk, alongside a green rotary phone whose cord had gone yellow with age. Boxes filled the rest of the space. Lou explained it was mainly used for storage only, since they never did legit paperwork.</p>
+                <p>When they came to the changing rooms—the next door in the hallway on the left—a row of six lockers greeted them. Below them, a rack held a dozen sets of red coveralls, with steel-toed rubber boots arranged neatly underneath, ready for the next shift.</p>
+                <p>"All right, well, get changed," said Lou, leaving the room. "I'll get you a new utility belt."</p>
+                <p>Max removed his leather jacket and got changed into the red coveralls. In one of the rubber boots, he found something: a Chinese takeaway menu. The paper was creased and worn, marked with a diagram of circles and squares in pencil. An arrowed line extended from one side of a circle, marked 'two miles.' Below were a bunch of numbers that seemed like whoever marked it up was working their way through some type of calculation involving forty minutes.</p>
+                <p>Max just stared at the numbers. They made no sense to him, so soon he found himself looking at the price of the Kung Pao Chicken, which wasn't bad, price-wise. Working nightshift felt strange; when he finished, he had the entire day ahead of him.</p>
+                <p>He might get some Chinese on the way home. A part of him wondered if those dogs would be out there.</p>
+                <p>He might even slow down for them again, but this time kill his motorcycle's engine to see if the little snappers could catch him. He would have to time it just right, so he could start it up and get away. But of course, that was half the fun.</p>
+                <p>There was an alternative, though. At one street corner just down from where the dogs were, there was a dip in the road that had made a perfect death trap. Max often made a point of noticing such things so he could play around with them later. This death trap had a perfect dip in the road covered in a thin coating of black ice from a leaking fire hydrant.</p>
+                <p>If he could get those little snappers to chase him and he could take that corner right, he could send them all sliding like small hockey pucks. Of course, if he did not take the corner right, then it would be him that went flying into the snow bank. Then those little snappers would have their way with him.</p>
+                <p>Tonight, on the way home, he would take a good look at the corner.</p>
+                <p>Sometimes he thought something was wrong with him. He always relished the feeling of being an inch away from everything going wrong. He was not sure why, but that feeling had consumed him all his life. The feeling that came from walking out on the edge of a building and staring down at the road below, moments from death. The heels of his boots barely catching the ledge.</p>
+                <p>Natasha had said he was different, and he sure was that, but she said she liked that about him. He remembered first meeting her at the Michigan State Fair.</p>
+                <p>Max had seen her across the crowd, standing in that faux leopard coat with those large looped earrings and short hair—every bit like a young Mia Farrow. She was with her sister in the shadow and lights of those nighttime rides a year ago. Their eyes locked. He cut in line and jumped over the fence, stole the fedora off the giant carny's head, then leaped into one of the ferris wheel buckets as it ascended. Below, the carny shouted up at him, but Max rose higher and around until, from above when the carny stopped the ride, he called out and asked her name.</p>
+                <p>She blushed like a summer rose, and it was the start of something beautiful.</p>
+                <p>That night they had raced through the city on his Honda while she rested her soft chin on his shoulder. The entire world felt as though it was made for them. Every violent corner, every soft nook, and everything wild and tame between—all theirs in the deep night.</p>
+                <p>"You thinking of ordering something on your way home?" asked Lou, returning. Max was still holding the Chinese menu.</p>
+                <p>"Thinking about it," said Max. He stood and walked over and put the menu in the bin. He was tempted by the deep-fried chicken. He liked his fried food.</p>
+                <p>Lou handed him a shrink-wrapped utility belt. "I assume you have a cellphone?"</p>
+                <p>Max put on the belt. There were loops around it to put tools in and a small carry pouch. He liked it. "Yeah, I got one."</p>
+                <p>"The equipment below will destroy any sensitive electronics, so it's best to leave it up here." Lou walked to the clothes rack, retrieved a respirator, and handed it to Max. It had an air filter on the front and a tinted yellow face visor. "You can leave your respirator off until we get to the end of the hall."</p>
+                <p>They finished changing and made their way back down the hallway, their boots echoing on the ramp. At a heavy door, Lou pointed to another entrance on the right.</p>
+                <p>"Shower rooms," he said, coming to a stop.</p>
+                <p>Max pulled out his pack of smokes, gesturing to ask if it was all right to light up inside. Lou answered by taking out his own packet, and they both lit up.</p>
+                <p>"I take it you've had a shower before?"</p>
+                <p>Max gave a wide smile. "Yeah, a few as a matter of fact."</p>
+                <p>"Well, at the end of each shift, that's what you do. Wash down good. And there are industrial washing machines in there for your coveralls."</p>
+                <p>They continued down the hall, approaching a series of double doors at the hallway's end. Purple light seeped through the glass panels. Lou took one last drag of his cigarette, then threw it on the floor and ground it out with his work boot. Max did the same. They pulled on their respirators. The amber visor now muted the purple light, turning it a reddish color. Lou circled Max, checking the seal.</p>
+                <p>"Well, after you," Lou said, his voice muffled by the plastic. "Welcome to the can factory."</p>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Create animated stars
         const starsContainer = document.getElementById('stars');
@@ -480,6 +774,38 @@
             star.style.animationDelay = Math.random() * 4 + 's';
             starsContainer.appendChild(star);
         }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
