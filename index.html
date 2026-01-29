@@ -21,7 +21,6 @@
             overflow-x: hidden;
         }
 
-        /* Starfield Background */
         .stars {
             position: fixed;
             top: 0;
@@ -47,7 +46,6 @@
             50% { opacity: 1; }
         }
 
-        /* Header */
         header {
             position: relative;
             z-index: 10;
@@ -73,13 +71,12 @@
             letter-spacing: 0.05em;
         }
 
-        /* Navigation */
         nav {
             display: flex;
             justify-content: center;
             gap: clamp(1rem, 3vw, 2.5rem);
             flex-wrap: wrap;
-            margin-bottom: 0;
+            margin-bottom: 20px;
         }
 
         nav a {
@@ -111,29 +108,27 @@
             text-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
         }
 
-        /* Audio Player Section */
+        /* Audio Player - NEW */
         .audio-player-section {
             position: relative;
             z-index: 10;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
             text-align: center;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         .audio-player-box {
+            display: inline-block;
             background: rgba(20, 20, 20, 0.6);
             border: 1px solid rgba(255, 140, 66, 0.3);
             border-radius: 8px;
-            padding: 25px;
-            display: inline-block;
-            min-width: 300px;
+            padding: 20px 30px;
         }
 
         .audio-label {
             color: #ff8c42;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            margin-bottom: 12px;
             display: block;
         }
 
@@ -141,62 +136,166 @@
             width: 100%;
             max-width: 400px;
         }
+        /* End Audio Player */
 
-        /* Main Content */
         main {
             position: relative;
             z-index: 10;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Info Box */
-        .info-box {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            padding: 40px;
-            margin-bottom: 60px;
-            text-align: center;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            line-height: 1.8;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        section {
+            margin-bottom: 80px;
         }
 
-        /* Newsletter Section */
-        .newsletter-section {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            padding: 50px 40px;
-            text-align: center;
-            margin-bottom: 60px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .newsletter-section h2 {
+        h2 {
             font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-size: clamp(2rem, 5vw, 3rem);
             color: #ff8c42;
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 0 0 15px rgba(255, 140, 66, 0.2);
         }
 
-        .newsletter-section p {
-            font-size: clamp(1rem, 2vw, 1.2rem);
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .book-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 140, 66, 0.3);
+            border-color: #ff8c42;
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .book-info {
+            padding: 25px;
+        }
+
+        .book-info h3 {
+            font-family: 'Cinzel', serif;
+            color: #ff8c42;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+
+        .book-info p {
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .book-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .book-link {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1.5px solid #ff8c42;
+            color: #ff8c42;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .book-link:hover {
+            background: #ff8c42;
+            color: #0a0a0a;
+            box-shadow: 0 0 15px rgba(255, 140, 66, 0.4);
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            line-height: 1.9;
+            color: #c0c0c0;
+        }
+
+        .about-content p {
+            margin-bottom: 25px;
+        }
+
+        .faq-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 140, 66, 0.4);
+            box-shadow: 0 4px 20px rgba(255, 140, 66, 0.1);
+        }
+
+        .faq-item h3 {
+            font-family: 'Cinzel', serif;
+            color: #ff8c42;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .faq-item p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .contact-section {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .contact-section p {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
             color: #b0b0b0;
             margin-bottom: 30px;
+            line-height: 1.8;
         }
 
         .cta-button {
             display: inline-block;
-            padding: 15px 40px;
+            padding: 15px 50px;
             background: #ff8c42;
             color: #0a0a0a;
             text-decoration: none;
             font-size: clamp(1rem, 2vw, 1.2rem);
             font-weight: 600;
-            border-radius: 4px;
+            border-radius: 5px;
             transition: all 0.3s ease;
             border: 2px solid #ff8c42;
         }
@@ -204,99 +303,36 @@
         .cta-button:hover {
             background: transparent;
             color: #ff8c42;
-            box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+            box-shadow: 0 0 25px rgba(255, 140, 66, 0.5);
         }
 
-        /* Books Section */
-        .books-section {
-            margin-bottom: 60px;
-        }
-
-        .books-section h2 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
-            color: #ff8c42;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .book-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .book-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 30px rgba(255, 140, 66, 0.3);
-        }
-
-        .book-cover {
-            width: 100%;
-            height: 350px;
-            object-fit: cover;
-        }
-
-        .book-info {
-            padding: 20px;
-        }
-
-        .book-info h3 {
-            font-family: 'Cinzel', serif;
-            color: #ff8c42;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .book-info p {
-            color: #b0b0b0;
-            margin-bottom: 15px;
+        .email-display {
+            margin-top: 20px;
             font-size: 1rem;
+            color: #888;
         }
 
-        .book-links {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .book-link {
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid #ff8c42;
+        .email-display a {
             color: #ff8c42;
             text-decoration: none;
-            font-size: 0.9rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
         }
 
-        .book-link:hover {
-            background: #ff8c42;
-            color: #0a0a0a;
+        .email-display a:hover {
+            color: #ffb366;
         }
 
-        /* Footer */
         footer {
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-size: 0.9rem;
+            padding: 50px 20px;
+            color: #555;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 140, 66, 0.1);
+            margin-top: 80px;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .site-title {
                 letter-spacing: 0.2em;
@@ -306,18 +342,13 @@
                 gap: 1rem;
             }
 
-            .info-box, .newsletter-section {
-                padding: 30px 20px;
-            }
-
-            .audio-player-box {
-                padding: 20px;
+            .books-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Starfield Background -->
     <div class="stars" id="stars"></div>
 
     <header>
@@ -329,11 +360,10 @@
             <a href="#about">About</a>
             <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
-            <a href="#newsletter">Newsletter</a>
         </nav>
     </header>
 
-    <!-- Audio Player Section -->
+    <!-- AUDIO PLAYER - ONLY NEW ADDITION -->
     <div class="audio-player-section">
         <div class="audio-player-box">
             <span class="audio-label">🎧 Listen to The Lift audiobook sample</span>
@@ -345,24 +375,14 @@
     </div>
 
     <main>
-        <section id="about" class="info-box">
-            <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
-        </section>
-
-        <section id="newsletter" class="newsletter-section">
-            <h2>Stay Updated</h2>
-            <p>Subscribe to get notified about new releases and exclusive updates</p>
-            <a href="https://buttondown.com/joeorange" target="_blank" class="cta-button">Subscribe to Newsletter</a>
-        </section>
-
-        <section id="books" class="books-section">
-            <h2>The Strange Detroit Series</h2>
+        <section id="books">
+            <h2>Books</h2>
             <div class="books-grid">
                 <div class="book-card">
                     <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox" class="book-cover">
                     <div class="book-info">
                         <h3>The Bootstrap Paradox</h3>
-                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel.</p>
+                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel. A mind-bending tale of time, causality, and the nature of existence.</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DPWF3J7Q" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6738601901" class="book-link">Apple Books</a>
@@ -375,7 +395,7 @@
                     <img src="lift-cover.jpg" alt="The Lift" class="book-cover">
                     <div class="book-info">
                         <h3>The Lift</h3>
-                        <p>An elevator that shouldn't exist. Floors that lead nowhere.</p>
+                        <p>An elevator that shouldn't exist. Floors that lead nowhere. One man's descent into impossible architecture and existential dread.</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DQ3HL7VJ" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6738736825" class="book-link">Apple Books</a>
@@ -388,7 +408,7 @@
                     <img src="dead-metal-cover.png" alt="Dead Metal" class="book-cover">
                     <div class="book-info">
                         <h3>Dead Metal</h3>
-                        <p>Metal is dying. Can humanity survive without its most vital resource?</p>
+                        <p>Metal is dying. Cars crumble, buildings collapse, and civilization teeters on the brink. Can humanity survive without its most vital resource?</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DRN7GH3J" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6740236498" class="book-link">Apple Books</a>
@@ -399,10 +419,47 @@
             </div>
         </section>
 
-        <section id="contact" class="newsletter-section">
-            <h2>Get In Touch</h2>
-            <p>Questions about my books? Want a review copy? I'd love to hear from you.</p>
-            <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Contact Me</a>
+        <section id="about">
+            <h2>About</h2>
+            <div class="about-content">
+                <p>Joe Orange writes science fiction that explores the boundaries between the ordinary and the impossible. Based in New Zealand, he crafts stories where everyday people encounter extraordinary circumstances that challenge their understanding of reality.</p>
+                <p>The Strange Detroit series emerged from a fascination with how small anomalies can cascade into world-changing events. Each book stands alone while contributing to a larger tapestry of interconnected mysteries.</p>
+                <p>When not writing, Joe explores the intersection of technology, philosophy, and the human condition—themes that inevitably find their way into his work.</p>
+            </div>
+        </section>
+
+        <section id="faq">
+            <h2>FAQ</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <h3>Do I need to read the books in order?</h3>
+                    <p>No! Each Strange Detroit book is a standalone story with its own characters and mystery. While they share a universe and certain underlying themes, you can start with whichever book's premise interests you most.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Are the books available in audiobook format?</h3>
+                    <p>Yes! The Lift is currently available as an audiobook, narrated by Google's Madison voice. More audiobooks are in production and will be announced through the newsletter.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Will there be more Strange Detroit books?</h3>
+                    <p>Absolutely. The Strange Detroit universe has many more stories to tell. Subscribe to the newsletter to stay updated on new releases and behind-the-scenes insights into upcoming books.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Can I get a signed copy?</h3>
+                    <p>As the books are currently only available in digital format, signed physical copies aren't available yet. If there's enough interest, print editions may be explored in the future.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <h2>Contact</h2>
+            <p>Have a question about my books? Interested in a review copy? Want to discuss a potential collaboration? I'd love to hear from you.</p>
+            <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Send Email</a>
+            <div class="email-display">
+                Or reach me directly at: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a>
+            </div>
         </section>
     </main>
 
@@ -411,7 +468,6 @@
     </footer>
 
     <script>
-        // Generate random stars
         function createStars() {
             const starsContainer = document.getElementById('stars');
             const starCount = 100;
