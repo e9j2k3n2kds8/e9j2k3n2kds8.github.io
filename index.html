@@ -3,426 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joe Orange - Science Fiction Author</title>
+    <title>Joe Orange - Speculative Fiction Author</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
+            font-family: 'Crimson Text', serif;
+            background-color: #0a0a0a;
             color: #e0e0e0;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        header {
-            background: rgba(15, 15, 30, 0.95);
-            padding: 2rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            position: sticky;
+
+        /* Starfield Background */
+        .stars {
+            position: fixed;
             top: 0;
-            z-index: 100;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .site-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            color: #ff8c42;
+            letter-spacing: 0.3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 140, 66, 0.3);
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #b0b0b0;
+            font-style: italic;
+            margin-bottom: 40px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
         nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ff6b35;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .logo:hover {
-            color: #ff8555;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        .nav-links a {
-            color: #e0e0e0;
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-size: 1.1rem;
-        }
-        .nav-links a:hover {
-            color: #ff6b35;
-        }
-        .audio-bar {
-            background: rgba(255, 107, 53, 0.1);
-            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
-            padding: 1rem 0;
-        }
-        .audio-bar-content {
-            display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 1.5rem;
+            gap: clamp(1rem, 3vw, 2.5rem);
             flex-wrap: wrap;
+            margin-bottom: 20px;
         }
-        .audio-bar-content span {
-            color: #ff6b35;
-            font-size: 1rem;
+
+        nav a {
+            color: #ff8c42;
+            text-decoration: none;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
         }
-        .audio-bar-content audio {
-            max-width: 400px;
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ff8c42;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
             width: 100%;
         }
-        .hero {
-            padding: 4rem 0;
+
+        nav a:hover {
+            color: #ffb366;
+            text-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+        }
+
+        /* Audio Player Bar */
+        .audio-bar {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            padding: 20px;
+            background: rgba(255, 140, 66, 0.05);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 8px;
             text-align: center;
         }
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            color: #ff6b35;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+        .audio-bar-label {
+            color: #ff8c42;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: block;
         }
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
+
+        .audio-bar audio {
+            width: 100%;
+            max-width: 500px;
+            height: 40px;
+        }
+
+        /* Main Content */
+        main {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 60px;
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 8px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .newsletter-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #ff8c42;
+            margin-bottom: 20px;
+        }
+
+        .newsletter-section p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
             color: #b0b0b0;
+            margin-bottom: 30px;
         }
+
         .cta-button {
             display: inline-block;
-            padding: 1rem 2rem;
-            background: #ff6b35;
-            color: white;
+            padding: 15px 40px;
+            background: #ff8c42;
+            color: #0a0a0a;
             text-decoration: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 600;
+            border-radius: 4px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 2px solid #ff8c42;
         }
+
         .cta-button:hover {
-            background: #ff8555;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+            background: transparent;
+            color: #ff8c42;
+            box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
         }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .info-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(255, 107, 53, 0.2);
-            border-color: rgba(255, 107, 53, 0.6);
-        }
-        .info-card h3 {
-            color: #ff6b35;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        .info-card p {
-            color: #b0b0b0;
-            line-height: 1.8;
-            flex-grow: 1;
-        }
-        .newsletter-form {
-            margin-top: 1.5rem;
-        }
-        .newsletter-form input {
-            padding: 0.8rem;
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #e0e0e0;
-            width: 70%;
-            margin-right: 0.5rem;
-        }
-        .newsletter-form button {
-            padding: 0.8rem 1.5rem;
-            background: #ff6b35;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .newsletter-form button:hover {
-            background: #ff8555;
-        }
+
+        /* Books Section */
         .books-section {
-            padding: 4rem 0;
+            margin-bottom: 60px;
         }
+
         .books-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #ff8c42;
             text-align: center;
-            font-size: 2.5rem;
-            color: #ff6b35;
-            margin-bottom: 3rem;
+            margin-bottom: 40px;
         }
+
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
+
         .book-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 8px;
             overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            display: flex;
-            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
+
         .book-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 12px 24px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 8px 30px rgba(255, 140, 66, 0.3);
         }
+
         .book-cover {
             width: 100%;
-            height: 400px;
+            height: 350px;
             object-fit: cover;
         }
+
         .book-info {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
+            padding: 20px;
         }
+
         .book-info h3 {
-            color: #ff6b35;
-            margin-bottom: 0.5rem;
-            font-size: 1.4rem;
+            font-family: 'Cinzel', serif;
+            color: #ff8c42;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
         }
+
         .book-info p {
             color: #b0b0b0;
-            margin-bottom: 1rem;
-            flex-grow: 1;
+            margin-bottom: 15px;
+            font-size: 1rem;
         }
+
         .book-links {
             display: flex;
-            gap: 1rem;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-top: auto;
         }
+
         .book-link {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 107, 53, 0.2);
-            color: #ff6b35;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #ff8c42;
+            color: #ff8c42;
             text-decoration: none;
-            border-radius: 5px;
-            border: 1px solid #ff6b35;
+            font-size: 0.9rem;
+            border-radius: 4px;
             transition: all 0.3s ease;
+        }
+
+        .book-link:hover {
+            background: #ff8c42;
+            color: #0a0a0a;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
             font-size: 0.9rem;
         }
-        .book-link:hover {
-            background: #ff6b35;
-            color: white;
-        }
-        .about-section {
-            padding: 4rem 0;
-            background: rgba(255, 255, 255, 0.02);
-        }
-        .about-content {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .about-content h2 {
-            font-size: 2.5rem;
-            color: #ff6b35;
-            margin-bottom: 2rem;
-        }
-        .about-content p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #b0b0b0;
-            margin-bottom: 1.5rem;
-        }
-        .contact-section {
-            padding: 4rem 0;
-            text-align: center;
-        }
-        .contact-section h2 {
-            font-size: 2.5rem;
-            color: #ff6b35;
-            margin-bottom: 2rem;
-        }
-        .contact-section p {
-            font-size: 1.1rem;
-            color: #b0b0b0;
-            margin-bottom: 2rem;
-        }
-        .email-display {
-            margin-top: 1rem;
-            font-size: 1rem;
-            color: #b0b0b0;
-        }
-        .email-display a {
-            color: #ff6b35;
-            text-decoration: none;
-        }
-        .email-display a:hover {
-            text-decoration: underline;
-        }
-        footer {
-            background: rgba(15, 15, 30, 0.95);
-            padding: 2rem 0;
-            text-align: center;
-            color: #b0b0b0;
-            margin-top: 4rem;
-        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .site-title {
+                letter-spacing: 0.2em;
             }
-            .nav-links {
-                flex-direction: column;
+
+            nav {
                 gap: 1rem;
             }
-            .newsletter-form input {
-                width: 100%;
-                margin-bottom: 0.5rem;
+
+            .info-box, .newsletter-section {
+                padding: 30px 20px;
             }
-            .newsletter-form button {
-                width: 100%;
-            }
-            .audio-bar-content {
-                flex-direction: column;
-                gap: 0.5rem;
+
+            .audio-bar {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Starfield Background -->
+    <div class="stars" id="stars"></div>
+
     <header>
-        <nav class="container">
-            <a href="#" class="logo">Joe Orange</a>
-            <ul class="nav-links">
-                <li><a href="#books">Books</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+        <h1 class="site-title">JOE ORANGE</h1>
+        <p class="tagline">Speculative Fiction Author</p>
+        
+        <nav>
+            <a href="#books">Books</a>
+            <a href="#about">About</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+            <a href="#newsletter">Newsletter</a>
         </nav>
-    </header>
-    
-    <div class="audio-bar">
-        <div class="container">
-            <div class="audio-bar-content">
-                <span>🎧 Listen to The Lift audiobook sample:</span>
-                <audio controls>
-                    <source src="TheLift.mp3" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
+
+        <!-- Audio Player Bar -->
+        <div class="audio-bar">
+            <span class="audio-bar-label">🎧 Listen to The Lift audiobook sample</span>
+            <audio controls>
+                <source src="TheLift.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
         </div>
-    </div>
-    
+    </header>
+
     <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Welcome to Strange Detroit</h1>
-                <p>Science Fiction That Questions Reality</p>
-                <a href="#books" class="cta-button">Explore My Books</a>
-                
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h3>📚 Latest Release</h3>
-                        <p>Dead Metal - A mysterious substance is causing metal to decay at an alarming rate. Scientists race against time to understand the phenomenon before civilization collapses.</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h3>📧 Newsletter</h3>
-                        <p>Get updates on new releases, behind-the-scenes content, and exclusive short stories.</p>
-                        <form class="newsletter-form" action="https://buttondown.com/api/emails/embed-subscribe/joeorange" method="post" target="popupwindow">
-                            <input type="email" name="email" placeholder="Your email address" required>
-                            <button type="submit">Subscribe</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <section id="about" class="info-box">
+            <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
         </section>
+
+        <section id="newsletter" class="newsletter-section">
+            <h2>Stay Updated</h2>
+            <p>Subscribe to get notified about new releases and exclusive updates</p>
+            <a href="https://buttondown.com/joeorange" target="_blank" class="cta-button">Subscribe to Newsletter</a>
+        </section>
+
         <section id="books" class="books-section">
-            <div class="container">
-                <h2>The Strange Detroit Series</h2>
-                <div class="books-grid">
-                    <div class="book-card">
-                        <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox" class="book-cover">
-                        <div class="book-info">
-                            <h3>The Bootstrap Paradox</h3>
-                            <p>When a mysterious object appears in Detroit, reality itself begins to unravel. A mind-bending tale of time, causality, and the nature of existence.</p>
-                            <div class="book-links">
-                                <a href="https://www.amazon.com/dp/B0DPWF3J7Q" class="book-link">Amazon</a>
-                                <a href="https://books.apple.com/us/book/id6738601901" class="book-link">Apple Books</a>
-                                <a href="https://www.kobo.com/us/en/ebook/the-bootstrap-paradox-5" class="book-link">Kobo</a>
-                            </div>
+            <h2>The Strange Detroit Series</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox" class="book-cover">
+                    <div class="book-info">
+                        <h3>The Bootstrap Paradox</h3>
+                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel.</p>
+                        <div class="book-links">
+                            <a href="https://www.amazon.com/dp/B0DPWF3J7Q" class="book-link">Amazon</a>
+                            <a href="https://books.apple.com/us/book/id6738601901" class="book-link">Apple Books</a>
+                            <a href="https://www.kobo.com/us/en/ebook/the-bootstrap-paradox-5" class="book-link">Kobo</a>
                         </div>
                     </div>
-                    <div class="book-card">
-                        <img src="lift-cover.jpg" alt="The Lift" class="book-cover">
-                        <div class="book-info">
-                            <h3>The Lift</h3>
-                            <p>An elevator that shouldn't exist. Floors that lead nowhere. One man's descent into impossible architecture and existential dread.</p>
-                            <div class="book-links">
-                                <a href="https://www.amazon.com/dp/B0DQ3HL7VJ" class="book-link">Amazon</a>
-                                <a href="https://books.apple.com/us/book/id6738736825" class="book-link">Apple Books</a>
-                                <a href="https://www.kobo.com/us/en/ebook/the-lift-66" class="book-link">Kobo</a>
-                            </div>
+                </div>
+
+                <div class="book-card">
+                    <img src="lift-cover.jpg" alt="The Lift" class="book-cover">
+                    <div class="book-info">
+                        <h3>The Lift</h3>
+                        <p>An elevator that shouldn't exist. Floors that lead nowhere.</p>
+                        <div class="book-links">
+                            <a href="https://www.amazon.com/dp/B0DQ3HL7VJ" class="book-link">Amazon</a>
+                            <a href="https://books.apple.com/us/book/id6738736825" class="book-link">Apple Books</a>
+                            <a href="https://www.kobo.com/us/en/ebook/the-lift-66" class="book-link">Kobo</a>
                         </div>
                     </div>
-                    <div class="book-card">
-                        <img src="dead-metal-cover.png" alt="Dead Metal" class="book-cover">
-                        <div class="book-info">
-                            <h3>Dead Metal</h3>
-                            <p>Metal is dying. Cars crumble, buildings collapse, and civilization teeters on the brink. Can humanity survive without its most vital resource?</p>
-                            <div class="book-links">
-                                <a href="https://www.amazon.com/dp/B0DRN7GH3J" class="book-link">Amazon</a>
-                                <a href="https://books.apple.com/us/book/id6740236498" class="book-link">Apple Books</a>
-                                <a href="https://www.kobo.com/us/en/ebook/dead-metal-9" class="book-link">Kobo</a>
-                            </div>
+                </div>
+
+                <div class="book-card">
+                    <img src="dead-metal-cover.png" alt="Dead Metal" class="book-cover">
+                    <div class="book-info">
+                        <h3>Dead Metal</h3>
+                        <p>Metal is dying. Can humanity survive without its most vital resource?</p>
+                        <div class="book-links">
+                            <a href="https://www.amazon.com/dp/B0DRN7GH3J" class="book-link">Amazon</a>
+                            <a href="https://books.apple.com/us/book/id6740236498" class="book-link">Apple Books</a>
+                            <a href="https://www.kobo.com/us/en/ebook/dead-metal-9" class="book-link">Kobo</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <section id="about" class="about-section">
-            <div class="container">
-                <div class="about-content">
-                    <h2>About Joe Orange</h2>
-                    <p>Joe Orange writes science fiction that explores the boundaries between the ordinary and the impossible. Based in New Zealand, he crafts stories where everyday people encounter extraordinary circumstances that challenge their understanding of reality.</p>
-                    <p>The Strange Detroit series emerged from a fascination with how small anomalies can cascade into world-changing events. Each book stands alone while contributing to a larger tapestry of interconnected mysteries.</p>
-                    <p>When not writing, Joe explores the intersection of technology, philosophy, and the human condition—themes that inevitably find their way into his work.</p>
-                </div>
-            </div>
-        </section>
-        <section id="contact" class="contact-section">
-            <div class="container">
-                <h2>Get In Touch</h2>
-                <p>Have a question about my books? Interested in a review copy? I'd love to hear from you.</p>
-                <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Contact Me</a>
-                <div class="email-display">
-                    Or email me directly at: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a>
-                </div>
-            </div>
+
+        <section id="contact" class="newsletter-section">
+            <h2>Get In Touch</h2>
+            <p>Questions about my books? Want a review copy? I'd love to hear from you.</p>
+            <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Contact Me</a>
         </section>
     </main>
+
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Joe Orange. All rights reserved.</p>
-        </div>
+        <p>&copy; 2025 Joe Orange. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Generate random stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        createStars();
+    </script>
 </body>
 </html>
