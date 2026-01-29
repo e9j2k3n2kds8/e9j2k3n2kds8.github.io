@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joe Orange - Speculative Fiction Author</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+    <title>Joe Orange - Speculative Fiction Author | Strange Detroit Series</title>
+    <meta name="description" content="Joe Orange writes speculative fiction in the spirit of The Twilight Zone. Read The Bootstrap Paradox and The Lift, the Strange Detroit series where ordinary people stumble into extraordinary circumstances.">
+    <meta name="keywords" content="Joe Orange, Strange Detroit, The Bootstrap Paradox, The Lift, speculative fiction, science fiction, thriller, Detroit fiction, Twilight Zone style">
+    <meta name="author" content="Joe Orange">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://joeorange.com/">
+    <meta property="og:title" content="Joe Orange - Speculative Fiction Author">
+    <meta property="og:description" content="Speculative fiction author weaving tales of wonder and the impossible. Creator of the Strange Detroit series.">
+    <meta property="og:image" content="https://joeorange.com/bootstrap-cover.jpg">
 
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://joeorange.com/">
+    <meta property="twitter:title" content="Joe Orange - Speculative Fiction Author">
+    <meta property="twitter:description" content="Speculative fiction author weaving tales of wonder and the impossible. Creator of the Strange Detroit series.">
+    <meta property="twitter:image" content="https://joeorange.com/bootstrap-cover.jpg">
+    
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -14,11 +30,446 @@
         }
 
         body {
-            font-family: 'Crimson Text', serif;
-            background-color: #0a0a0a;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
             color: #e0e0e0;
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 5em;
+            font-weight: 300;
+            letter-spacing: 10px;
+            margin-bottom: 15px;
+            color: #ff8c42;
+            text-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 140, 66, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 140, 66, 0.8), 0 0 40px rgba(255, 140, 66, 0.6); }
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            color: #a0a0a0;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 25px;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            color: #ff6b35;
+            transform: translateY(-2px);
+        }
+
+        .about {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .about p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .newsletter-section {
+            background: rgba(255, 140, 66, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .newsletter-section h2 {
+            color: #ff8c42;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .newsletter-section p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #c0c0c0;
+        }
+
+        .newsletter-embed {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .newsletter-embed iframe {
+            border-radius: 10px;
+        }
+
+        .contact-section {
+            background: rgba(255, 140, 66, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            color: #ff8c42;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .contact-section p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #c0c0c0;
+        }
+
+        .faq-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 15px;
+            padding: 50px 40px;
+            margin: 60px auto;
+            max-width: 900px;
+        }
+
+        .faq-section h2 {
+            color: #ff8c42;
+            font-size: 2.2em;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+
+        .faq-item {
+            margin-bottom: 35px;
+        }
+
+        .faq-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-question {
+            color: #ff8c42;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .faq-answer {
+            color: #c0c0c0;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+
+        .faq-answer p {
+            margin-bottom: 15px;
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .books-section {
+            padding: 60px 20px;
+        }
+
+        .books-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ff8c42;
+            margin-bottom: 50px;
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            margin-bottom: 60px;
+            align-items: start;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            height: 100%;
+        }
+
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 140, 66, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .book-card:hover::before {
+            opacity: 1;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 140, 66, 0.6);
+            box-shadow: 0 20px 40px rgba(255, 140, 66, 0.2);
+        }
+
+        .book-cover-container {
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            width: 160px;
+        }
+
+        .book-cover {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        .book-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card h3 {
+            color: #ff8c42;
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .book-series {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .book-card p {
+            margin-bottom: 15px;
+            color: #c0c0c0;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .review-quote {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #ff8c42;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #d0d0d0;
+            font-size: 0.9em;
+        }
+
+        .review-source {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .buy-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .buy-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5);
+        }
+
+        .read-sample-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .read-sample-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .author-bio {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 60px auto 40px;
+            max-width: 900px;
+        }
+
+        .author-bio h2 {
+            text-align: center;
+            color: #ff8c42;
+            font-size: 2em;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .author-bio p {
+            font-size: 1.05em;
+            margin-bottom: 20px;
+            color: #c0c0c0;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .author-bio p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 140, 66, 0.3);
+        }
+
+        footer p {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ff6b35;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+                letter-spacing: 4px;
+            }
+
+            .books-section h2 {
+                font-size: 2em;
+            }
+
+            .about {
+                padding: 25px;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .book-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .book-cover {
+                width: 200px;
+            }
+
+            .author-bio {
+                padding: 25px;
+            }
         }
 
         .stars {
@@ -28,7 +479,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: -1;
         }
 
         .star {
@@ -37,419 +488,111 @@
             height: 2px;
             background: white;
             border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 3s infinite;
+            animation: twinkle 4s infinite;
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0; }
+            0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
 
-        header {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 60px 20px 40px;
-        }
-
-        .site-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            font-weight: 700;
-            color: #ff8c42;
-            letter-spacing: 0.3em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255, 140, 66, 0.3);
-        }
-
-        .tagline {
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
-            color: #b0b0b0;
-            font-style: italic;
-            margin-bottom: 40px;
-            letter-spacing: 0.05em;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: clamp(1rem, 3vw, 2.5rem);
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        nav a {
-            color: #ff8c42;
-            text-decoration: none;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 5px 0;
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
+        /* Modal styles for Read Sample popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
-            width: 0;
-            height: 2px;
-            background: #ff8c42;
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover::after {
+            top: 0;
             width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
         }
 
-        nav a:hover {
-            color: #ffb366;
-            text-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        /* AUDIO PLAYER - NEW ADDITION */
-        .audio-player-section {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .audio-player-box {
-            display: inline-block;
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            padding: 20px 30px;
-        }
-
-        .audio-label {
-            color: #ff8c42;
-            font-size: 1rem;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .audio-player-box audio {
-            width: 100%;
-            max-width: 400px;
-        }
-        /* END AUDIO PLAYER */
-
-        main {
-            position: relative;
-            z-index: 10;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        section {
-            margin-bottom: 80px;
-        }
-
-        h2 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 3rem);
-            color: #ff8c42;
-            text-align: center;
-            margin-bottom: 50px;
-            text-shadow: 0 0 15px rgba(255, 140, 66, 0.2);
-        }
-
-        .info-box {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            padding: 40px;
-            margin-bottom: 60px;
-            text-align: center;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            line-height: 1.8;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .newsletter-section {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 8px;
-            padding: 50px 40px;
-            text-align: center;
-            margin-bottom: 60px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .newsletter-section h2 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
-            color: #ff8c42;
-            margin-bottom: 20px;
-        }
-
-        .newsletter-section p {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: #b0b0b0;
-            margin-bottom: 30px;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: #ff8c42;
-            color: #0a0a0a;
-            text-decoration: none;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            font-weight: 600;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            border: 2px solid #ff8c42;
-        }
-
-        .cta-button:hover {
-            background: transparent;
-            color: #ff8c42;
-            box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
-        }
-
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .book-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .book-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(255, 140, 66, 0.3);
-            border-color: #ff8c42;
-        }
-
-        .book-cover {
-            width: 100%;
-            height: 450px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .book-info {
-            padding: 25px;
-        }
-
-        .book-info h3 {
-            font-family: 'Cinzel', serif;
-            color: #ff8c42;
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-        }
-
-        .book-info p {
-            color: #b0b0b0;
-            margin-bottom: 20px;
-            font-size: 1.05rem;
-            line-height: 1.7;
-        }
-
-        .book-links {
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            margin: 3% auto;
+            padding: 0;
+            border: 2px solid rgba(255, 140, 66, 0.5);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
         }
 
-        .book-link {
-            padding: 10px 20px;
-            background: transparent;
-            border: 1.5px solid #ff8c42;
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 140, 66, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
             color: #ff8c42;
-            text-decoration: none;
-            font-size: 0.95rem;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 300;
+            letter-spacing: 2px;
         }
 
-        .book-link:hover {
-            background: #ff8c42;
-            color: #0a0a0a;
-            box-shadow: 0 0 15px rgba(255, 140, 66, 0.4);
-        }
-
-        .coming-soon-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 140, 66, 0.3);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .coming-soon-card h3 {
-            font-family: 'Cinzel', serif;
+        .close {
             color: #ff8c42;
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .coming-soon-card .release-date {
-            color: #888;
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-
-        .coming-soon-card p {
-            color: #b0b0b0;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .book-cover-small {
-            width: 150px;
-            height: auto;
-            float: left;
-            margin-right: 20px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        .about-content {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 140, 66, 0.2);
-            border-radius: 8px;
-            padding: 40px;
-            font-size: clamp(1.05rem, 2.5vw, 1.15rem);
-            line-height: 1.9;
-            color: #c0c0c0;
-        }
-
-        .about-content p {
-            margin-bottom: 20px;
-        }
-
-        .faq-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .faq-item {
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 140, 66, 0.2);
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .faq-item:hover {
-            border-color: rgba(255, 140, 66, 0.4);
-            box-shadow: 0 4px 20px rgba(255, 140, 66, 0.1);
-        }
-
-        .faq-item h3 {
-            font-family: 'Cinzel', serif;
-            color: #ff8c42;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-        }
-
-        .faq-item p {
-            color: #b0b0b0;
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-
-        .testimonials-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .testimonial {
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 140, 66, 0.2);
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
-            font-style: italic;
-            color: #b0b0b0;
-            line-height: 1.8;
-        }
-
-        .testimonial-author {
-            text-align: right;
-            margin-top: 15px;
-            font-style: normal;
-            color: #ff8c42;
-        }
-
-        .contact-section {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .contact-section p {
-            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
-            color: #b0b0b0;
-            margin-bottom: 30px;
-            line-height: 1.8;
-        }
-
-        .email-display {
-            margin-top: 20px;
-            font-size: 1rem;
-            color: #888;
-        }
-
-        .email-display a {
-            color: #ff8c42;
-            text-decoration: none;
+            font-size: 35px;
+            font-weight: 300;
+            cursor: pointer;
             transition: color 0.3s ease;
+            line-height: 1;
         }
 
-        .email-display a:hover {
-            color: #ffb366;
+        .close:hover,
+        .close:focus {
+            color: #ff6b35;
         }
 
-        footer {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 50px 20px;
-            color: #555;
-            font-size: 0.95rem;
-            border-top: 1px solid rgba(255, 140, 66, 0.1);
-            margin-top: 80px;
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+            color: #d0d0d0;
+            line-height: 1.8;
         }
 
-        @media (max-width: 768px) {
-            .site-title {
-                letter-spacing: 0.2em;
-            }
+        .modal-body p {
+            margin-bottom: 1.2em;
+            font-size: 1.05em;
+        }
 
-            nav {
-                gap: 1rem;
-            }
+        .modal-body p:last-child {
+            margin-bottom: 0;
+        }
 
-            .books-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Custom scrollbar for modal */
+        .modal-body::-webkit-scrollbar {
+            width: 10px;
+        }
 
-            .book-cover-small {
-                float: none;
-                display: block;
-                margin: 0 auto 20px;
-            }
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 140, 66, 0.5);
+            border-radius: 5px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 140, 66, 0.7);
         }
     </style>
 </head>
@@ -457,190 +600,490 @@
     <div class="stars" id="stars"></div>
 
     <header>
-        <h1 class="site-title">JOE ORANGE</h1>
-        <p class="tagline">Speculative Fiction Author</p>
-        
-        <nav>
-            <a href="#books">Books</a>
-            <a href="#about">About</a>
-            <a href="#faq">FAQ</a>
-            <a href="#contact">Contact</a>
-            <a href="#newsletter">Newsletter</a>
-        </nav>
+        <div class="container">
+            <h1>JOE ORANGE</h1>
+            <p class="tagline">Speculative Fiction Author</p>
+            <nav>
+                <a href="#books">Books</a>
+                <a href="#about">About</a>
+                <a href="#faq">FAQ</a>
+                <a href="#contact">Contact</a>
+                <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" target="_blank">Newsletter</a>
+            </nav>
+        </div>
     </header>
 
-    <!-- AUDIO PLAYER - ONLY NEW SECTION -->
-    <div class="audio-player-section">
-        <div class="audio-player-box">
-            <span class="audio-label">🎧 Listen to The Lift audiobook sample</span>
-            <audio controls>
-                <source src="TheLift.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-    </div>
-    <!-- END AUDIO PLAYER -->
-
-    <main>
-        <section class="info-box">
+    <div class="container">
+        <div class="about">
             <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
-        </section>
+        </div>
 
-        <section id="newsletter" class="newsletter-section">
+        <div class="newsletter-section">
             <h2>Stay Updated</h2>
             <p>Subscribe to get notified about new releases and exclusive updates</p>
-            <a href="https://buttondown.com/joeorange" target="_blank" class="cta-button">Subscribe to Newsletter</a>
-        </section>
+            <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" class="buy-button" target="_blank">Subscribe to Newsletter</a>
+        </div>
 
-        <section id="coming-soon">
-            <h2>Coming Soon</h2>
-            <div class="coming-soon-card">
-                <img src="dead-metal-cover.png" alt="Alien Invasion: Dead Metal book cover" class="book-cover-small">
-                <h3>Alien Invasion: Dead Metal</h3>
-                <p class="release-date">Coming February 9th, 2026</p>
-                <p>Christmas Eve, 1980. Rory Kobayashi toasts out her cigarette in a Kermit the Frog mug and faces toward the aircraft megahouse. Steel crumples from feet-to-ceil slow, something impossible: entities piling at the sub-micron level. She gets to make coffee. When the sunrise, the piping has decided.</p>
-                <p>Her assistant Freddie steps it on the blackboard. It's an exponential curve. By cycle thirty, every piece of ferrous metal on Earth will fail completely. The aliens blimey? That won't happen for sixty-thousand years.</p>
-                <p>But something is happening. Something that shouldn't be possible. And the world may never be the same.</p>
-                <p>With a changing world around them, Rick, a former baseball player turned President, fights to keep the government functioning underground. George, a British operative, infiltrates enemy facilities searching for answers. Jess survives terrible ordeals about herself that hurts everything she believed. At civilization teeters on the edge and pursues upends, they rush that the status quo-term is less the end of the world, or something worse?</p>
-                <a href="#newsletter" class="cta-button">Get Notified at Launch</a>
+        <div class="books-section" id="books" style="padding-top: 40px;">
+            <h2 style="color: #ff8c42;">COMING SOON</h2>
+            <div class="books-grid" style="max-width: 800px; margin: 0 auto;">
+                <div class="book-card" style="background: rgba(255, 140, 66, 0.08); border-color: rgba(255, 140, 66, 0.5);">
+                    <div class="book-cover-container">
+                        <img src="dead-metal-cover.png" alt="Alien Invasion: Dead Metal book cover" class="book-cover">
+                    </div>
+                    <div class="book-content">
+                        <h3>Alien Invasion: Dead Metal</h3>
+                        <p class="book-series">Coming February 30th, 2026</p>
+                        <p>Christmas Eve, 1980. Betty Kobayashi stubs out her cigarette in a Kermit the Frog mug and leans toward the electron microscope. Steel samples from Invercargill show something impossible: uniform pitting at the sub-micron level. She goes to make coffee. When she returns, the pitting has doubled.</p>
+                        <p>Her assistant Freddie maps it on the blackboard. It's an exponential curve. By cycle thirty, every piece of ferrous metal on Earth will fail completely. The silver lining? That won't happen for sixty thousand years.</p>
+                        <p>But something is happening. Something that shouldn't be possible. And the world may never be the same.</p>
+                        <p>With a changing world around them, Rick, a former baseball player turned President, fights to keep the government functioning underground. George, a British operative, infiltrates enemy facilities searching for answers. Jess discovers terrible truths about herself that shake everything she believed. As civilization teeters on the edge and paranoia spreads, they each face the same question: is this the end of the world, or something worse?</p>
+                        <div class="button-container">
+                            <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" class="buy-button" target="_blank">Get Notified at Launch</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
 
-        <section id="books">
-            <h2>The Strange Detroit Series</h2>
+        <div class="about">
+            <h2 style="text-align: center; color: #ff8c42; font-size: 2em; margin-bottom: 30px; font-weight: 300; letter-spacing: 2px;">What Readers Are Saying</h2>
+            <div class="review-quote">
+                "Ought to be made into a movie. Little bits of every emotional-filled moments with surprising twists and turns. Terrifying yet funny."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+            <div class="review-quote">
+                "I could not put it down! I had to know what happens next at the end of every chapter."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+            <div class="review-quote">
+                "Brain bending twists that would give Rod Serling a migraine, but very easy to imagine and follow."
+                <div class="review-source">— Amazon Reader</div>
+            </div>
+        </div>
+
+        <div class="books-section">
+            <h2>THE STRANGE DETROIT SERIES</h2>
             <div class="books-grid">
                 <div class="book-card">
-                    <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox" class="book-cover">
-                    <div class="book-info">
+                    <div class="book-cover-container">
+                        <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox book cover" class="book-cover">
+                    </div>
+                    <div class="book-content">
                         <h3>The Bootstrap Paradox</h3>
-                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel.</p>
-                        <div class="book-links">
-                            <a href="https://www.amazon.com/dp/B0DPWF3J7Q" class="book-link">Amazon</a>
-                            <a href="https://books.apple.com/us/book/id6738601901" class="book-link">Apple Books</a>
-                            <a href="https://www.kobo.com/us/en/ebook/the-bootstrap-paradox-5" class="book-link">Kobo</a>
+                        <p class="book-series">Strange Detroit #1</p>
+                        <p style="font-size: 0.95em; color: #ff8c42; font-weight: bold; margin-bottom: 15px;">📖 Ebook | 🎧 Audiobook Available</p>
+                        <p>The wall in front of you is solid. You've measured it. You know its dimensions. But what if you were wrong?</p>
+                        <p>For Fredrick, it was just a house flip. A derelict property hiding a secret door. But behind that door is a room that breaks the laws of physics, a space that shouldn't exist. And it leads to a darkness that stretches into forever.</p>
+                        <p>He has a choice. Board it up, walk away, and convince himself it was a dream. Or step through the hole in his reality and discover what's waiting on the other side.</p>
+                        <div class="review-quote">
+                            "Like Stephen King meets Twilight Zone"
+                            <div class="review-source">— Amazon Reader (★★★★½ 4.6 average)</div>
                         </div>
+                        <div class="button-container">
+                            <a href="#" class="read-sample-button" onclick="openModal('bootstrapModal'); return false;">Read Sample</a>
+                            <a href="https://www.amazon.com/dp/B0CGJ6VVYR" class="buy-button" target="_blank">Available on Amazon</a>
+                            <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEAy7hyuPM" class="buy-button" target="_blank">Google Play Audiobook</a>
+                        </div>
+                        <p style="font-size: 0.85em; color: #888; margin-top: 10px; font-style: italic;">Also available on Barnes & Noble, Kobo, Apple Books, and other major retailers</p>
                     </div>
                 </div>
 
                 <div class="book-card">
-                    <img src="lift-cover.jpg" alt="The Lift" class="book-cover">
-                    <div class="book-info">
+                    <div class="book-cover-container">
+                        <img src="lift-cover.jpg" alt="The Lift book cover" class="book-cover">
+                    </div>
+                    <div class="book-content">
                         <h3>The Lift</h3>
-                        <p>An elevator that shouldn't exist. Floors that lead nowhere.</p>
-                        <div class="book-links">
-                            <a href="https://www.amazon.com/dp/B0DQ3HL7VJ" class="book-link">Amazon</a>
-                            <a href="https://books.apple.com/us/book/id6738736825" class="book-link">Apple Books</a>
-                            <a href="https://www.kobo.com/us/en/ebook/the-lift-66" class="book-link">Kobo</a>
+                        <p class="book-series">Strange Detroit #2</p>
+                        <p style="font-size: 0.95em; color: #ff8c42; font-weight: bold; margin-bottom: 15px;">📖 Ebook | 🎧 Audiobook Available</p>
+                        <p>Max needs the money. The job is simple enough. Night shift, dispose of hazardous waste, no questions asked. Just him, a forklift, and sealed drums in a warehouse in Detroit's abandoned industrial district.</p>
+                        <p>But simple jobs have a way of becoming complicated.</p>
+                        <p>At the center stands a black sphere his supervisor calls the lift. When the sphere begins to vibrate, the doors open. A blinding light pours through, and it feels like he's inside a furnace.</p>
+                        <p>Some lifts don't take you up or down. They take you somewhere else entirely.</p>
+                        <div class="review-quote">
+                            "This is just like science fiction used to be"
+                            <div class="review-source">— Amazon Reader (★★★★ 4.3 average)</div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="book-card">
-                    <img src="dead-metal-cover.png" alt="Dead Metal" class="book-cover">
-                    <div class="book-info">
-                        <h3>Dead Metal</h3>
-                        <p>Metal is dying. Can humanity survive without its most vital resource?</p>
-                        <div class="book-links">
-                            <a href="https://www.amazon.com/dp/B0DRN7GH3J" class="book-link">Amazon</a>
-                            <a href="https://books.apple.com/us/book/id6740236498" class="book-link">Apple Books</a>
-                            <a href="https://www.kobo.com/us/en/ebook/dead-metal-9" class="book-link">Kobo</a>
+                        <div class="button-container">
+                            <a href="#" class="read-sample-button" onclick="openModal('liftModal'); return false;">Read Sample</a>
+                            <a href="https://www.amazon.com/dp/B0DQKC6GQR" class="buy-button" target="_blank">Available on Amazon</a>
+                            <a href="https://play.google.com/store/audiobooks/details/x?id=AQAAAEDyfTI90M" class="buy-button" target="_blank">Google Play Audiobook</a>
                         </div>
+                        <p style="font-size: 0.85em; color: #888; margin-top: 10px; font-style: italic;">Also available on Barnes & Noble, Kobo, Apple Books, and other major retailers</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section id="testimonials">
-            <h2>What Readers Are Saying</h2>
-            <div class="testimonials-container">
-                <div class="testimonial">
-                    "The Bootstrap Paradox kept me up all night. Orange has a gift for making the impossible feel terrifyingly real."
-                    <div class="testimonial-author">— Sarah M., Amazon Review</div>
-                </div>
-                <div class="testimonial">
-                    "The Lift is the most unsettling thing I've read in years. It's like Twilight Zone meets Lovecraft."
-                    <div class="testimonial-author">— Michael R., Goodreads</div>
-                </div>
-                <div class="testimonial">
-                    "Dead Metal poses a question I never thought to ask, and the answer is more disturbing than I could have imagined."
-                    <div class="testimonial-author">— Jennifer K., Book Reviewer</div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about">
+        <div class="author-bio" id="about">
             <h2>About the Author</h2>
-            <div class="about-content">
-                <p>I miss the times when stories were just about entertainment. Every page I write is there to entertain you, the reader. And I never lose sight of that.</p>
-                <p>Raised on a steady diet of The Twilight Zone and The Outer Limits, I developed an enduring fascination with stories where ordinary people stumble into extraordinary circumstances. This influence shines through in my work, including my debut novel The Bootstrap Paradox, where bizarre anomalies disrupt a gateway to the past in an old house. I write stories where the fantastic keeps a firm foot in reality while probing foot-sized in the sublime.</p>
-                <p>My storytelling philosophy is simple: entertain readers with carefully crafted tales that challenge our understanding of reality while remaining grounded in authentic human experience. Each story serves as a doorway to the extraordinary, inviting readers to explore the thin line between the familiar and the impossible.</p>
-                <p>If you want to keep track of my work, make sure to follow on Amazon and sign up for my newsletter. Thank you for reading!</p>
-            </div>
-        </section>
+            <p>I miss the times when stories were just about entertainment. Every page I write is there to entertain you, the reader. And I never lose sight of that.</p>
+            <p>Raised on a steady diet of The Twilight Zone and The Outer Limits, I developed an enduring fascination with stories where ordinary people stumble into extraordinary circumstances. This influence shines through in my work, including my debut novel The Bootstrap Paradox, where house renovators discover a gateway to the past in an old house. I write stories where my characters keep a firm foot in reality while another foot rests in the unknown.</p>
+            <p>My storytelling philosophy is simple: entertain readers with carefully crafted tales that challenge our understanding of reality while remaining grounded in authentic human experience. Each story serves as a doorway to the extraordinary, inviting readers to explore the thin line between the familiar and the impossible.</p>
+            <p>If you want to keep track of my work, make sure to follow on Amazon and sign up for my newsletter. Thank you for reading!</p>
+        </div>
 
-        <section id="faq">
+        <div class="faq-section" id="faq">
             <h2>FAQ</h2>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <h3>Q: Do your books need to be read in order?</h3>
-                    <p>Not at all! The Strange Detroit series can be read in any order. Think of them as part of a shared world where strange things happen, like Tales from the Crypt, but instead of the Cryptkeeper, I had this idea for a character called the Motor Head. The series is still in its early stages, but more stories are definitely coming!</p>
-                </div>
-
-                <div class="faq-item">
-                    <h3>Q: What books do you have coming next?</h3>
-                    <p>I have four Strange Detroit novellas written that just need final editing. That's one about an alien invasion in Detroit, a detective solving a strange mystery, a psychiatrist who's part of a doomsday team stumbling during a world-ending event, and Red Faust. I'm thrilled at collecting them later Stephen King's Four Past Midnight. Maybe three Per Midnight. Still working on the title. I'm planning to release this collection in 2026.</p>
-                </div>
-
-                <div class="faq-item">
-                    <h3>Q: What genres do you write?</h3>
-                    <p>I write stories where 'strange things' happen. I've always been fascinated by anthology storytelling. The Twilight Zone, The Outer Limits, and as a kid, Tales from the Darkside and Monsters. I still remember watching Creepshow as my stepping bag on a kid. That's what I want to bring to the table: self-contained stories that entertain. Though I'm working on my very first ongoing, in general I write to entertain myself, and other people!</p>
-                </div>
-
-                <div class="faq-item">
-                    <h3>Q: How did you start writing?</h3>
-                    <p>This is a stronger story. Up until the age of 24, I had never even thought about writing. I totally used to love stories and was always a daydreamer though.</p>
-                    <p>What happened is I moved away from home to another country and ended up in a flat with no furniture, nothing but a mattress. A family member told me their computer was broken, something with the power cord. I had a small background in computers, so I thought I'd try to fix it. They were like, do so and I if it's working.</p>
-                    <p>All that was on the computer was MS Word. No games, nothing. Just in my room was nothing but a mattress and the sound of the sea outside. There was no TV, no radio. Just a walk to look at and this computer. That's when I thought, "I'm going to try to write a book."</p>
-                    <p>I started writing and totally enjoyed it. It was the most freeing thing in the world. On maybe, it was false, depending on how you look at it. That week, I completed my first novel. Looking back, it was a simple adventure story, but I liked the way I could move words around. Of course, that was most of an act project novel. I tend to pilot a lot more later days and think more carefully, I still think it was as lazy.</p>
-                </div>
-
-                <div class="faq-item">
-                    <h3>Q: What's your writing process?</h3>
-                    <p>I write everything out on a typewriter first. My word After Morning, Dead Metal was 228 pages of screenplay. Then I convert everything out into prose on a laptop. I start the prose with MS Word on Linux with a target of 300 words per page. I'm not saying this makes any sense. But this is what I do.</p>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Do your books need to be read in order?</div>
+                <div class="faq-answer">
+                    <p>Not at all! The Strange Detroit series can be read in any order. Think of them as part of a shared world where strange things happen, like <em>Tales from the Crypt</em>, but instead of the Cryptkeeper, I had this idea for a character called the Motor Head. The series is still in its early stages, but more stories are definitely coming!</p>
                 </div>
             </div>
-        </section>
 
-        <section id="contact" class="contact-section">
-            <h2>Contact</h2>
-            <p>Questions about my books? Want a review copy? I'd love to hear from you.</p>
-            <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Send Email</a>
-            <div class="email-display">
-                Or reach me directly at: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a>
+            <div class="faq-item">
+                <div class="faq-question">Q: What books do you have coming next?</div>
+                <div class="faq-answer">
+                    <p>I have four Strange Detroit novellas written that just need final editing. There's one about an alien invasion in Detroit, a detective solving a strange mystery, a psychiatrist who's part of a doomsday team assembling during a world-ending event, and <em>Red Foam</em>. I'm thinking of collecting them like Stephen King's <em>Four Past Midnight</em>. Maybe <em>Three Past Midnight</em>? Still working on the title. I'm planning to release this collection in 2026.</p>
+                </div>
             </div>
-        </section>
-    </main>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: What genres do you write?</div>
+                <div class="faq-answer">
+                    <p>I write stories where strange things happen. I've always been fascinated by anthology storytelling: <em>The Twilight Zone</em>, <em>The Outer Limits</em>, and as a kid, <em>Tales from the Darkside</em> and <em>Monsters</em>. I still remember watching <em>Creepshow</em> in my sleeping bag as a kid. That's what I want to bring to the table: self-contained stories that entertain. Though I'm working on my alien invasion trilogy at the moment, in general I write to entertain myself and other people!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: How did you start writing?</div>
+                <div class="faq-answer">
+                    <p>This is a strange story. Up until the age of 24, I had never even thought about writing. I really used to love stories and was always a daydreamer though.</p>
+                    <p>What happened is I moved away from home to another town and ended up in a flat with no furniture, nothing but a mattress. A family member told me their computer was broken, something with the power cord. I had a small background in computers, so I thought I'd try fixing it. They sent it to me and I got it working.</p>
+                    <p>All that was on the computer was MS Word. No games, nothing. And in my room was nothing but a mattress and the sound of the sea outside. There was no TV, no radio. Just a wall to look at and this computer. That's when I thought, "I'm going to try to write a book."</p>
+                    <p>I started writing and really enjoyed it. It was the most random thing in the world. Or maybe it was fate, depending on how you look at it. That week, I completed my first novel. Looking back, it was a simple adventure story, but I liked the way I could move words around. Of course, that was more of an organic pantser novel. I tend to plot a lot more these days and think more about structure.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: What's your writing process?</div>
+                <div class="faq-answer">
+                    <p>I write everything out as a screenplay first. My novel <em>Alien Invasion: Dead Metal</em> was 250 pages of screenplay. Then I dictate that screenplay into prose. After that, I break everything down into chapters using Novelwriter (a wonderful open-source program), then go chapter by chapter revising, adding, taking away, and getting clarity of plot. Bird by bird, so to speak, until I'm done.</p>
+                    <p>I'm what's called a "pantser" when writing the screenplay, although I do know roughly where things are going. The dictation method lets me plot as I go, using a different part of my brain so it doesn't get boring. In the past I've pantsed entire novels from start to finish without the screenplay stage, but as a pantser of prose, I used to write myself into walls with no way out. You live and learn. I'm 47 now and have been doing this since I was 24, so I've had time to refine the workflow.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: What tools do you use for writing?</div>
+                <div class="faq-answer">
+                    <p>My current setup is a standard computer running Linux Mint with Novelwriter and KIT Scenarist for screenplay software. For dictation, I use a Windows computer that's air-gapped with Dragon NaturallySpeaking. I'm aware there are AI programs like Otter, and I use these sometimes, but I like that you can say "new paragraph" in Dragon. Nearly everything that comes out of dictation needs to be rewritten anyway. It's mainly just getting the bones out.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: How long have you been writing?</div>
+                <div class="faq-answer">
+                    <p>About 23 years. I've done the whole agent thing, submissions to publishing houses. I even came close to a deal at Dalton Press many years ago. For about ten years I worked on a fantasy novel that will come out one day under my pen name. These days I fly solo. Just me. So all the mistakes I own. But it's a lot of fun!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Why do you self-publish?</div>
+                <div class="faq-answer">
+                    <p>I used to have an agent and went through the traditional publishing route: submissions, the whole process. I think agents are really useful and traditional publishers can help a lot with nearly everything. But I'm not getting any younger, and I figured I'd try my hand at it myself. So I do everything from cover design (I have a background in design) to getting the book ready for publication. I make mistakes, but the universe likes that because everything is more entertaining.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: If you're from New Zealand, why do you write about Detroit?</div>
+                <div class="faq-answer">
+                    <p>Lee Child is British but writes about a US Marine! I didn't live in Detroit, but I did live in the United States and enjoyed it there. I usually write where I think there's something interesting. I've always been fascinated by cities with abandoned sectors, and Detroit has that. I wonder to myself: what's going on down there? And yes, I've done a lot of research into Detroit. I hope it shows. My alien invasion story is actually set partly in New Zealand, at least for one of the characters.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Do you offer signed copies?</div>
+                <div class="faq-answer">
+                    <p>Unfortunately not. I live in New Zealand, so shipping would be impractical. Though I am planning on living somewhere else one day!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Where can I leave a review?</div>
+                <div class="faq-answer">
+                    <p>If you enjoyed one of my books, I'd love it if you left a review on Amazon or Goodreads. Reviews really help other readers discover the Strange Detroit series!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Do you do book club visits or author interviews?</div>
+                <div class="faq-answer">
+                    <p>I'd love to! Feel free to reach out using the contact button below.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Do you have any other hobbies?</div>
+                <div class="faq-answer">
+                    <p>Not really. I used to do some painting about twenty years ago, but these days I mainly write. I don't tend to do anything else. Although there's still time!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Can I contact you?</div>
+                <div class="faq-answer">
+                    <p>Absolutely! Use the contact button below and I'd love to hear from you.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: What happens when you die, do you think?</div>
+                <div class="faq-answer">
+                    <p>I take off the headset and get ready for work, of course!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section" id="contact">
+            <h2>Get In Touch</h2>
+            <p>Have a question about my books? Interested in a review copy or interview? I'd love to hear from you.</p>
+            <a href="#" class="buy-button" id="contact-btn">Contact Me</a>
+        </div>
+    </div>
 
     <footer>
-        <p>&copy; 2025 Joe Orange. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2026 Joe Orange. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank">Amazon</a>
+            </div>
+        </div>
     </footer>
 
+    <!-- Modal for Bootstrap Paradox -->
+    <div id="bootstrapModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>The Bootstrap Paradox - Chapter One</h2>
+                <span class="close" onclick="closeModal('bootstrapModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>"I lost my thermos," Sam said. "My girlfriend made me hot chocolate…"</p>
+                <p>"You know, most people in our line of work drink tea or coffee," I said, exiting our work van, the rundown Victorian two-story house before us.</p>
+                <p>"Why?"</p>
+                <p>"I can't explain it to you," I said. "It's just something that happens when you become an adult."</p>
+                <p>"Well, I can't find it."</p>
+                <p>I took the house in for the first time. It was engulfed in dark foliage on both sides. A two-story Victorian with little of its original blue paint left.</p>
+                <p>The fact that it hadn't been set on fire or had all its windows broken by squatters, when it was twenty feet from a suburban hellscape, was proof that miracles were still alive in Detroit.</p>
+                <p>"I remember putting it in the van," said Sam, searching.</p>
+                <p>"Don't take this the wrong way," I added. "But that pot you like smoking? You're not the type that can get away with that long-term. You don't have the same reservoir of brain cells, shall we say, that most normal people have."</p>
+                <p>"My mother says my brain is just the same as anyone else's."</p>
+                <p>"You see, it's the mere fact you have that reply on tap that proves my point."</p>
+                <p>"I found it," Sam said, searching the passenger seat of the van. "It was under the seat."</p>
+                <p>I walked to the end of the driveway, measuring with my hands how much fence I'd need to cover the apocalyptic view of the boarded-up muffler shop that sat across the road next to a bus stop. The shop's windows were gone, and there was a collection of rusted scrap metal out front.</p>
+                <p>The fence would need to be ten feet high, give or take…</p>
+                <p>The city had put a surveillance camera on top of the muffler shop, which looked down on the bus stop and everything around it, including, no doubt, the front yard of the house where I was now standing. Not that the camera had stopped someone from kicking in all three glass panels of the bus stop the night before. The camera might have even inspired them. It was that part of town, after all.</p>
+                <p>The front door opened on a shared living room and kitchen. Almost all the furniture was gone, and everything that was left was covered in thick dust.</p>
+                <p>Sam worked, bringing in our painting gear while I inspected an open floor safe in the kitchen. Its linoleum cover board was beside it. There were signs that someone had tried to drill the safe door years ago but had no luck.</p>
+                <p>I was no stranger to safes. I'd cracked my fair share in my former life as a professional thief years ago, before I'd learned how to enjoy the slow ride of being a straight shooter. This brand of safe could be opened in under a minute with a strong enough rare-earth magnet by manipulating the deadbolt inside with the magnet from the outside, therefore bypassing any need for a key or combination.</p>
+                <p>Every time I came across someone using a safe in their house, I felt like explaining to them that they were better off burying their valuables in the backyard in a jar. All a safe was good at was acting as a red herring. Anyone who said otherwise had either no understanding of how easy it was to crack a safe or liked signposting where they kept their valuables. I always buried anything of any real value I had. No one could steal something from you if they had no idea where it was. There was a reason Al Capone's vault was empty and Captain Kidd's treasure was never found.</p>
+                <p>I went out the back door, opened the fuse box, and turned on the power, then exited the back of the house and checked the backyard. Long grass covered everything except a toolshed, whose side was being gradually undermined by the thick roots of a walnut tree that shaded it. The sea of green went all the way to the backyard fence, which blocked the view of a railway line. In the distance, one of Detroit's cloud makers was puffing out streams of white.</p>
+                <p>The backyard would be all right once I cut the grass. The toolshed would need to come down, though.</p>
+                <p>"There are no lightbulbs anywhere," Sam told me as I returned to the hallway. And he was right. No bulbs anywhere.</p>
+                <p>"Remind me to buy some," I said, studying the ceiling. But then, remembering who I was talking to, I searched for my notebook and made a note with my pencil.</p>
+                <p>"Remind you to do what?"</p>
+                <p>"Nothing," I replied.</p>
+                <p>I went up the staircase to the second floor and walked down the hallway to the master bedroom. A mattress that had seen better days lay propped up against one wall. The bed base was gone. I went to the closet and opened the door, letting loose the strong smell of ancient mothballs. Nothing was inside except a stack of metal coat hangers with a very old pair of red 1950s bowling shoes on top. The leather was as hard as rock.</p>
+                <p>I closed the door and found a lamp on a nightstand. I plugged it in and turned it on; it glowed with its small bulb, but there was a rhythmic flicker. I hoped it was something easy to fix, and not bad wiring. Although, given all the bulbs were missing from below, I guessed it was most likely the latter.</p>
+                <p>I turned off the lamp and went to the bedroom window, which had a less-than-spectacular view of the second story of the brick house next door. I pulled the thick green curtains back and forth on the curtain rails; they still had life in them.</p>
+                <p>My goal was just to get the house to livable standards. I wasn't trying to remodel it. If something still worked well enough, I was leaving it. At the moment, I saw no major issues apart from the wiring, which wouldn't be cheap.</p>
+                <p>I had bought the house at an estate auction last month when I'd learned from a little bird that the Mayor's sister had been buying up properties nearby. I'd smelled something in the works, and it turned out, given the news last week, I'd been right. A major community arts college was to be built on the city dime two blocks down. And although it was unlikely that it would 'revitalize the district' as the newspapers said, I hoped to turn a profit on the upswing.</p>
+                <p>Maybe the little bird had some more tips for me? I would have to ask Sam, since it was his grandmother who was the little bird, the secretary for the Mayor. She had let the detail slip to Sam and me when we were painting her fence. It had been lemonade, sandwiches, and a short conversation about how the Mayor's sister was investing in some lower-end district. A very nice old woman who had glasses about as thick as you could wear without toppling over.</p>
+                <p>It did show you the value of good information. Something I'd learned in my former life. You always had to be aware of what things were in play around you. The world was never static.</p>
+                <p>Across the hallway was a combined toilet and bathroom. I sat on the wooden seat of the toilet, which lay unconnected to any plumbing, and smoked a cigarette. Everything looked good, and even better when I brought up the water blaster to remove the yellowing between the tiles. The only problem was the toilet had, at one point, maybe with the best intentions, been moved from beside the bathroom sink to where it now sat. I could see where they had paved over the drain, but they hadn't connected any new plumbing to where the toilet now was; no closet flange to drain, no waterline to the tank.</p>
+                <p>Curry was off the menu, at least for a while. I would just open up the drain again on the other side and reconnect the toilet to where it had been. I was not out to make more work for myself than there needed to be.</p>
+                <p>I stood before the bathroom sink and tried the faucet. The water ran brown, and the pipes shook; a few seconds later, the water started to clear. Wetting my fingers, I ran them through my hair. Inside the medicine cabinet, I found a pocket knife that someone, for reasons only known to them, had submerged in an ancient bottle of mint Listerine.</p>
+                <p>I emptied the Listerine and removed the pocket knife. The pungent smell of mouthwash filled the air. The pocket knife was stainless steel, and the blade was still good, but it had led a hard, violent life; deep gashes traced the enamel siding where the faded lettering 'Luck's Grill 1949' was only barely visible.</p>
+                <p>My grandfather used to say that you could ignore many things, but not something that had come to you the hard way. After my father went to Vietnam and never came back, I spent a lot of time in his company while my mother worked. Many hours watching him work his craft in smoky pool rooms.</p>
+                <p>I decided to keep the pocket knife. I clipped it onto the loop of my keyring, and it fit perfectly.</p>
+                <p>Behind me, Sam came in. "The radio isn't working. It just makes a strange sound. Like popcorn."</p>
+                <p>"That reminds me," I said. "There may be something wrong with the wiring, so don't plug in your cell phone. It's all right for power tools, but any sensitive electronics are to be kept away from any outlets."</p>
+                <p>I wet my hair and combed it with my hand. "By the way, there is a large walnut tree out the back. Before we leave, fill one of those plastic bags in the van with as many as you can carry. But don't go wall-nut crazy, though. You eat too many, and you turn into a squirrel."</p>
+                <p>I was starting to realize that I had finally become one of those middle-aged men who had graduated to dad humor. Jokes that had lost all edge and were perfect for any occasion, even daycare.</p>
+                <p>"I can't do any overtime tonight. It's my girlfriend's birthday. I am taking her to dinner."</p>
+                <p>"I don't have any extra money to pay you any overtime anyway, not with a baby on the way."</p>
+                <p>"You're having a baby?"</p>
+                <p>"I told you last week, and the week before that," I checked my teeth. My gums were still good, and so were my teeth. The trick was not to overbrush; if you did, you brushed away the enamel. "Where are you taking your girlfriend?"</p>
+                <p>"I'm taking her to that Thai restaurant. The one across from where we painted that motorcycle shop sign."</p>
+                <p>"Well, I believe your fine observation skills have led you astray once again."</p>
+                <p>"Why?"</p>
+                <p>"That place you call a restaurant is really a brothel."</p>
+                <p>"Really?"</p>
+                <p>"It is indeed. And I am not saying that from experience, just so you are not confused. It's open knowledge."</p>
+                <p>"But it looks like a restaurant."</p>
+                <p>"Well, they have tables, chairs, and a vending machine, so I guess that technically they might qualify." I waited. "Why don't you cook her something?"</p>
+                <p>"But I never cook anything."</p>
+                <p>"That's why it would be special. When I found out my wife was pregnant, I cooked her this Indian vegetarian curry. It had tofu in it. Now, I am far from a vegetarian and honestly, I hate tofu. But my wife likes it, and for that reason, it was special, you know, different."</p>
+                <p>Sam looked confused for a moment.</p>
+                <p>I asked him what was wrong. I wet my fingers and ran a hand again through my hair.</p>
+                <p>It was a second before the cogs in his brain started moving again. "You told me to tell you if I ever saw water damage. Not just this house, but any house…"</p>
+                <p>I froze, turning to him. "I did . . ."</p>
+                <p>"Well, I think there is bad water damage in the hallway."</p>
+                <p>Soon we were standing in the middle of the hallway studying a water stain at the base of the skirting board, the wallpaper peeling away and discolored around it. When I bent down, I could already smell dampness. Placing my hand against the skirting board, the wood felt soft. A bad sign. There was a lot of rot there. I removed my hand; my fingers coming away wet.</p>
+                <p>This was not some leak that occurred only when it rained, which would point to the roof. This was a constant dripping from something like a pipe. But there shouldn't have been any pipes behind the wall to cause any constant leaks. There was a master bedroom down from me and a bathroom across from that. And that was it.</p>
+                <p>I started tapping around the wall, and when I got to the middle, it had a completely different sound. I was not hitting early nineteenth-century pine anymore, but drywall. I stopped and pushed my blade a few inches into the wall. There was a layer of plaster, and behind it, drywall. My blade hit something hard behind. I dug around a little until I could see the varnished surface on the other side.</p>
+                <p>"What does that mean?" asked Sam.</p>
+                <p>"There's a hidden room behind there."</p>
+                <p>"A hidden room," said Sam, more to himself.</p>
+                <p>"Well, a door to a hidden room," I added, feeling the wall.</p>
+                <p>I stepped back and studied the wallpaper. Although old, it did not match the rooms. It was only a slight difference, both being green floral patterns, but the wallpaper in the rooms was early nineteenth-century. The wallpaper in the hallway was much later, maybe late 1980s.</p>
+                <p>"Why would someone try to hide a door to a room?"</p>
+                <p>"I can think of a few reasons," I stated. "Given it's Poletown East, Detroit, they're mostly bad ones."</p>
+                <p>"Should we call the police?"</p>
+                <p>"Why?"</p>
+                <p>"Maybe something bad is behind there."</p>
+                <p>"You know how you are allergic to lobster? Well, for me, just exchange lobster with the police, in regard to me."</p>
+                <p>"You don't like the police?"</p>
+                <p>"If there is a dead body behind there, then yes, I guess we will have to call in Detroit's finest. But short of that, I really need to look out for my allergy."</p>
+                <p>"Are you going to open it?"</p>
+                <p>"I thought I would wait a while. Maybe come back to it in a few days. Figure it out once we finish painting the house. You know, kind of draw out the mystery for as long as possible until I have a long enough cord to make a noose from. Then put it around my neck and hang myself. Maybe in front of this door. Then they can chalk it up to 'Death by Curiosity'."</p>
+                <p>"You're really not going to open it?"</p>
+                <p>I examined him for a long moment. "Get the crowbar."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for The Lift -->
+    <div id="liftModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>The Lift - Chapter One</h2>
+                <span class="close" onclick="closeModal('liftModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>He loved going fast. The problem was, the more you fell in love with going fast, the worse it felt being still.</p>
+                <p>Twenty-six-year-old Max sat there in his black leather jacket, blue jeans, and combat boots, mounted on his parked motorcycle (an ice blue 1975 Goldwing GL1000) with his black hair greased back. He studied the parking lot of the low lime-green concrete building before him.</p>
+                <p>He blew on his hands to warm them, rubbing them together, while his lone headlamp illuminated an anomaly: a dead Cairn Terrier lying frozen solid against the side of the building. It seemed as though it had been in a fight with something with teeth and lost.</p>
+                <p>There were wild dogs around here, a small pack that roamed in the night. He had seen them when he came speeding through the snow-peppered streets of Detroit's abandoned industrial district, their shadowy bodies darting about in the darkness as he went. He had even slowed down and watched them spring out of the shadows, only for him to speed down the street again as they came scampering after him, one only inches behind his back wheel.</p>
+                <p>If he stopped a moment longer, he might end up like the small terrier before him. Those dogs had a real wild streak in them.</p>
+                <p>He smoked two cigarettes while studying the dead dog, its fur frozen solid, its eyes glazed over, before the front door finally opened, spilling harsh fluorescent light onto the snow-covered steps. There in the doorway was a middle-aged, clean-shaven man with a small gray mustache and short hair.</p>
+                <p>"You must be the new guy, Max," the old man said, introducing himself as Lou.</p>
+                <p>"That's what they tell me," Max replied, killing his headlamp and dismounting. He climbed to the bottom of the steps where he met Lou with a handshake. Lou's hands felt like leather.</p>
+                <p>"Riding with no gloves in this weather. Either brave or stupid."</p>
+                <p>Max smiled. "My girlfriend, Natasha, laid them out for me on the kitchen table, but I forgot them. I guess I'm just stupid."</p>
+                <p>"At least you've got someone who cares. That's something. You can't be that stupid to win that lottery."</p>
+                <p>"Yeah," said Max. "She has been good for me."</p>
+                <p>"They tell you what you would be moving?"</p>
+                <p>"Waste," Max said with a shrug. "Hazardous stuff."</p>
+                <p>"And you're good with that? Because if you're not, this isn't going to work out."</p>
+                <p>"I don't care, as long as I get paid," said Max. "I need the money."</p>
+                <p>"All about the paycheck?"</p>
+                <p>"These days, pretty much."</p>
+                <p>"Sounds like the words of someone about to move up in the world."</p>
+                <p>"That's the only direction I want to move," said Max.</p>
+                <p>Lou took out a plastic bag and shook some air into it. He handed it to Max. "Well, the first bit of moving you can do is put that dog into this bag."</p>
+                <p>They walked down a cold hallway with Max carrying the dog wrapped in plastic under his arm. The flooring was decaying vinyl, and the walls were a cool paint-chipped blue. The first door they opened was a fire exit that came out on the back courtyard where a frozen dumpster sat. Lou collected the dog from Max, walked to the dumpster, and placed the dog inside.</p>
+                <p>Max saw a black Cadillac Escalade across the road, nestled at the corner of a crossroads.</p>
+                <p>Lou saw him looking. "They are with us. We have someone in the building out front, and then someone always in a vehicle out back." The latch of the dumpster was not closing correctly, and he walked around to inspect it. Something was caught in the hinge.</p>
+                <p>"You need help?" Max offered, coming down.</p>
+                <p>But Lou held up a hand. He found some stray wire stuck in the hinge and pulled it free, rolling it up in his hand as he inspected around the dumpster for any more problems. The lid of the dumpster now closed.</p>
+                <p>"I was wondering if my motorcycle was good out front," said Max. "But I guess if you have a set of eyes out there."</p>
+                <p>"Even if we did not have any muscle watching the front and the back, no one takes anything from around here anyway. They all know who owns this place." He paused, then added, "I take it that who owns it has been made crystal clear to you?"</p>
+                <p>"Yeah, I know who owns it," Max said, hands in his pockets. "Theodore Benson."</p>
+                <p>"I heard you worked for him, putting in a pond or something."</p>
+                <p>"Yeah," said Max with a smile. "Up at one of his properties in Indian Village. It was a weeklong job, but I never met him, though."</p>
+                <p>"If it were not for your former cellmate, just so you know," said Lou, climbing the steps to the door with Max stepping out of his way, "you would not be here. He vouched for you. And he happens to be my nephew."</p>
+                <p>"He was a good cellie," said Max. And he was. In jail, where Max had been locked up for working at one of Detroit's most infamous chop shops on the West Side, Gordon (whom Max used to call Gordie) had the two best qualities you could hope for in a cellmate. The first, and most important, was he was not a psychopath. And the second was he loved nothing more than the smell of burning rubber while he had control of the steering wheel.</p>
+                <p>"Gordon says you're into cars in a big way," said Lou, closing the back door once they were back in the hallway.</p>
+                <p>Max smiled widely. "I am. But really, it's anything with four wheels."</p>
+                <p>"Then why are you on a motorbike?"</p>
+                <p>Max reflected. "Judge said I can't own a motor vehicle for the next five years. He tacked it onto my parole. He said I have a problem that needs fixing."</p>
+                <p>"Must be some problem," Lou said, returning to the steps.</p>
+                <p>"Yeah, well, the judge thought so."</p>
+                <p>"Well, if you are wondering, the 1997 Toyota Corolla down the street is mine," said Lou as they went back inside. "It's got half a million miles on it and still runs fine."</p>
+                <p>"Toyota makes reliable cars."</p>
+                <p>When they were back in the hallway, Lou added, "As I always tell my wife, there is a reason why the Taliban drive them." Lou paused. "It's nightshift from now on, so I hope you're a night owl."</p>
+                <p>"Never been anything else," Max said.</p>
+                <p>"The job is five days a week. Monday to Friday. Your hours are midnight to seven in the morning, when all is said and done."</p>
+                <p>"Sounds good."</p>
+                <p>Lou showed Max the kitchen. Nothing much was inside apart from tins of coffee, a sink with two tan 60-ounce thermoses sitting inside, and a hot water dispenser.</p>
+                <p>They came to the office. A dusty electric typewriter from the early 1990s rested on the desk, alongside a green rotary phone whose cord had gone yellow with age. Boxes filled the rest of the space. Lou explained it was mainly used for storage only, since they never did legit paperwork.</p>
+                <p>When they came to the changing rooms (the next door in the hallway on the left), a row of six lockers greeted them. Below them, a rack held a dozen sets of red coveralls, with steel-toed rubber boots arranged neatly underneath, ready for the next shift.</p>
+                <p>"All right, well, get changed," said Lou, leaving the room. "I'll get you a new utility belt."</p>
+                <p>Max removed his leather jacket and got changed into the red coveralls. In one of the rubber boots, he found something: a Chinese takeaway menu. The paper was creased and worn, marked with a diagram of circles and squares in pencil. An arrowed line extended from one side of a circle, marked 'two miles.' Below were a bunch of numbers that seemed like whoever marked it up was working their way through some type of calculation involving forty minutes.</p>
+                <p>Max just stared at the numbers. They made no sense to him, so soon he found himself looking at the price of the Kung Pao Chicken, which wasn't bad, price-wise. Working nightshift felt strange; when he finished, he had the entire day ahead of him.</p>
+                <p>He might get some Chinese on the way home. A part of him wondered if those dogs would be out there.</p>
+                <p>He might even slow down for them again, but this time kill his motorcycle's engine to see if the little snappers could catch him. He would have to time it just right, so he could start it up and get away. But of course, that was half the fun.</p>
+                <p>There was an alternative, though. At one street corner just down from where the dogs were, there was a dip in the road that had made a perfect death trap. Max often made a point of noticing such things so he could play around with them later. This death trap had a perfect dip in the road covered in a thin coating of black ice from a leaking fire hydrant.</p>
+                <p>If he could get those little snappers to chase him and he could take that corner right, he could send them all sliding like small hockey pucks. Of course, if he did not take the corner right, then it would be him that went flying into the snow bank. Then those little snappers would have their way with him.</p>
+                <p>Tonight, on the way home, he would take a good look at the corner.</p>
+                <p>Sometimes he thought something was wrong with him. He always relished the feeling of being an inch away from everything going wrong. He was not sure why, but that feeling had consumed him all his life. The feeling that came from walking out on the edge of a building and staring down at the road below, moments from death. The heels of his boots barely catching the ledge.</p>
+                <p>Natasha had said he was different, and he sure was that, but she said she liked that about him. He remembered first meeting her at the Michigan State Fair.</p>
+                <p>Max had seen her across the crowd, standing in that faux leopard coat with those large looped earrings and short hair. Every bit like a young Mia Farrow. She was with her sister in the shadow and lights of those nighttime rides a year ago. Their eyes locked. He cut in line and jumped over the fence, stole the fedora off the giant carny's head, then leaped into one of the ferris wheel buckets as it ascended. Below, the carny shouted up at him, but Max rose higher and around until, from above when the carny stopped the ride, he called out and asked her name.</p>
+                <p>She blushed like a summer rose, and it was the start of something beautiful.</p>
+                <p>That night they had raced through the city on his Honda while she rested her soft chin on his shoulder. The entire world felt as though it was made for them. Every violent corner, every soft nook, and everything wild and tame between. All theirs in the deep night.</p>
+                <p>"You thinking of ordering something on your way home?" asked Lou, returning. Max was still holding the Chinese menu.</p>
+                <p>"Thinking about it," said Max. He stood and walked over and put the menu in the bin. He was tempted by the deep-fried chicken. He liked his fried food.</p>
+                <p>Lou handed him a shrink-wrapped utility belt. "I assume you have a cellphone?"</p>
+                <p>Max put on the belt. There were loops around it to put tools in and a small carry pouch. He liked it. "Yeah, I got one."</p>
+                <p>"The equipment below will destroy any sensitive electronics, so it's best to leave it up here." Lou walked to the clothes rack, retrieved a respirator, and handed it to Max. It had an air filter on the front and a tinted yellow face visor. "You can leave your respirator off until we get to the end of the hall."</p>
+                <p>They finished changing and made their way back down the hallway, their boots echoing on the ramp. At a heavy door, Lou pointed to another entrance on the right.</p>
+                <p>"Shower rooms," he said, coming to a stop.</p>
+                <p>Max pulled out his pack of smokes, gesturing to ask if it was all right to light up inside. Lou answered by taking out his own packet, and they both lit up.</p>
+                <p>"I take it you've had a shower before?"</p>
+                <p>Max gave a wide smile. "Yeah, a few as a matter of fact."</p>
+                <p>"Well, at the end of each shift, that's what you do. Wash down good. And there are industrial washing machines in there for your coveralls."</p>
+                <p>They continued down the hall, approaching a series of double doors at the hallway's end. Purple light seeped through the glass panels. Lou took one last drag of his cigarette, then threw it on the floor and ground it out with his work boot. Max did the same. They pulled on their respirators. The amber visor now muted the purple light, turning it a reddish color. Lou circled Max, checking the seal.</p>
+                <p>"Well, after you," Lou said, his voice muffled by the plastic. "Welcome to the can factory."</p>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const starCount = 100;
-            
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
+        // Create animated stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
         }
-        
-        createStars();
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
+
+        // Obfuscated email contact
+        document.getElementById('contact-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Email is encoded to prevent spam bots
+            const parts = ['Joeorange', 'proton', 'me'];
+            const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+            window.location.href = 'mailto:' + email;
+        });
     </script>
 </body>
 </html>
