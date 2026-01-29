@@ -93,6 +93,65 @@
             transform: translateY(-2px);
         }
 
+        /* Audio Player Section */
+        .audio-player-section {
+            background: rgba(255, 140, 66, 0.08);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 140, 66, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 140, 66, 0.2);
+        }
+
+        .audio-player-section h2 {
+            color: #ff8c42;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .audio-player-section p {
+            color: #c0c0c0;
+            font-size: 1em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .audio-player-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .audio-player-container audio {
+            width: 100%;
+            max-width: 500px;
+            height: 40px;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        /* Custom audio player styling */
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(135deg, rgba(255, 140, 66, 0.2) 0%, rgba(255, 107, 53, 0.2) 100%);
+            border-radius: 25px;
+        }
+
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-mute-button {
+            background-color: rgba(255, 140, 66, 0.8);
+            border-radius: 50%;
+        }
+
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: #ff8c42;
+        }
+
         .about {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -470,6 +529,14 @@
             .author-bio {
                 padding: 25px;
             }
+
+            .audio-player-section {
+                padding: 20px;
+            }
+
+            .audio-player-section h2 {
+                font-size: 1.4em;
+            }
         }
 
         .stars {
@@ -614,6 +681,18 @@
     </header>
 
     <div class="container">
+        <!-- Audio Player Section -->
+        <div class="audio-player-section">
+            <h2>🎧 Listen to The Lift Audiobook Sample</h2>
+            <p>Experience the atmospheric narration of Strange Detroit</p>
+            <div class="audio-player-container">
+                <audio controls preload="metadata">
+                    <source src="TheLift.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+
         <div class="about">
             <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
         </div>
