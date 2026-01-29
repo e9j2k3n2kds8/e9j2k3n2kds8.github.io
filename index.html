@@ -355,6 +355,7 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         .book-card h3 {
@@ -378,6 +379,11 @@
             font-size: 0.95em;
         }
 
+        .content-spacer {
+            flex: 1;
+            min-height: 20px;
+        }
+
         .review-quote {
             background: rgba(0, 0, 0, 0.3);
             border-left: 3px solid #ff8c42;
@@ -398,8 +404,8 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            margin-top: auto;
             padding-top: 20px;
+            flex-shrink: 0;
         }
 
         .buy-button {
@@ -759,6 +765,7 @@
                             "Like Stephen King meets Twilight Zone"
                             <div class="review-source">— Amazon Reader (★★★★½ 4.6 average)</div>
                         </div>
+                        <div class="content-spacer"></div>
                         <div class="button-container">
                             <a href="#" class="read-sample-button" onclick="openModal('bootstrapModal'); return false;">Read Sample</a>
                             <a href="https://www.amazon.com/dp/B0CGJ6VVYR" class="buy-button" target="_blank">Available on Amazon</a>
@@ -784,6 +791,7 @@
                             "This is just like science fiction used to be"
                             <div class="review-source">— Amazon Reader (★★★★ 4.3 average)</div>
                         </div>
+                        <div class="content-spacer"></div>
                         <div class="button-container">
                             <a href="#" class="read-sample-button" onclick="openModal('liftModal'); return false;">Read Sample</a>
                             <a href="https://www.amazon.com/dp/B0DQKC6GQR" class="buy-button" target="_blank">Available on Amazon</a>
