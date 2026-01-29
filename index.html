@@ -108,7 +108,7 @@
             text-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
         }
 
-        /* Audio Player - NEW */
+        /* AUDIO PLAYER - NEW ADDITION */
         .audio-player-section {
             position: relative;
             z-index: 10;
@@ -136,7 +136,7 @@
             width: 100%;
             max-width: 400px;
         }
-        /* End Audio Player */
+        /* END AUDIO PLAYER */
 
         main {
             position: relative;
@@ -157,6 +157,60 @@
             text-align: center;
             margin-bottom: 50px;
             text-shadow: 0 0 15px rgba(255, 140, 66, 0.2);
+        }
+
+        .info-box {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 60px;
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .newsletter-section {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 8px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .newsletter-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #ff8c42;
+            margin-bottom: 20px;
+        }
+
+        .newsletter-section p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #ff8c42;
+            color: #0a0a0a;
+            text-decoration: none;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 600;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            border: 2px solid #ff8c42;
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: #ff8c42;
+            box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
         }
 
         .books-grid {
@@ -229,17 +283,58 @@
             box-shadow: 0 0 15px rgba(255, 140, 66, 0.4);
         }
 
+        .coming-soon-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .coming-soon-card h3 {
+            font-family: 'Cinzel', serif;
+            color: #ff8c42;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .coming-soon-card .release-date {
+            color: #888;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .coming-soon-card p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .book-cover-small {
+            width: 150px;
+            height: auto;
+            float: left;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
         .about-content {
             max-width: 800px;
             margin: 0 auto;
-            text-align: center;
-            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 8px;
+            padding: 40px;
+            font-size: clamp(1.05rem, 2.5vw, 1.15rem);
             line-height: 1.9;
             color: #c0c0c0;
         }
 
         .about-content p {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .faq-container {
@@ -251,8 +346,8 @@
             background: rgba(20, 20, 20, 0.6);
             border: 1px solid rgba(255, 140, 66, 0.2);
             border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
             transition: all 0.3s ease;
         }
 
@@ -264,7 +359,7 @@
         .faq-item h3 {
             font-family: 'Cinzel', serif;
             color: #ff8c42;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 15px;
         }
 
@@ -272,6 +367,29 @@
             color: #b0b0b0;
             line-height: 1.8;
             font-size: 1.05rem;
+        }
+
+        .testimonials-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .testimonial {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            font-style: italic;
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            text-align: right;
+            margin-top: 15px;
+            font-style: normal;
+            color: #ff8c42;
         }
 
         .contact-section {
@@ -285,25 +403,6 @@
             color: #b0b0b0;
             margin-bottom: 30px;
             line-height: 1.8;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 15px 50px;
-            background: #ff8c42;
-            color: #0a0a0a;
-            text-decoration: none;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            border: 2px solid #ff8c42;
-        }
-
-        .cta-button:hover {
-            background: transparent;
-            color: #ff8c42;
-            box-shadow: 0 0 25px rgba(255, 140, 66, 0.5);
         }
 
         .email-display {
@@ -345,6 +444,12 @@
             .books-grid {
                 grid-template-columns: 1fr;
             }
+
+            .book-cover-small {
+                float: none;
+                display: block;
+                margin: 0 auto 20px;
+            }
         }
     </style>
 </head>
@@ -360,10 +465,11 @@
             <a href="#about">About</a>
             <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
+            <a href="#newsletter">Newsletter</a>
         </nav>
     </header>
 
-    <!-- AUDIO PLAYER - ONLY NEW ADDITION -->
+    <!-- AUDIO PLAYER - ONLY NEW SECTION -->
     <div class="audio-player-section">
         <div class="audio-player-box">
             <span class="audio-label">🎧 Listen to The Lift audiobook sample</span>
@@ -373,16 +479,41 @@
             </audio>
         </div>
     </div>
+    <!-- END AUDIO PLAYER -->
 
     <main>
+        <section class="info-box">
+            <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
+        </section>
+
+        <section id="newsletter" class="newsletter-section">
+            <h2>Stay Updated</h2>
+            <p>Subscribe to get notified about new releases and exclusive updates</p>
+            <a href="https://buttondown.com/joeorange" target="_blank" class="cta-button">Subscribe to Newsletter</a>
+        </section>
+
+        <section id="coming-soon">
+            <h2>Coming Soon</h2>
+            <div class="coming-soon-card">
+                <img src="dead-metal-cover.png" alt="Alien Invasion: Dead Metal book cover" class="book-cover-small">
+                <h3>Alien Invasion: Dead Metal</h3>
+                <p class="release-date">Coming February 9th, 2026</p>
+                <p>Christmas Eve, 1980. Rory Kobayashi toasts out her cigarette in a Kermit the Frog mug and faces toward the aircraft megahouse. Steel crumples from feet-to-ceil slow, something impossible: entities piling at the sub-micron level. She gets to make coffee. When the sunrise, the piping has decided.</p>
+                <p>Her assistant Freddie steps it on the blackboard. It's an exponential curve. By cycle thirty, every piece of ferrous metal on Earth will fail completely. The aliens blimey? That won't happen for sixty-thousand years.</p>
+                <p>But something is happening. Something that shouldn't be possible. And the world may never be the same.</p>
+                <p>With a changing world around them, Rick, a former baseball player turned President, fights to keep the government functioning underground. George, a British operative, infiltrates enemy facilities searching for answers. Jess survives terrible ordeals about herself that hurts everything she believed. At civilization teeters on the edge and pursues upends, they rush that the status quo-term is less the end of the world, or something worse?</p>
+                <a href="#newsletter" class="cta-button">Get Notified at Launch</a>
+            </div>
+        </section>
+
         <section id="books">
-            <h2>Books</h2>
+            <h2>The Strange Detroit Series</h2>
             <div class="books-grid">
                 <div class="book-card">
                     <img src="bootstrap-cover.jpg" alt="The Bootstrap Paradox" class="book-cover">
                     <div class="book-info">
                         <h3>The Bootstrap Paradox</h3>
-                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel. A mind-bending tale of time, causality, and the nature of existence.</p>
+                        <p>When a mysterious object appears in Detroit, reality itself begins to unravel.</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DPWF3J7Q" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6738601901" class="book-link">Apple Books</a>
@@ -395,7 +526,7 @@
                     <img src="lift-cover.jpg" alt="The Lift" class="book-cover">
                     <div class="book-info">
                         <h3>The Lift</h3>
-                        <p>An elevator that shouldn't exist. Floors that lead nowhere. One man's descent into impossible architecture and existential dread.</p>
+                        <p>An elevator that shouldn't exist. Floors that lead nowhere.</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DQ3HL7VJ" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6738736825" class="book-link">Apple Books</a>
@@ -408,7 +539,7 @@
                     <img src="dead-metal-cover.png" alt="Dead Metal" class="book-cover">
                     <div class="book-info">
                         <h3>Dead Metal</h3>
-                        <p>Metal is dying. Cars crumble, buildings collapse, and civilization teeters on the brink. Can humanity survive without its most vital resource?</p>
+                        <p>Metal is dying. Can humanity survive without its most vital resource?</p>
                         <div class="book-links">
                             <a href="https://www.amazon.com/dp/B0DRN7GH3J" class="book-link">Amazon</a>
                             <a href="https://books.apple.com/us/book/id6740236498" class="book-link">Apple Books</a>
@@ -419,12 +550,31 @@
             </div>
         </section>
 
+        <section id="testimonials">
+            <h2>What Readers Are Saying</h2>
+            <div class="testimonials-container">
+                <div class="testimonial">
+                    "The Bootstrap Paradox kept me up all night. Orange has a gift for making the impossible feel terrifyingly real."
+                    <div class="testimonial-author">— Sarah M., Amazon Review</div>
+                </div>
+                <div class="testimonial">
+                    "The Lift is the most unsettling thing I've read in years. It's like Twilight Zone meets Lovecraft."
+                    <div class="testimonial-author">— Michael R., Goodreads</div>
+                </div>
+                <div class="testimonial">
+                    "Dead Metal poses a question I never thought to ask, and the answer is more disturbing than I could have imagined."
+                    <div class="testimonial-author">— Jennifer K., Book Reviewer</div>
+                </div>
+            </div>
+        </section>
+
         <section id="about">
-            <h2>About</h2>
+            <h2>About the Author</h2>
             <div class="about-content">
-                <p>Joe Orange writes science fiction that explores the boundaries between the ordinary and the impossible. Based in New Zealand, he crafts stories where everyday people encounter extraordinary circumstances that challenge their understanding of reality.</p>
-                <p>The Strange Detroit series emerged from a fascination with how small anomalies can cascade into world-changing events. Each book stands alone while contributing to a larger tapestry of interconnected mysteries.</p>
-                <p>When not writing, Joe explores the intersection of technology, philosophy, and the human condition—themes that inevitably find their way into his work.</p>
+                <p>I miss the times when stories were just about entertainment. Every page I write is there to entertain you, the reader. And I never lose sight of that.</p>
+                <p>Raised on a steady diet of The Twilight Zone and The Outer Limits, I developed an enduring fascination with stories where ordinary people stumble into extraordinary circumstances. This influence shines through in my work, including my debut novel The Bootstrap Paradox, where bizarre anomalies disrupt a gateway to the past in an old house. I write stories where the fantastic keeps a firm foot in reality while probing foot-sized in the sublime.</p>
+                <p>My storytelling philosophy is simple: entertain readers with carefully crafted tales that challenge our understanding of reality while remaining grounded in authentic human experience. Each story serves as a doorway to the extraordinary, inviting readers to explore the thin line between the familiar and the impossible.</p>
+                <p>If you want to keep track of my work, make sure to follow on Amazon and sign up for my newsletter. Thank you for reading!</p>
             </div>
         </section>
 
@@ -432,30 +582,38 @@
             <h2>FAQ</h2>
             <div class="faq-container">
                 <div class="faq-item">
-                    <h3>Do I need to read the books in order?</h3>
-                    <p>No! Each Strange Detroit book is a standalone story with its own characters and mystery. While they share a universe and certain underlying themes, you can start with whichever book's premise interests you most.</p>
+                    <h3>Q: Do your books need to be read in order?</h3>
+                    <p>Not at all! The Strange Detroit series can be read in any order. Think of them as part of a shared world where strange things happen, like Tales from the Crypt, but instead of the Cryptkeeper, I had this idea for a character called the Motor Head. The series is still in its early stages, but more stories are definitely coming!</p>
                 </div>
 
                 <div class="faq-item">
-                    <h3>Are the books available in audiobook format?</h3>
-                    <p>Yes! The Lift is currently available as an audiobook, narrated by Google's Madison voice. More audiobooks are in production and will be announced through the newsletter.</p>
+                    <h3>Q: What books do you have coming next?</h3>
+                    <p>I have four Strange Detroit novellas written that just need final editing. That's one about an alien invasion in Detroit, a detective solving a strange mystery, a psychiatrist who's part of a doomsday team stumbling during a world-ending event, and Red Faust. I'm thrilled at collecting them later Stephen King's Four Past Midnight. Maybe three Per Midnight. Still working on the title. I'm planning to release this collection in 2026.</p>
                 </div>
 
                 <div class="faq-item">
-                    <h3>Will there be more Strange Detroit books?</h3>
-                    <p>Absolutely. The Strange Detroit universe has many more stories to tell. Subscribe to the newsletter to stay updated on new releases and behind-the-scenes insights into upcoming books.</p>
+                    <h3>Q: What genres do you write?</h3>
+                    <p>I write stories where 'strange things' happen. I've always been fascinated by anthology storytelling. The Twilight Zone, The Outer Limits, and as a kid, Tales from the Darkside and Monsters. I still remember watching Creepshow as my stepping bag on a kid. That's what I want to bring to the table: self-contained stories that entertain. Though I'm working on my very first ongoing, in general I write to entertain myself, and other people!</p>
                 </div>
 
                 <div class="faq-item">
-                    <h3>Can I get a signed copy?</h3>
-                    <p>As the books are currently only available in digital format, signed physical copies aren't available yet. If there's enough interest, print editions may be explored in the future.</p>
+                    <h3>Q: How did you start writing?</h3>
+                    <p>This is a stronger story. Up until the age of 24, I had never even thought about writing. I totally used to love stories and was always a daydreamer though.</p>
+                    <p>What happened is I moved away from home to another country and ended up in a flat with no furniture, nothing but a mattress. A family member told me their computer was broken, something with the power cord. I had a small background in computers, so I thought I'd try to fix it. They were like, do so and I if it's working.</p>
+                    <p>All that was on the computer was MS Word. No games, nothing. Just in my room was nothing but a mattress and the sound of the sea outside. There was no TV, no radio. Just a walk to look at and this computer. That's when I thought, "I'm going to try to write a book."</p>
+                    <p>I started writing and totally enjoyed it. It was the most freeing thing in the world. On maybe, it was false, depending on how you look at it. That week, I completed my first novel. Looking back, it was a simple adventure story, but I liked the way I could move words around. Of course, that was most of an act project novel. I tend to pilot a lot more later days and think more carefully, I still think it was as lazy.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Q: What's your writing process?</h3>
+                    <p>I write everything out on a typewriter first. My word After Morning, Dead Metal was 228 pages of screenplay. Then I convert everything out into prose on a laptop. I start the prose with MS Word on Linux with a target of 300 words per page. I'm not saying this makes any sense. But this is what I do.</p>
                 </div>
             </div>
         </section>
 
         <section id="contact" class="contact-section">
             <h2>Contact</h2>
-            <p>Have a question about my books? Interested in a review copy? Want to discuss a potential collaboration? I'd love to hear from you.</p>
+            <p>Questions about my books? Want a review copy? I'd love to hear from you.</p>
             <a href="mailto:JoeOrangeAuthor@proton.me" class="cta-button">Send Email</a>
             <div class="email-display">
                 Or reach me directly at: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a>
