@@ -876,7 +876,7 @@
             <div class="faq-item">
                 <div class="faq-question">Q: If you're from New Zealand, why do you write about Detroit?</div>
                 <div class="faq-answer">
-                    <p>Lee Child is British but writes about a US Marine! I didn't live in Detroit, but I did live in the United States and enjoyed it there. I usually write where I think there's something interesting. I've always been fascinated by cities with abandoned sectors, and Detroit has that. I wonder to myself: what's going on down there? And yes, I've done a lot of research into Detroit. I hope it shows. My alien invasion story is actually set partly in New Zealand, at least for one of the characters.</p>
+                    <p>I have a novella on my desk that will explain that. You see, there is a portal from my house in New Zealand to Detroit. I did live in the United States for a time though and really enjoyed it. One of the best things about America is its fast food. New Zealand fast food pales in comparison.</p>
                 </div>
             </div>
 
@@ -1162,13 +1162,16 @@
             }
         });
 
-        // Obfuscated email contact
+        // Obfuscated email contact - reveals on click to avoid bot scraping
         document.getElementById('contact-btn').addEventListener('click', function(e) {
             e.preventDefault();
+            const btn = this;
             // Email is encoded to prevent spam bots
-            const parts = ['Joeorange', 'proton', 'me'];
+            const parts = ['JoeOrangeAuthor', 'proton', 'me'];
             const email = parts[0] + '@' + parts[1] + '.' + parts[2];
-            window.location.href = 'mailto:' + email;
+            btn.textContent = email;
+            btn.style.cursor = 'text';
+            btn.style.userSelect = 'text';
         });
     </script>
 </body>
