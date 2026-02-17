@@ -354,7 +354,7 @@ body { background: var(--bg); color: var(--fg); font-family: -apple-system, Blin
       <p style="font-weight:bold; margin-bottom:10px;">Connect:</p>
       <p><a href="https://joeorange.com" target="_blank" rel="noopener noreferrer">JoeOrange.com</a></p>
       <p><a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank" rel="noopener noreferrer">Joe's Books on Amazon</a></p>
-      <p>Feedback &amp; Questions: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a></p>
+      <p>Feedback &amp; Questions: <button id="readerContactBtn" onclick="revealReaderContact()" style="background: var(--accent); color: #fff; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">Contact Me</button></p>
     </div>
     <button class="close-about" onclick="document.getElementById('aboutOverlay').classList.remove('visible')">Close</button>
   </div>
@@ -1127,6 +1127,19 @@ $('btn-resume').addEventListener('click', () => {
 $('btn-clear-save').addEventListener('click', () => { localStorage.removeItem('autoReaderBookmark'); showResumeBar(); });
 $('btn-about-home').addEventListener('click', () => $('aboutOverlay').classList.add('visible'));
 $('btn-about-toolbar').addEventListener('click', () => $('aboutOverlay').classList.add('visible'));
+function revealReaderContact() {
+    const btn = document.getElementById('readerContactBtn');
+    const parts = ['JoeOrangeAuthor', 'proton', 'me'];
+    const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+    btn.textContent = email;
+    btn.style.cursor = 'text';
+    btn.style.userSelect = 'text';
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--accent)';
+    btn.style.fontWeight = 'bold';
+    btn.style.padding = '0';
+    btn.onclick = null;
+}
 
 contentArea.addEventListener('click', e => {
   if (settingsPanel.classList.contains('visible')) return;

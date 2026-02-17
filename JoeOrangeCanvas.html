@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joe Orange Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .toolbar.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toolbar-toggle {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1001;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toolbar-toggle.visible {
+            opacity: 0.7;
+            pointer-events: all;
+        }
+
+        .toolbar-toggle:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding-right: 12px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .tool-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            gap: 2px;
+        }
+        
+        .tool-btn .icon {
+            font-size: 18px;
+        }
+        
+        .tool-btn .label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .tool-btn:hover {
+            border-color: #4a90e2;
+            transform: translateY(-1px);
+        }
+
+        .tool-btn.active {
+            border-color: #4a90e2;
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .tool-btn.active .label {
+            color: white;
+        }
+
+        .tool-btn.reset {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .tool-btn.reset:hover {
+            border-color: #c82333;
+            background: #dc3545;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .tool-btn.reset:hover .label {
+            color: white;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #ffffff;
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-hidden {
+            display: none !important;
+        }
+
+        .canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+
+        .canvas-container.panning {
+            cursor: grabbing !important;
+        }
+
+        .canvas-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.1s ease-out;
+        }
+
+        .drawing-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .drawing-svg.drawing {
+            pointer-events: all;
+            cursor: crosshair;
+        }
+
+        .canvas-element {
+            position: absolute;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            background: transparent;
+        }
+
+        .canvas-element:hover {
+            border-color: #4a90e2;
+        }
+
+        .canvas-element.selected {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 1px #4a90e2;
+            cursor: move;
+        }
+
+        .canvas-element.focused {
+            z-index: 200 !important;
+        }
+
+        .canvas-element img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .canvas-element video {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: auto;
+        }
+
+        .canvas-element.pdf-element {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .canvas-element.pdf-element .pdf-thumbnail {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .canvas-element.pdf-element .pdf-thumbnail .pdf-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .canvas-element.pdf-element .pdf-thumbnail .pdf-name {
+            font-size: 12px;
+            color: #666;
+            max-width: 90%;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .canvas-element.pdf-element .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            background: #525659;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .canvas-element.pdf-element.pdf-expanded .pdf-thumbnail {
+            display: none;
+        }
+
+        .canvas-element.pdf-element.pdf-expanded .pdf-viewer {
+            display: flex;
+        }
+
+        .pdf-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: background 0.2s ease;
+        }
+
+        .pdf-close-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .canvas-element.pdf-element.pdf-expanded .pdf-close-btn {
+            display: flex;
+        }
+
+        .pdf-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #4a90e2;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 300;
+        }
+
+        .resize-handle.corner-tl {
+            top: -9px;
+            left: -9px;
+            cursor: nw-resize;
+        }
+
+        .resize-handle.corner-tr {
+            top: -9px;
+            right: -9px;
+            cursor: ne-resize;
+        }
+
+        .resize-handle.corner-bl {
+            bottom: -9px;
+            left: -9px;
+            cursor: sw-resize;
+        }
+
+        .resize-handle.corner-br {
+            bottom: -9px;
+            right: -9px;
+            cursor: se-resize;
+        }
+
+        .canvas-element.selected .resize-handle {
+            display: block;
+        }
+
+        .resize-handle:hover {
+            background: #2171b5;
+            transform: scale(1.2);
+        }
+
+        .shape-element {
+            border-radius: 8px;
+        }
+
+        .drag-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 144, 226, 0.1);
+            border: 3px dashed #4a90e2;
+            display: none;
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #4a90e2;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .drag-overlay.active {
+            display: flex;
+        }
+
+        .fullscreen-hover-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100px;
+            z-index: 1002;
+            display: none;
+            pointer-events: none;
+        }
+
+        .fullscreen-hover-zone.active {
+            display: block;
+            pointer-events: all;
+        }
+
+        .fullscreen-hover-zone-right {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            z-index: 1002;
+            display: none;
+            pointer-events: none;
+        }
+
+        .fullscreen-hover-zone-right.active {
+            display: block;
+            pointer-events: all;
+        }
+
+        .export-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(74, 144, 226, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .export-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .export-notification.success {
+            background: rgba(40, 167, 69, 0.9);
+        }
+
+        .export-notification.error {
+            background: rgba(220, 53, 69, 0.9);
+        }
+
+        .confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .confirmation-modal.show {
+            display: flex;
+        }
+
+        .confirmation-dialog {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .confirmation-dialog h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .confirmation-dialog p {
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-btn.cancel {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .confirm-btn.cancel:hover {
+            background: #e9ecef;
+        }
+
+        .confirm-btn.reset {
+            background: #dc3545;
+            color: white;
+        }
+
+        .confirm-btn.reset:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-hover-zone" id="leftHoverZone"></div>
+    <div class="fullscreen-hover-zone-right" id="rightHoverZone"></div>
+
+    <button class="toolbar-toggle" id="toolbarToggle" title="Show/Hide Toolbar"></button>
+
+    <div class="toolbar" id="toolbar">
+        <div class="tool-group">
+            <button class="tool-btn active" data-tool="select">
+                <span class="icon">📍</span>
+                <span class="label">Select</span>
+            </button>
+            <button class="tool-btn" data-tool="hand">
+                <span class="icon">✋</span>
+                <span class="label">Hand</span>
+            </button>
+            <button class="tool-btn" data-tool="draw">
+                <span class="icon">✏️</span>
+                <span class="label">Draw</span>
+            </button>
+            <button class="tool-btn" data-tool="rectangle">
+                <span class="icon">⬜</span>
+                <span class="label">Box</span>
+            </button>
+            <button class="tool-btn" data-tool="circle">
+                <span class="icon">⭕</span>
+                <span class="label">Circle</span>
+            </button>
+
+        </div>
+        
+        <div class="tool-group">
+            <input type="color" class="color-picker" id="drawColor" value="#000000" title="Drawing Color">
+            <input type="color" class="color-picker" id="bgColor" value="#f0f0f0" title="Background Color">
+        </div>
+
+        <div class="tool-group">
+            <button class="tool-btn" onclick="saveProject()">
+                <span class="icon">💾</span>
+                <span class="label">Save</span>
+            </button>
+            <button class="tool-btn" onclick="loadProject()">
+                <span class="icon">📂</span>
+                <span class="label">Load</span>
+            </button>
+            <button class="tool-btn reset" onclick="showResetConfirmation()">
+                <span class="icon">🗑️</span>
+                <span class="label">Reset</span>
+            </button>
+            <button class="tool-btn" onclick="showCanvasAbout()">
+                <span class="icon">ℹ️</span>
+                <span class="label">About</span>
+            </button>
+        </div>
+    </div>
+
+    <button class="fullscreen-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+
+    <div class="canvas-container" id="canvas">
+        <div class="canvas-content" id="canvasContent">
+            <svg class="drawing-svg" id="drawingSvg">
+                <defs>
+                    <filter id="smooth">
+                        <feGaussianBlur stdDeviation="0.5"/>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+    </div>
+
+    <div class="drag-overlay" id="dragOverlay">
+        Drop files here to add them to canvas (images, videos, PDFs)
+    </div>
+
+    <div class="export-notification" id="exportNotification">
+        Action completed!
+    </div>
+
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-dialog">
+            <h3>Reset Whiteboard</h3>
+            <p>Are you sure you want to clear everything? This will remove all drawings, shapes, text, and media from the canvas. This action cannot be undone.</p>
+            <div class="confirmation-buttons">
+                <button class="confirm-btn cancel" onclick="hideResetConfirmation()">Cancel</button>
+                <button class="confirm-btn reset" onclick="confirmReset()">Reset Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentTool = 'select';
+        let isDrawing = false;
+        let isDraggingElement = false;
+        let isResizing = false;
+        let isPanning = false;
+        let currentPath = null;
+        let selectedElement = null;
+        let dragOffset = { x: 0, y: 0 };
+        let panOffset = { x: 0, y: 0 };
+        let lastPanPoint = null;
+        let resizeCorner = null;
+        let resizeStartState = null;
+        let elements = [];
+        let elementOriginalState = new Map();
+        let toolbarVisible = true;
+        let isInFullscreen = false;
+        let fileDataStore = new Map(); // Store file data for save/load
+        let isEditingText = false;
+        let doubleClickTimeout = null;
+        
+        let dragState = {
+            initialPos: null,
+            hasDragged: false
+        };
+
+        // Get DOM elements
+        const canvas = document.getElementById('canvas');
+        const canvasContent = document.getElementById('canvasContent');
+        const drawingSvg = document.getElementById('drawingSvg');
+        const dragOverlay = document.getElementById('dragOverlay');
+        const toolbar = document.getElementById('toolbar');
+        const toolbarToggle = document.getElementById('toolbarToggle');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const leftHoverZone = document.getElementById('leftHoverZone');
+        const rightHoverZone = document.getElementById('rightHoverZone');
+        const toolButtons = document.querySelectorAll('.tool-btn');
+        const drawColorPicker = document.getElementById('drawColor');
+        const bgColorPicker = document.getElementById('bgColor');
+        const exportNotification = document.getElementById('exportNotification');
+        const confirmationModal = document.getElementById('confirmationModal');
+
+        // Reset functionality
+        function showResetConfirmation() {
+            confirmationModal.classList.add('show');
+        }
+
+        function hideResetConfirmation() {
+            confirmationModal.classList.remove('show');
+        }
+
+        function confirmReset() {
+            // Clear all elements
+            elements.forEach(el => el.remove());
+            elements = [];
+            elementOriginalState.clear();
+            fileDataStore.clear();
+            
+            // Clear all drawings
+            drawingSvg.innerHTML = '<defs><filter id="smooth"><feGaussianBlur stdDeviation="0.5"/></filter></defs>';
+            
+            // Reset canvas position
+            panOffset = { x: 0, y: 0 };
+            canvasContent.style.transform = '';
+            
+            // Reset background color
+            canvas.style.backgroundColor = '#f0f0f0';
+            bgColorPicker.value = '#f0f0f0';
+            
+            // Deselect everything
+            deselectAll();
+            
+            // Hide confirmation modal
+            hideResetConfirmation();
+            
+            // Show success message
+            showExportNotification('Whiteboard reset successfully!', 'success');
+        }
+
+        // Click outside modal to close
+        confirmationModal.addEventListener('click', (e) => {
+            if (e.target === confirmationModal) {
+                hideResetConfirmation();
+            }
+        });
+
+        // Utility function to convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Create project data for saving
+        function createProjectData() {
+            return {
+                version: '2.0',
+                backgroundColor: canvas.style.backgroundColor || '#f0f0f0',
+                panOffset: panOffset,
+                elements: elements.map(el => {
+                    const originalState = elementOriginalState.get(el);
+                    const elementData = {
+                        type: el.classList.contains('text-element') ? 'text' : 
+                              el.classList.contains('shape-element') ? 'shape' :
+                              el.classList.contains('pdf-element') ? 'pdf' : 'media',
+                        left: el.style.left,
+                        top: el.style.top,
+                        width: el.style.width,
+                        height: el.style.height,
+                        backgroundColor: el.style.backgroundColor,
+                        color: el.style.color,
+                        borderRadius: el.style.borderRadius,
+                        originalState: originalState
+                    };
+                    
+                    if (el.classList.contains('text-element')) {
+                        elementData.text = el.textContent;
+                    } else if (el.classList.contains('pdf-element')) {
+                        elementData.fileId = el.dataset.fileId;
+                        elementData.fileName = el.dataset.fileName;
+                    } else if (el.querySelector('img, video')) {
+                        const media = el.querySelector('img, video');
+                        elementData.fileId = media.dataset.fileId;
+                        elementData.mediaType = media.tagName.toLowerCase();
+                    }
+                    
+                    return elementData;
+                }),
+                drawings: Array.from(drawingSvg.querySelectorAll('path')).map(path => ({
+                    d: path.getAttribute('d'),
+                    stroke: path.getAttribute('stroke'),
+                    strokeWidth: path.getAttribute('stroke-width')
+                }))
+            };
+        }
+
+        // Load project data
+        function loadProjectData(projectData) {
+            // Clear current canvas
+            elements.forEach(el => el.remove());
+            elements = [];
+            elementOriginalState.clear();
+            drawingSvg.innerHTML = '<defs><filter id="smooth"><feGaussianBlur stdDeviation="0.5"/></filter></defs>';
+            
+            // Restore background
+            canvas.style.backgroundColor = projectData.backgroundColor;
+            bgColorPicker.value = projectData.backgroundColor;
+            
+            // Restore pan offset
+            if (projectData.panOffset) {
+                panOffset = projectData.panOffset;
+                canvasContent.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px)`;
+            }
+            
+            // Restore drawings
+            if (projectData.drawings) {
+                projectData.drawings.forEach(drawing => {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', drawing.stroke);
+                    path.setAttribute('stroke-width', drawing.strokeWidth);
+                    path.setAttribute('stroke-linecap', 'round');
+                    path.setAttribute('stroke-linejoin', 'round');
+                    path.setAttribute('filter', 'url(#smooth)');
+                    path.setAttribute('d', drawing.d);
+                    drawingSvg.appendChild(path);
+                });
+            }
+            
+            // Restore elements
+            if (projectData.elements) {
+                projectData.elements.forEach(elementData => {
+                    if (elementData.type === 'text' || elementData.type === 'shape') {
+                        const element = document.createElement('div');
+                        element.className = elementData.type === 'text' ? 'canvas-element text-element' : 'canvas-element shape-element';
+                        element.style.left = elementData.left;
+                        element.style.top = elementData.top;
+                        element.style.width = elementData.width;
+                        element.style.height = elementData.height;
+                        
+                        if (elementData.backgroundColor) {
+                            element.style.backgroundColor = elementData.backgroundColor;
+                        }
+                        if (elementData.color) {
+                            element.style.color = elementData.color;
+                        }
+                        if (elementData.borderRadius) {
+                            element.style.borderRadius = elementData.borderRadius;
+                        }
+                        if (elementData.text) {
+                            element.contentEditable = true;
+                            element.textContent = elementData.text;
+                            setupTextElement(element);
+                        }
+                        
+                        addResizeHandles(element);
+                        setupElementInteraction(element);
+                        canvasContent.appendChild(element);
+                        elements.push(element);
+                        
+                        if (elementData.originalState) {
+                            elementOriginalState.set(element, { ...elementData.originalState });
+                        } else {
+                            setTimeout(() => storeOriginalState(element), 100);
+                        }
+                    } else if (elementData.type === 'media' && elementData.fileId) {
+                        // Restore media from stored data
+                        const fileData = fileDataStore.get(elementData.fileId);
+                        if (fileData) {
+                            const element = document.createElement('div');
+                            element.className = 'canvas-element';
+                            element.style.left = elementData.left;
+                            element.style.top = elementData.top;
+                            element.style.width = elementData.width;
+                            element.style.height = elementData.height;
+                            
+                            if (elementData.mediaType === 'img') {
+                                const img = document.createElement('img');
+                                img.src = fileData;
+                                img.dataset.fileId = elementData.fileId;
+                                element.appendChild(img);
+                            } else if (elementData.mediaType === 'video') {
+                                const video = document.createElement('video');
+                                video.controls = true;
+                                video.preload = 'metadata';
+                                video.muted = false;
+                                video.src = fileData;
+                                video.dataset.fileId = elementData.fileId;
+                                
+                                video.addEventListener('mousedown', (e) => {
+                                    const videoRect = video.getBoundingClientRect();
+                                    const controlsHeight = 40;
+                                    const isInControlsArea = e.clientY > (videoRect.bottom - controlsHeight);
+                                    if (!isInControlsArea) {
+                                        return;
+                                    }
+                                });
+                                
+                                element.appendChild(video);
+                            }
+                            
+                            addResizeHandles(element);
+                            setupElementInteraction(element);
+                            canvasContent.appendChild(element);
+                            elements.push(element);
+                            
+                            if (elementData.originalState) {
+                                elementOriginalState.set(element, { ...elementData.originalState });
+                            } else {
+                                setTimeout(() => storeOriginalState(element), 100);
+                            }
+                        }
+                    } else if (elementData.type === 'pdf' && elementData.fileId) {
+                        // Restore PDF from stored data
+                        const fileData = fileDataStore.get(elementData.fileId);
+                        if (fileData) {
+                            const element = document.createElement('div');
+                            element.className = 'canvas-element pdf-element';
+                            element.style.left = elementData.left;
+                            element.style.top = elementData.top;
+                            element.style.width = elementData.width;
+                            element.style.height = elementData.height;
+                            element.dataset.fileId = elementData.fileId;
+                            element.dataset.fileName = elementData.fileName || 'document.pdf';
+                            
+                            // Create thumbnail view
+                            const thumbnail = document.createElement('div');
+                            thumbnail.className = 'pdf-thumbnail';
+                            thumbnail.innerHTML = `
+                                <span class="pdf-icon">📄</span>
+                                <span class="pdf-name">${elementData.fileName || 'document.pdf'}</span>
+                            `;
+                            
+                            // Create expanded viewer
+                            const viewer = document.createElement('div');
+                            viewer.className = 'pdf-viewer';
+                            
+                            const embed = document.createElement('embed');
+                            embed.className = 'pdf-embed';
+                            embed.src = fileData;
+                            embed.type = 'application/pdf';
+                            viewer.appendChild(embed);
+                            
+                            // Create close button
+                            const closeBtn = document.createElement('button');
+                            closeBtn.className = 'pdf-close-btn';
+                            closeBtn.innerHTML = '✕';
+                            closeBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                collapsePdf(element);
+                            });
+                            
+                            element.appendChild(thumbnail);
+                            element.appendChild(viewer);
+                            element.appendChild(closeBtn);
+                            
+                            addResizeHandles(element);
+                            setupElementInteraction(element);
+                            setupPdfInteraction(element);
+                            canvasContent.appendChild(element);
+                            elements.push(element);
+                            
+                            if (elementData.originalState) {
+                                elementOriginalState.set(element, { ...elementData.originalState });
+                            } else {
+                                setTimeout(() => storeOriginalState(element), 100);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Setup interaction for canvas elements (needed for loaded elements)
+        function setupElementInteraction(element) {
+            // This function ensures loaded elements have proper mouse event handling
+            // The actual interaction is handled by the main canvas mouse events,
+            // but we need to ensure the element is properly registered
+            
+            // Make sure the element is in the elements array
+            if (!elements.includes(element)) {
+                elements.push(element);
+            }
+            
+            // Ensure resize handles are clickable
+            const resizeHandles = element.querySelectorAll('.resize-handle');
+            resizeHandles.forEach(handle => {
+                handle.style.pointerEvents = 'auto';
+            });
+            
+            // For text elements, ensure editing capabilities are set up
+            if (element.classList.contains('text-element')) {
+                element.contentEditable = true;
+                setupTextElement(element);
+            }
+        }
+
+        // Export functions
+        function showExportNotification(message, type = 'success') {
+            exportNotification.textContent = message;
+            exportNotification.className = `export-notification show ${type}`;
+            
+            setTimeout(() => {
+                exportNotification.classList.remove('show', 'success', 'error');
+            }, 3000);
+        }
+
+        // Save and load functions
+        async function saveProject() {
+            try {
+                const projectData = createProjectData();
+                
+                // Create a complete save package with file data
+                const savePackage = {
+                    project: projectData,
+                    fileData: Object.fromEntries(fileDataStore)
+                };
+                
+                const dataStr = JSON.stringify(savePackage, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.download = `whiteboard-${Date.now()}.json`;
+                link.href = url;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                showExportNotification('Project saved successfully!');
+                
+            } catch (error) {
+                console.error('Save failed:', error);
+                showExportNotification('Save failed. Please try again.', 'error');
+            }
+        }
+
+        function loadProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const saveData = JSON.parse(event.target.result);
+                        
+                        // Handle both old and new save formats
+                        let projectData;
+                        if (saveData.project) {
+                            // New format with file data
+                            projectData = saveData.project;
+                            fileDataStore.clear();
+                            if (saveData.fileData) {
+                                Object.entries(saveData.fileData).forEach(([fileId, data]) => {
+                                    fileDataStore.set(fileId, data);
+                                });
+                            }
+                        } else {
+                            // Old format
+                            projectData = saveData;
+                        }
+                        
+                        loadProjectData(projectData);
+                        showExportNotification('Project loaded successfully!');
+                        
+                    } catch (error) {
+                        console.error('Load failed:', error);
+                        showExportNotification('Failed to load project. Please check the file.', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Fullscreen functionality
+        function detectFullscreen() {
+            const wasFullscreen = isInFullscreen;
+            isInFullscreen = !!(document.fullscreenElement || 
+                               document.webkitFullscreenElement || 
+                               document.mozFullScreenElement || 
+                               document.msFullscreenElement);
+                               
+            if (wasFullscreen !== isInFullscreen) {
+                handleFullscreenChange();
+            }
+        }
+
+        function handleFullscreenChange() {
+            if (isInFullscreen) {
+                toolbar.classList.add('fullscreen-hidden');
+                fullscreenBtn.classList.add('fullscreen-hidden');
+                leftHoverZone.classList.add('active');
+                rightHoverZone.classList.add('active');
+            } else {
+                toolbar.classList.remove('fullscreen-hidden');
+                fullscreenBtn.classList.remove('fullscreen-hidden');
+                leftHoverZone.classList.remove('active');
+                rightHoverZone.classList.remove('active');
+                
+                if (!toolbarVisible) {
+                    toolbar.classList.add('hidden');
+                    toolbarToggle.classList.add('visible');
+                }
+            }
+        }
+
+        function showFullscreenUI() {
+            if (isInFullscreen) {
+                toolbar.classList.remove('fullscreen-hidden');
+                fullscreenBtn.classList.remove('fullscreen-hidden');
+            }
+        }
+
+        function hideFullscreenUI() {
+            if (isInFullscreen) {
+                setTimeout(() => {
+                    if (!toolbar.matches(':hover') && !fullscreenBtn.matches(':hover')) {
+                        toolbar.classList.add('fullscreen-hidden');
+                        fullscreenBtn.classList.add('fullscreen-hidden');
+                    }
+                }, 300);
+            }
+        }
+
+        leftHoverZone.addEventListener('mouseenter', showFullscreenUI);
+        leftHoverZone.addEventListener('mouseleave', hideFullscreenUI);
+        rightHoverZone.addEventListener('mouseenter', showFullscreenUI);
+        rightHoverZone.addEventListener('mouseleave', hideFullscreenUI);
+        toolbar.addEventListener('mouseleave', hideFullscreenUI);
+        fullscreenBtn.addEventListener('mouseleave', hideFullscreenUI);
+
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(event => {
+            document.addEventListener(event, detectFullscreen);
+        });
+
+        setInterval(detectFullscreen, 1000);
+
+        function toggleFullscreen() {
+            if (!isInFullscreen) {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        function toggleToolbar() {
+            if (isInFullscreen) return;
+            
+            toolbarVisible = !toolbarVisible;
+            if (toolbarVisible) {
+                toolbar.classList.remove('hidden');
+                toolbarToggle.classList.remove('visible');
+            } else {
+                toolbar.classList.add('hidden');
+                toolbarToggle.classList.add('visible');
+            }
+        }
+
+        toolbarToggle.addEventListener('click', toggleToolbar);
+
+        // Tool selection
+        toolButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toolButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTool = btn.dataset.tool;
+                updateCursor();
+            });
+        });
+
+        bgColorPicker.addEventListener('input', (e) => {
+            canvas.style.backgroundColor = e.target.value;
+        });
+
+        function updateCursor() {
+            if (currentTool === 'draw') {
+                drawingSvg.classList.add('drawing');
+                canvas.style.cursor = 'crosshair';
+            } else if (currentTool === 'hand') {
+                drawingSvg.classList.remove('drawing');
+                canvas.style.cursor = 'grab';
+            } else {
+                drawingSvg.classList.remove('drawing');
+                canvas.style.cursor = 'default';
+            }
+        }
+
+        // Text element setup function
+        function setupTextElement(element) {
+            // Remove default text and enable immediate editing
+            if (element.textContent === 'Double click to edit') {
+                element.textContent = '';
+            }
+            
+            // Add event listeners for text editing
+            element.addEventListener('click', (e) => {
+                if (currentTool === 'select') {
+                    e.stopPropagation();
+                    selectElement(element);
+                    
+                    // Start editing immediately on single click
+                    setTimeout(() => {
+                        element.focus();
+                        isEditingText = true;
+                        element.classList.add('editing');
+                    }, 10);
+                }
+            });
+
+            element.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (doubleClickTimeout) {
+                    clearTimeout(doubleClickTimeout);
+                    doubleClickTimeout = null;
+                }
+                
+                // Double click triggers focus mode (enlargement)
+                toggleFocusMode(element);
+            });
+
+            element.addEventListener('focus', () => {
+                isEditingText = true;
+                element.classList.add('editing');
+            });
+
+            element.addEventListener('blur', () => {
+                isEditingText = false;
+                element.classList.remove('editing');
+                
+                // Auto-resize text box to fit content
+                autoResizeTextElement(element);
+            });
+
+            element.addEventListener('input', () => {
+                // Auto-resize as user types
+                autoResizeTextElement(element);
+            });
+
+            element.addEventListener('paste', (e) => {
+                // Allow paste operations
+                setTimeout(() => autoResizeTextElement(element), 10);
+            });
+
+            // Prevent drag when editing text
+            element.addEventListener('mousedown', (e) => {
+                if (isEditingText && element.classList.contains('editing')) {
+                    e.stopPropagation();
+                }
+            });
+        }
+
+        function autoResizeTextElement(element) {
+            if (!element.classList.contains('text-element')) return;
+            
+            const content = element.textContent || element.innerHTML;
+            if (!content.trim()) {
+                element.style.width = '120px';
+                element.style.height = '60px';
+                return;
+            }
+            
+            // Create temporary element to measure text size
+            const temp = document.createElement('div');
+            temp.style.position = 'absolute';
+            temp.style.visibility = 'hidden';
+            temp.style.whiteSpace = 'pre-wrap';
+            temp.style.wordWrap = 'break-word';
+            temp.style.fontSize = window.getComputedStyle(element).fontSize;
+            temp.style.fontFamily = window.getComputedStyle(element).fontFamily;
+            temp.style.lineHeight = window.getComputedStyle(element).lineHeight;
+            temp.style.padding = '12px';
+            temp.style.maxWidth = '400px'; // Limit max width
+            temp.textContent = content;
+            
+            document.body.appendChild(temp);
+            
+            const newWidth = Math.max(120, Math.min(400, temp.offsetWidth + 4));
+            const newHeight = Math.max(60, temp.offsetHeight + 4);
+            
+            document.body.removeChild(temp);
+            
+            element.style.width = newWidth + 'px';
+            element.style.height = newHeight + 'px';
+            
+            // Update original state if not focused
+            const originalState = elementOriginalState.get(element);
+            if (originalState && !originalState.isFocused) {
+                originalState.width = element.style.width;
+                originalState.height = element.style.height;
+            }
+        }
+
+        // Mouse Events with FIXED coordinate handling
+        let lastPoint = null;
+
+        canvas.addEventListener('mousedown', handleStart);
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleEnd);
+
+        function getEventPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function getCanvasPos(screenPos) {
+            // Convert screen position to canvas position accounting for pan
+            return {
+                x: screenPos.x - panOffset.x,
+                y: screenPos.y - panOffset.y
+            };
+        }
+
+        function handleStart(e) {
+            // If user is editing text, don't interfere with text editing
+            if (isEditingText && e.target.classList.contains('text-element')) {
+                return;
+            }
+            
+            const screenPos = getEventPos(e);
+            const canvasPos = getCanvasPos(screenPos);
+            
+            if (e.target.classList.contains('resize-handle')) {
+                e.preventDefault();
+                e.stopPropagation();
+                isResizing = true;
+                resizeCorner = e.target.dataset.corner;
+                
+                const rect = selectedElement.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                resizeStartState = {
+                    left: parseFloat(selectedElement.style.left) || 0,
+                    top: parseFloat(selectedElement.style.top) || 0,
+                    width: rect.width,
+                    height: rect.height,
+                    mouseX: screenPos.x,
+                    mouseY: screenPos.y
+                };
+                return;
+            }
+            
+            const clickedElement = e.target.closest('.canvas-element');
+            
+            if (currentTool === 'draw') {
+                startDrawing(canvasPos);
+            } else if (currentTool === 'hand') {
+                if (clickedElement) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // PDFs have their own expand/collapse via thumbnail click
+                    if (clickedElement.classList.contains('pdf-element')) {
+                        if (!clickedElement.classList.contains('pdf-expanded')) {
+                            expandPdf(clickedElement);
+                        }
+                    } else {
+                        toggleFocusMode(clickedElement);
+                    }
+                    selectElement(clickedElement);
+                } else {
+                    isPanning = true;
+                    lastPanPoint = screenPos;
+                    canvas.style.cursor = 'grabbing';
+                    canvas.classList.add('panning');
+                }
+            } else if (currentTool === 'select') {
+                if (clickedElement) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    selectElement(clickedElement);
+                    
+                    // For text elements, don't start dragging immediately
+                    if (!clickedElement.classList.contains('text-element')) {
+                        dragState.initialPos = { x: screenPos.x, y: screenPos.y };
+                        dragState.hasDragged = false;
+                        isDraggingElement = true;
+                        startDragging(clickedElement, screenPos);
+                    }
+                } else {
+                    deselectAll();
+                    // Clear any active text editing
+                    document.activeElement.blur();
+                    isEditingText = false;
+                }
+            } else {
+                createShape(canvasPos);
+            }
+        }
+
+        function handleMove(e) {
+            if (!isDrawing && !isDraggingElement && !isResizing && !isPanning) return;
+            if (isEditingText) return; // Don't interfere with text editing
+            
+            e.preventDefault();
+            const screenPos = getEventPos(e);
+            const canvasPos = getCanvasPos(screenPos);
+            
+            if (dragState.initialPos && !dragState.hasDragged) {
+                const deltaX = Math.abs(screenPos.x - dragState.initialPos.x);
+                const deltaY = Math.abs(screenPos.y - dragState.initialPos.y);
+                if (deltaX > 5 || deltaY > 5) {
+                    dragState.hasDragged = true;
+                }
+            }
+            
+            if (isDrawing) {
+                continueDrawing(canvasPos);
+            } else if (isDraggingElement && selectedElement && dragState.hasDragged) {
+                dragElement(screenPos);
+            } else if (isResizing && selectedElement) {
+                resizeElement(screenPos);
+            } else if (isPanning && lastPanPoint) {
+                panCanvas(screenPos);
+            }
+        }
+
+        function handleEnd(e) {
+            if (currentTool === 'select' && selectedElement && !dragState.hasDragged && !isResizing && !isEditingText) {
+                if (!selectedElement.classList.contains('text-element') && !selectedElement.classList.contains('pdf-element')) {
+                    toggleFocusMode(selectedElement);
+                }
+            }
+            
+            isDrawing = false;
+            isDraggingElement = false;
+            isResizing = false;
+            isPanning = false;
+            currentPath = null;
+            lastPoint = null;
+            lastPanPoint = null;
+            resizeCorner = null;
+            resizeStartState = null;
+            dragState.initialPos = null;
+            dragState.hasDragged = false;
+            canvas.style.cursor = currentTool === 'hand' ? 'grab' : 'default';
+            canvas.classList.remove('panning');
+        }
+
+        // Drawing functions
+        function startDrawing(pos) {
+            isDrawing = true;
+            currentPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            currentPath.setAttribute('fill', 'none');
+            currentPath.setAttribute('stroke', drawColorPicker.value);
+            currentPath.setAttribute('stroke-width', '3');
+            currentPath.setAttribute('stroke-linecap', 'round');
+            currentPath.setAttribute('stroke-linejoin', 'round');
+            currentPath.setAttribute('filter', 'url(#smooth)');
+            
+            const pathData = `M ${pos.x} ${pos.y}`;
+            currentPath.setAttribute('d', pathData);
+            drawingSvg.appendChild(currentPath);
+            lastPoint = pos;
+        }
+
+        function continueDrawing(pos) {
+            if (!currentPath || !lastPoint) return;
+            
+            const currentPathData = currentPath.getAttribute('d');
+            const newPathData = `${currentPathData} L ${pos.x} ${pos.y}`;
+            currentPath.setAttribute('d', newPathData);
+            lastPoint = pos;
+        }
+
+        function panCanvas(pos) {
+            if (!lastPanPoint) return;
+            
+            const deltaX = pos.x - lastPanPoint.x;
+            const deltaY = pos.y - lastPanPoint.y;
+            
+            panOffset.x += deltaX;
+            panOffset.y += deltaY;
+            
+            canvasContent.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px)`;
+            lastPanPoint = pos;
+        }
+
+        function createShape(pos) {
+            const element = document.createElement('div');
+            element.className = 'canvas-element shape-element';
+            element.style.left = pos.x + 'px';
+            element.style.top = pos.y + 'px';
+            
+            if (currentTool === 'rectangle') {
+                element.style.width = '100px';
+                element.style.height = '60px';
+                element.style.backgroundColor = drawColorPicker.value;
+            } else if (currentTool === 'circle') {
+                element.style.width = '80px';
+                element.style.height = '80px';
+                element.style.backgroundColor = drawColorPicker.value;
+                element.style.borderRadius = '50%';
+            }
+            
+            addResizeHandles(element);
+            setupElementInteraction(element);
+            canvasContent.appendChild(element);
+            elements.push(element);
+            
+            setTimeout(() => storeOriginalState(element), 100);
+            selectElement(element);
+        }
+
+        function toggleFocusMode(element) {
+            const originalState = elementOriginalState.get(element);
+            if (!originalState) return;
+            
+            if (!originalState.isFocused) {
+                focusElement(element, originalState);
+            } else {
+                unfocusElement(element, originalState);
+            }
+        }
+
+        function focusElement(element, originalState) {
+            const canvasRect = canvas.getBoundingClientRect();
+            const maxHeight = canvasRect.height * 0.9;
+            const maxWidth = canvasRect.width * 0.9;
+            
+            const media = element.querySelector('img, video');
+            let newWidth, newHeight;
+            
+            if (media) {
+                let aspectRatio = 1;
+                if (media.tagName === 'IMG' && media.naturalWidth && media.naturalHeight) {
+                    aspectRatio = media.naturalWidth / media.naturalHeight;
+                } else if (media.tagName === 'VIDEO') {
+                    if (media.videoWidth && media.videoHeight) {
+                        aspectRatio = media.videoWidth / media.videoHeight;
+                    }
+                }
+                
+                if (maxHeight * aspectRatio <= maxWidth) {
+                    newHeight = maxHeight;
+                    newWidth = maxHeight * aspectRatio;
+                } else {
+                    newWidth = maxWidth;
+                    newHeight = maxWidth / aspectRatio;
+                }
+            } else {
+                // For text elements and shapes, maintain aspect ratio or use sensible defaults
+                if (element.classList.contains('text-element')) {
+                    newWidth = Math.min(600, maxWidth);
+                    newHeight = Math.min(400, maxHeight);
+                } else {
+                    newWidth = Math.min(400, maxWidth);
+                    newHeight = Math.min(300, maxHeight);
+                }
+            }
+            
+            const centerX = (canvasRect.width - newWidth) / 2 - panOffset.x;
+            const centerY = (canvasRect.height - newHeight) / 2 - panOffset.y;
+            
+            element.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            element.classList.add('focused');
+            element.style.left = centerX + 'px';
+            element.style.top = centerY + 'px';
+            element.style.width = newWidth + 'px';
+            element.style.height = newHeight + 'px';
+            
+            originalState.isFocused = true;
+            
+            setTimeout(() => {
+                element.style.transition = '';
+            }, 400);
+        }
+
+        function unfocusElement(element, originalState) {
+            element.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            element.classList.remove('focused');
+            element.style.left = originalState.left;
+            element.style.top = originalState.top;
+            element.style.width = originalState.width;
+            element.style.height = originalState.height;
+            element.style.transform = originalState.transform;
+            
+            originalState.isFocused = false;
+            
+            setTimeout(() => {
+                element.style.transition = '';
+            }, 400);
+        }
+
+        function addResizeHandles(element) {
+            const corners = [
+                { class: 'corner-tl', corner: 'tl' },
+                { class: 'corner-tr', corner: 'tr' },
+                { class: 'corner-bl', corner: 'bl' },
+                { class: 'corner-br', corner: 'br' }
+            ];
+            
+            corners.forEach(({ class: className, corner }) => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${className}`;
+                handle.dataset.corner = corner;
+                element.appendChild(handle);
+            });
+        }
+
+        function storeOriginalState(element) {
+            if (!elementOriginalState.has(element)) {
+                const computedWidth = element.style.width || element.offsetWidth + 'px';
+                const computedHeight = element.style.height || element.offsetHeight + 'px';
+                const computedLeft = element.style.left || '0px';
+                const computedTop = element.style.top || '0px';
+                
+                elementOriginalState.set(element, {
+                    width: computedWidth,
+                    height: computedHeight,
+                    left: computedLeft,
+                    top: computedTop,
+                    transform: element.style.transform || '',
+                    isFocused: false
+                });
+            }
+        }
+
+        function selectElement(element) {
+            deselectAll();
+            selectedElement = element;
+            element.classList.add('selected');
+        }
+
+        function deselectAll() {
+            elements.forEach(el => {
+                el.classList.remove('selected');
+                if (el.classList.contains('text-element')) {
+                    el.blur();
+                    el.classList.remove('editing');
+                }
+            });
+            selectedElement = null;
+            isEditingText = false;
+        }
+
+        function startDragging(element, screenPos) {
+            const elementLeft = parseFloat(element.style.left) || 0;
+            const elementTop = parseFloat(element.style.top) || 0;
+            
+            // Fixed drag offset calculation
+            dragOffset = {
+                x: getCanvasPos(screenPos).x - elementLeft,
+                y: getCanvasPos(screenPos).y - elementTop
+            };
+        }
+
+        function dragElement(screenPos) {
+            if (!selectedElement || !dragState.hasDragged) return;
+            
+            const canvasPos = getCanvasPos(screenPos);
+            const newX = canvasPos.x - dragOffset.x;
+            const newY = canvasPos.y - dragOffset.y;
+            
+            selectedElement.style.left = newX + 'px';
+            selectedElement.style.top = newY + 'px';
+            
+            const originalState = elementOriginalState.get(selectedElement);
+            if (originalState && !originalState.isFocused) {
+                originalState.left = selectedElement.style.left;
+                originalState.top = selectedElement.style.top;
+            }
+        }
+
+        function resizeElement(screenPos) {
+            if (!selectedElement || !resizeStartState) return;
+            
+            const rawDeltaX = screenPos.x - resizeStartState.mouseX;
+            const rawDeltaY = screenPos.y - resizeStartState.mouseY;
+            const deltaX = rawDeltaX * 0.7;
+            const deltaY = rawDeltaY * 0.7;
+            
+            let newLeft = resizeStartState.left;
+            let newTop = resizeStartState.top;
+            let newWidth = resizeStartState.width;
+            let newHeight = resizeStartState.height;
+            
+            switch (resizeCorner) {
+                case 'tl':
+                    newLeft = resizeStartState.left + deltaX;
+                    newTop = resizeStartState.top + deltaY;
+                    newWidth = resizeStartState.width - deltaX;
+                    newHeight = resizeStartState.height - deltaY;
+                    break;
+                case 'tr':
+                    newTop = resizeStartState.top + deltaY;
+                    newWidth = resizeStartState.width + deltaX;
+                    newHeight = resizeStartState.height - deltaY;
+                    break;
+                case 'bl':
+                    newLeft = resizeStartState.left + deltaX;
+                    newWidth = resizeStartState.width - deltaX;
+                    newHeight = resizeStartState.height + deltaY;
+                    break;
+                case 'br':
+                    newWidth = resizeStartState.width + deltaX;
+                    newHeight = resizeStartState.height + deltaY;
+                    break;
+            }
+            
+            const minSize = 30;
+            const maxSize = Math.min(canvas.offsetWidth * 2, canvas.offsetHeight * 2);
+            
+            if (newWidth < minSize || newHeight < minSize) return;
+            if (newWidth > maxSize || newHeight > maxSize) return;
+            
+            const media = selectedElement.querySelector('img, video');
+            if (media) {
+                let aspectRatio = 1;
+                
+                if (media.tagName === 'IMG' && media.naturalWidth && media.naturalHeight) {
+                    aspectRatio = media.naturalWidth / media.naturalHeight;
+                } else if (media.tagName === 'VIDEO') {
+                    if (media.videoWidth && media.videoHeight) {
+                        aspectRatio = media.videoWidth / media.videoHeight;
+                    } else {
+                        const currentRect = selectedElement.getBoundingClientRect();
+                        aspectRatio = currentRect.width / currentRect.height;
+                    }
+                }
+                
+                if (aspectRatio > 0) {
+                    const targetHeight = newWidth / aspectRatio;
+                    
+                    if (resizeCorner === 'tl' || resizeCorner === 'tr') {
+                        const heightDiff = targetHeight - newHeight;
+                        newTop -= heightDiff;
+                    }
+                    
+                    newHeight = targetHeight;
+                }
+            }
+            
+            selectedElement.style.left = newLeft + 'px';
+            selectedElement.style.top = newTop + 'px';
+            selectedElement.style.width = newWidth + 'px';
+            selectedElement.style.height = newHeight + 'px';
+            
+            const originalState = elementOriginalState.get(selectedElement);
+            if (originalState && !originalState.isFocused) {
+                originalState.width = selectedElement.style.width;
+                originalState.height = selectedElement.style.height;
+                originalState.left = selectedElement.style.left;
+                originalState.top = selectedElement.style.top;
+            }
+        }
+
+        // File drag and drop with FIXED coordinate handling
+        let dragCounter = 0;
+
+        document.addEventListener('dragenter', (e) => {
+            if (e.dataTransfer.types.includes('Files')) {
+                e.preventDefault();
+                dragCounter++;
+                dragOverlay.classList.add('active');
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            if (e.dataTransfer.types.includes('Files')) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('dragleave', (e) => {
+            if (e.dataTransfer.types.includes('Files')) {
+                dragCounter--;
+                if (dragCounter <= 0) {
+                    dragCounter = 0;
+                    dragOverlay.classList.remove('active');
+                }
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length > 0) {
+                e.preventDefault();
+                e.stopPropagation();
+                dragCounter = 0;
+                dragOverlay.classList.remove('active');
+                
+                const files = Array.from(e.dataTransfer.files);
+                const screenPos = getEventPos(e);
+                const canvasPos = getCanvasPos(screenPos);
+                
+                files.forEach((file, index) => {
+                    if (file.type.startsWith('video/')) {
+                        createVideoElement(file, {
+                            x: canvasPos.x + (index * 30),
+                            y: canvasPos.y + (index * 30)
+                        });
+                    } else if (file.type.startsWith('image/')) {
+                        createImageElement(file, {
+                            x: canvasPos.x + (index * 30),
+                            y: canvasPos.y + (index * 30)
+                        });
+                    } else if (file.type === 'application/pdf') {
+                        createPdfElement(file, {
+                            x: canvasPos.x + (index * 30),
+                            y: canvasPos.y + (index * 30)
+                        });
+                    }
+                });
+            }
+        });
+
+        async function createVideoElement(file, pos) {
+            const fileId = 'video_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const fileData = await fileToBase64(file);
+            fileDataStore.set(fileId, fileData);
+            
+            const element = document.createElement('div');
+            element.className = 'canvas-element';
+            element.style.left = pos.x + 'px';
+            element.style.top = pos.y + 'px';
+            element.style.width = '320px';
+            element.style.height = '240px';
+            
+            const video = document.createElement('video');
+            video.controls = true;
+            video.preload = 'metadata';
+            video.muted = false;
+            video.src = fileData;
+            video.dataset.fileId = fileId;
+            
+            video.addEventListener('mousedown', (e) => {
+                const videoRect = video.getBoundingClientRect();
+                const controlsHeight = 40;
+                const isInControlsArea = e.clientY > (videoRect.bottom - controlsHeight);
+                
+                if (!isInControlsArea) {
+                    return;
+                }
+            });
+            
+            video.addEventListener('dragstart', (e) => {
+                e.preventDefault();
+            });
+            
+            element.appendChild(video);
+            addResizeHandles(element);
+            setupElementInteraction(element);
+            canvasContent.appendChild(element);
+            elements.push(element);
+            
+            setTimeout(() => storeOriginalState(element), 100);
+            selectElement(element);
+        }
+
+        async function createImageElement(file, pos) {
+            const fileId = 'image_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const fileData = await fileToBase64(file);
+            fileDataStore.set(fileId, fileData);
+            
+            const element = document.createElement('div');
+            element.className = 'canvas-element';
+            element.style.left = pos.x + 'px';
+            element.style.top = pos.y + 'px';
+            
+            const img = document.createElement('img');
+            img.src = fileData;
+            img.dataset.fileId = fileId;
+            
+            img.onload = () => {
+                const aspectRatio = img.naturalWidth / img.naturalHeight;
+                const maxWidth = 300;
+                const maxHeight = 200;
+                
+                if (aspectRatio > 1) {
+                    element.style.width = maxWidth + 'px';
+                    element.style.height = (maxWidth / aspectRatio) + 'px';
+                } else {
+                    element.style.height = maxHeight + 'px';
+                    element.style.width = (maxHeight * aspectRatio) + 'px';
+                }
+                
+                setTimeout(() => storeOriginalState(element), 100);
+            };
+            
+            element.appendChild(img);
+            addResizeHandles(element);
+            setupElementInteraction(element);
+            canvasContent.appendChild(element);
+            elements.push(element);
+            selectElement(element);
+        }
+
+        async function createPdfElement(file, pos) {
+            const fileId = 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const fileData = await fileToBase64(file);
+            fileDataStore.set(fileId, fileData);
+            
+            const element = document.createElement('div');
+            element.className = 'canvas-element pdf-element';
+            element.style.left = pos.x + 'px';
+            element.style.top = pos.y + 'px';
+            element.style.width = '150px';
+            element.style.height = '180px';
+            element.dataset.fileId = fileId;
+            element.dataset.fileName = file.name;
+            
+            // Create thumbnail view
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'pdf-thumbnail';
+            thumbnail.innerHTML = `
+                <span class="pdf-icon">📄</span>
+                <span class="pdf-name">${file.name}</span>
+            `;
+            
+            // Create expanded viewer
+            const viewer = document.createElement('div');
+            viewer.className = 'pdf-viewer';
+            
+            const embed = document.createElement('embed');
+            embed.className = 'pdf-embed';
+            embed.src = fileData;
+            embed.type = 'application/pdf';
+            viewer.appendChild(embed);
+            
+            // Create close button
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'pdf-close-btn';
+            closeBtn.innerHTML = '✕';
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                collapsePdf(element);
+            });
+            
+            element.appendChild(thumbnail);
+            element.appendChild(viewer);
+            element.appendChild(closeBtn);
+            
+            addResizeHandles(element);
+            setupElementInteraction(element);
+            setupPdfInteraction(element);
+            canvasContent.appendChild(element);
+            elements.push(element);
+            
+            setTimeout(() => storeOriginalState(element), 100);
+            selectElement(element);
+        }
+
+        function setupPdfInteraction(element) {
+            const thumbnail = element.querySelector('.pdf-thumbnail');
+            if (thumbnail) {
+                thumbnail.addEventListener('click', (e) => {
+                    if (currentTool === 'select' || currentTool === 'hand') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        expandPdf(element);
+                    }
+                });
+            }
+        }
+
+        function expandPdf(element) {
+            const originalState = elementOriginalState.get(element);
+            if (!originalState) return;
+            
+            // Store current state before expanding
+            if (!originalState.isFocused) {
+                originalState.width = element.style.width;
+                originalState.height = element.style.height;
+                originalState.left = element.style.left;
+                originalState.top = element.style.top;
+            }
+            
+            const canvasRect = canvas.getBoundingClientRect();
+            const maxHeight = canvasRect.height * 0.9;
+            const maxWidth = canvasRect.width * 0.9;
+            
+            // Use typical PDF aspect ratio (letter size)
+            const aspectRatio = 8.5 / 11;
+            let newWidth, newHeight;
+            
+            if (maxHeight * aspectRatio <= maxWidth) {
+                newHeight = maxHeight;
+                newWidth = maxHeight * aspectRatio;
+            } else {
+                newWidth = maxWidth;
+                newHeight = maxWidth / aspectRatio;
+            }
+            
+            const centerX = (canvasRect.width - newWidth) / 2 - panOffset.x;
+            const centerY = (canvasRect.height - newHeight) / 2 - panOffset.y;
+            
+            element.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            element.classList.add('focused', 'pdf-expanded');
+            element.style.left = centerX + 'px';
+            element.style.top = centerY + 'px';
+            element.style.width = newWidth + 'px';
+            element.style.height = newHeight + 'px';
+            
+            originalState.isFocused = true;
+            
+            setTimeout(() => {
+                element.style.transition = '';
+            }, 400);
+        }
+
+        function collapsePdf(element) {
+            const originalState = elementOriginalState.get(element);
+            if (!originalState) return;
+            
+            element.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            element.classList.remove('focused', 'pdf-expanded');
+            element.style.left = originalState.left;
+            element.style.top = originalState.top;
+            element.style.width = originalState.width;
+            element.style.height = originalState.height;
+            
+            originalState.isFocused = false;
+            
+            setTimeout(() => {
+                element.style.transition = '';
+            }, 400);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveProject();
+                return;
+            }
+            
+            if (e.key === 'Delete' && selectedElement && !isEditingText) {
+                // Clean up file data if it's a media element
+                const media = selectedElement.querySelector('img, video');
+                if (media && media.dataset.fileId) {
+                    fileDataStore.delete(media.dataset.fileId);
+                }
+                
+                // Clean up file data if it's a PDF element
+                if (selectedElement.classList.contains('pdf-element') && selectedElement.dataset.fileId) {
+                    fileDataStore.delete(selectedElement.dataset.fileId);
+                }
+                
+                elementOriginalState.delete(selectedElement);
+                selectedElement.remove();
+                elements = elements.filter(el => el !== selectedElement);
+                selectedElement = null;
+            }
+            
+            if (e.key === 'Escape') {
+                deselectAll();
+                currentTool = 'select';
+                updateToolButtons();
+                updateCursor();
+            }
+            
+            if (e.key === ' ' && !isEditingText) {
+                e.preventDefault();
+                panOffset = { x: 0, y: 0 };
+                canvasContent.style.transform = '';
+            }
+            
+            if (e.key === 'h' || e.key === 'H') {
+                if (!isInFullscreen && !isEditingText) {
+                    toggleToolbar();
+                }
+            }
+            
+            if (e.key === 'r' || e.key === 'R') {
+                if (!isEditingText) {
+                    // Reset view shortcut
+                    panOffset = { x: 0, y: 0 };
+                    canvasContent.style.transform = '';
+                    showExportNotification('View reset to center', 'success');
+                }
+            }
+        });
+
+        function updateToolButtons() {
+            toolButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === currentTool);
+            });
+        }
+
+        // Initialize
+        function initialize() {
+            updateCursor();
+            detectFullscreen();
+        }
+
+        // Start the app
+        initialize();
+
+        // About panel
+        function showCanvasAbout() { document.getElementById('canvasAboutOverlay').style.display = 'flex'; }
+        function hideCanvasAbout() { document.getElementById('canvasAboutOverlay').style.display = 'none'; }
+        function revealCanvasContact() {
+            const btn = document.getElementById('canvasContactBtn');
+            const parts = ['JoeOrangeAuthor', 'proton', 'me'];
+            const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+            btn.textContent = email;
+            btn.style.cursor = 'text';
+            btn.style.userSelect = 'text';
+            btn.style.background = 'transparent';
+            btn.style.color = '#f97316';
+            btn.style.fontWeight = 'bold';
+            btn.style.border = 'none';
+            btn.style.padding = '0';
+            btn.onclick = null;
+        }
+    </script>
+
+<div id="canvasAboutOverlay" onclick="hideCanvasAbout()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9000; justify-content:center; align-items:center; overflow-y:auto; padding:20px;">
+    <div onclick="event.stopPropagation()" style="background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.4); width:90%; max-width:600px; max-height:90vh; overflow-y:auto; position:relative; font-family:'Segoe UI',system-ui,sans-serif;">
+        <h2 style="margin:0 0 5px 0; color:#f97316; text-align:center;">Joe Orange Canvas</h2>
+        <p style="font-size:14px; color:#6b7280; margin-bottom:20px; text-align:center;">By author Joe Orange</p>
+
+        <h3 style="color:#f97316; margin-top:20px; margin-bottom:10px; text-align:center;">A Note from the Creator</h3>
+        <p style="margin-bottom:14px; line-height:1.6;">I built this canvas as a visual thinking space for writers — somewhere to pin images, sketch out story structure, map character relationships, or just think visually before you start writing. Sometimes a blank page needs a picture first.</p>
+        <p style="margin-bottom:14px; line-height:1.6;">It's completely free, runs in your browser, and saves everything locally. No accounts, no cloud, no nonsense.</p>
+        <p style="margin-bottom:14px; line-height:1.6;">When I'm not building tools, I write speculative fiction — sci-fi with a touch of horror. You can find my books and everything else at <a href="https://joeorange.com" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-weight:bold; text-decoration:none;">JoeOrange.com</a>.</p>
+
+        <div style="margin:20px 0; padding:15px; background:#f3f4f6; border-radius:8px; text-align:center;">
+            <p style="font-weight:bold; margin-bottom:10px;">Connect:</p>
+            <p style="margin:5px 0;"><a href="https://joeorange.com" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-weight:bold; text-decoration:none;">🌐 JoeOrange.com</a></p>
+            <p style="margin:5px 0;"><a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank" rel="noopener noreferrer" style="color:#2563eb; font-weight:bold; text-decoration:none;">📚 Joe's Books on Amazon</a></p>
+            <p style="margin:8px 0;">✉️ Feedback &amp; Questions: <button id="canvasContactBtn" onclick="revealCanvasContact()" style="background:#2563eb; color:white; border:none; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:14px;">Contact Me</button></p>
+        </div>
+
+        <button onclick="hideCanvasAbout()" style="background:#2563eb; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-size:14px; display:block; margin:10px auto 0;">Close</button>
+    </div>
+</div>
+
+</body>
+</html>

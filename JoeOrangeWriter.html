@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joe Orange's Writing App - Screenwriting & Text Editor</title>
+    <!-- Library for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f5f5f5;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+            overflow-y: scroll;
+        }
+
+        /* Custom scrollbar styling */
+        body::-webkit-scrollbar { width: 12px; }
+        body::-webkit-scrollbar-track { background: transparent; }
+        body::-webkit-scrollbar-thumb { background: transparent; border-radius: 6px; transition: background 0.3s ease; }
+        body:hover::-webkit-scrollbar-thumb { background: #9ca3af; }
+        body::-webkit-scrollbar-thumb:hover { background: #6b7280 !important; }
+
+        body.fullscreen { padding: 0; }
+        body.fullscreen .container { height: 100vh; margin: 0; box-shadow: none; padding-top: 80px; padding-bottom: 80px; }
+
+        .container {
+            position: relative; /* Needed for positioning page numbers */
+            max-width: 816px; /* Default page width */
+            margin: 0 auto;
+            background: white;
+            padding: 60px 72px; /* Default margins */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 90vh;
+        }
+
+        .toolbar { position: fixed; top: 20px; right: 20px; display: flex; flex-wrap: wrap; gap: 10px; z-index: 1000; transition: opacity 0.3s ease; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); opacity: 0; pointer-events: none; }
+        .toolbar.visible { opacity: 1; pointer-events: auto; }
+
+        .toolbar button { padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .toolbar button:hover { background: #1d4ed8; }
+        .toolbar button#settingsToggle { background: #64748b; padding: 10px; font-size: 16px; }
+        .toolbar button#settingsToggle:hover { background: #475569; }
+        .toolbar button.export-pdf { background: #10b981; }
+        .toolbar button.export-pdf:hover { background: #059669; }
+        .toolbar button#modeSwitchButton { background: #8b5cf6; }
+        .toolbar button#modeSwitchButton:hover { background: #7c3aed; }
+        .toolbar button.format-btn { background: #f59e0b; padding: 8px 12px; font-weight: bold; }
+        .toolbar button.format-btn:hover { background: #d97706; }
+
+
+        .element-type-indicator { position: fixed; bottom: 20px; left: 20px; padding: 10px 20px; background: #1f2937; color: white; border-radius: 5px; font-size: 14px; z-index: 1000; transition: opacity 0.3s ease; opacity: 0; pointer-events: none; }
+        .element-type-indicator.visible { opacity: 1; pointer-events: auto; }
+
+        .hover-area-right { position: fixed; top: 0; right: 0; width: 500px; height: 150px; z-index: 999; }
+        .hover-area-bottom-left { position: fixed; bottom: 0; left: 0; width: 350px; height: 150px; z-index: 999; }
+        
+        #script-content { outline: none; font-size: 16px; /* Default font size */ }
+        .line { position: relative; line-height: 1.5; min-height: 24px; outline: none; margin: 0; white-space: pre-wrap; }
+        .line .highlight { background-color: #fdba74; color: black; }
+        .line:focus { background: #fef3c7; }
+
+        .line[data-type="scene"] { 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            margin-top: 24px; 
+            padding-left: 50px; /* Space for left scene number */
+            padding-right: 50px; /* Space for right scene number */
+            margin-left: -50px; /* Pull back to align text */
+            margin-right: -50px; /* Pull back to align text */
+            position: relative;
+        }
+        .line[data-type="action"] { margin: 12px 0; }
+        .line[data-type="character"] { text-transform: uppercase; margin-left: 35%; margin-right: 15%; margin-top: 24px; margin-bottom: 0; }
+        .line[data-type="dialogue"] { margin-left: 20%; margin-right: 20%; margin-top: 0; margin-bottom: 0; }
+        .line[data-type="parenthetical"] { margin-left: 28%; margin-right: 28%; margin-top: 0; margin-bottom: 0; }
+        .line[data-type="transition"] { text-transform: uppercase; text-align: right; margin-top: 24px; }
+
+        .scene-number {
+            position: absolute;
+            top: 0;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .scene-number.left {
+            left: 0;
+        }
+        .scene-number.right {
+            right: 0;
+        }
+
+        body.text-editor-mode .line {
+            text-transform: none !important;
+            text-align: left !important;
+            font-weight: normal !important;
+            margin: 0 0 12px 0 !important;
+            padding: 0 !important;
+        }
+
+        .autocomplete-dropdown { position: absolute; background: white; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+        .autocomplete-item { padding: 8px 12px; cursor: pointer; }
+        .autocomplete-item:hover, .autocomplete-item.selected { background: #e5e7eb; }
+
+        .management-panel, .settings-panel { position: fixed; top: 0; width: 350px; height: 100vh; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; z-index: 2000; overflow-y: auto; padding: 20px; }
+        .management-panel { right: 0; transform: translateX(100%); }
+        .management-panel.open { transform: translateX(0); }
+        .settings-panel { left: 0; transform: translateX(-100%); }
+        .settings-panel.open { transform: translateX(0); }
+        .management-panel h2, .settings-panel h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; }
+        .management-section { margin-bottom: 30px; }
+        .management-section h3 { margin-bottom: 10px; font-size: 16px; color: #1f2937; }
+        .element-list { border: 1px solid #e5e7eb; border-radius: 5px; max-height: 200px; overflow-y: auto; }
+        .element-item { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .element-item:last-child { border-bottom: none; }
+        .element-item:hover { background: #f9fafb; }
+        .element-name { flex: 1; font-size: 14px; }
+        .delete-btn { background: #ef4444; color: white; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .delete-btn:hover { background: #dc2626; }
+        .close-panel-btn { position: absolute; top: 20px; right: 20px; background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
+        .close-panel-btn:hover { background: #4b5563; }
+        .empty-message { padding: 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+        .setting-group { margin-bottom: 25px; }
+        .setting-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: bold; color: #1f2937; }
+        .color-option { display: inline-block; width: 40px; height: 40px; border-radius: 5px; margin-right: 10px; cursor: pointer; border: 3px solid transparent; transition: border 0.2s ease; }
+        .color-option:hover { border-color: #2563eb; }
+        .color-option.selected { border-color: #2563eb; box-shadow: 0 0 0 2px white, 0 0 0 4px #2563eb; }
+        .fullscreen-btn { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .fullscreen-btn:hover { background: #059669; }
+        .import-fountain-section textarea { width: 100%; height: 150px; font-family: 'Courier New', Courier, monospace; font-size: 12px; padding: 10px; border: 1px solid #d1d5db; border-radius: 5px; resize: vertical; }
+        .import-btn { width: 100%; padding: 10px; background: #8b5cf6; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+        .import-btn:hover { background: #7c3aed; }
+        .title-page { text-align: center; margin-bottom: 60px; }
+        .title-page input { font-family: 'Courier New', Courier, monospace; font-size: 24px; font-weight: bold; text-align: center; border: none; outline: none; width: 100%; margin: 10px 0; background: transparent; }
+        .title-page input:focus { background: #fef3c7; }
+        #script-content { margin-top: 40px; }
+        .toggle-switch { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+        .toggle-switch label { font-weight: normal !important; margin-bottom: 0 !important; }
+        .toggle-switch .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .toggle-switch .switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .toggle-switch .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .toggle-switch input:checked + .slider { background-color: #2563eb; }
+        .toggle-switch input:checked + .slider:before { transform: translateX(26px); }
+        .screen-info { position: fixed; bottom: 20px; right: 20px; background: #1f2937; color: white; padding: 10px 15px; border-radius: 5px; font-size: 14px; z-index: 1000; transition: opacity 0.3s ease; opacity: 0; pointer-events: none; }
+        .screen-info.visible { opacity: 1; pointer-events: auto; }
+        body.fullscreen .screen-info { right: 20px; bottom: 20px; }
+        .find-replace-panel { position: fixed; top: 80px; right: 20px; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1001; display: none; width: 300px; }
+        .find-replace-panel.open { display: block; }
+        .find-replace-panel input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 3px; font-family: 'Courier New', Courier, monospace; }
+        .find-replace-panel button { padding: 8px 12px; margin-right: 5px; border: none; border-radius: 3px; cursor: pointer; }
+        .find-replace-panel .find-btn { background: #2563eb; color: white; }
+        .find-replace-panel .replace-btn { background: #10b981; color: white; }
+        .find-replace-panel .close-btn { background: #6b7280; color: white; float: right; }
+        
+        /* PRESET BUTTONS */
+        .preset-btn { padding: 10px; border-radius: 5px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; text-align: left; font-size: 13px; }
+        .preset-btn:hover { opacity: 0.8; }
+
+        /* SCENE NAVIGATION PANEL */
+        #sceneNavPanel { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #1f2937; color: white; box-shadow: 0 0 15px rgba(0,0,0,0.3); transform: translateX(-100%); transition: transform 0.3s ease; z-index: 2002; display: flex; flex-direction: column; }
+        #sceneNavPanel.open { transform: translateX(0); }
+        .scene-nav-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #111827; }
+        .scene-nav-header h2 { margin: 0; font-size: 18px; }
+        .scene-nav-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
+        .scene-nav-item { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid #374151; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .scene-nav-item:hover { background: #4b5563; }
+        .scene-nav-item:last-child { border-bottom: none; }
+        .nav-panel-info { padding: 15px 20px; font-size: 13px; color: #9ca3af; background: #111827; border-top: 1px solid #374151; }
+        
+        /* PAGE BREAK & NUMBER STYLES */
+        .page-break { border: 0; border-top: 2px dashed #ccc; margin: 24px 0; text-align: center; position: relative; }
+        .page-break::after { content: attr(data-page-num); color: #aaa; font-size: 12px; display: inline-block; background: white; padding: 0 10px; position: relative; top: -8px; }
+        body.hide-page-breaks .page-break { display: none; }
+
+        .page-number-on-screen {
+            position: absolute;
+            right: 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px; /* Increased for better visibility */
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        /* STICKY NOTES */
+        .note-anchor { background-color: rgba(254, 240, 138, 0.3); border-bottom: 2px solid #ca8a04; cursor: pointer; }
+        .note-anchor:hover { background-color: rgba(254, 240, 138, 0.5); }
+        .sticky-note { position: absolute; min-width: 250px; background: #fef08a; border: 2px solid #ca8a04; border-radius: 8px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 100; cursor: move; font-family: 'Arial', sans-serif; resize: both; overflow: auto; }
+        .sticky-note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #ca8a04; }
+        .sticky-note-drag-handle { cursor: move; font-weight: bold; color: #92400e; font-size: 12px; }
+        .sticky-note-delete { background: #dc2626; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 11px; }
+        .sticky-note-delete:hover { background: #b91c1c; }
+        .sticky-note-content { width: 100%; min-height: 80px; border: 1px solid #d97706; border-radius: 4px; padding: 6px; font-size: 13px; resize: none; background: #fffbeb; font-family: 'Courier New', Courier, monospace; }
+        .sticky-note-line { position: absolute; pointer-events: none; z-index: 99; }
+        .sticky-note-arrow { position: absolute; width: 20px; height: 20px; background: #ca8a04; border-radius: 50%; cursor: grab; z-index: 101; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .sticky-note-arrow:hover { background: #b45309; }
+        .sticky-note-arrow::before { content: '▶'; }
+        .sticky-note.dark-note .sticky-note-content { background: #1f2937; color: white; border-color: #4b5563; }
+        .sticky-note.dark-note .sticky-note-drag-handle { color: #d1d5db; }
+        .sticky-note.dark-note .sticky-note-header { border-bottom-color: #4b5563; }
+
+        /* ABOUT & HELP PANEL STYLES */
+        .about-overlay, .help-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; justify-content: center; align-items: center; overflow-y: auto; padding: 20px; }
+        .about-panel, .help-panel { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .about-panel h2, .help-panel h2 { margin-top: 0; margin-bottom: 5px; color: #f97316; text-align: center;}
+        .about-panel h3, .help-panel h3 { color: #2563eb; margin-top: 25px; margin-bottom: 10px; }
+        .about-panel p, .help-panel p, .help-panel li { margin-bottom: 15px; line-height: 1.6; text-align: left; }
+        .about-panel a, .help-panel a { color: #2563eb; text-decoration: none; font-weight: bold; }
+        .about-panel a:hover, .help-panel a:hover { text-decoration: underline; }
+        .about-panel .close-about-btn, .help-panel .close-help-btn { background: #2563eb; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; display: block; margin-left: auto; margin-right: auto;}
+        .about-panel .close-about-btn:hover, .help-panel .close-help-btn:hover { background: #1d4ed8; }
+        .help-panel ul { padding-left: 20px; }
+        .help-panel .code { background: #eee; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; }
+
+    </style>
+</head>
+<body>
+    <div id="sceneNavPanel">
+        <div class="scene-nav-header">
+            <h2 id="navPanelTitle">Scene Navigation</h2>
+            <button class="close-panel-btn" onclick="toggleSceneNavPanel()">×</button>
+        </div>
+        <ul class="scene-nav-list" id="sceneNavList"></ul>
+    </div>
+    
+    <div class="hover-area-right" id="hoverAreaRight"></div>
+    <div class="hover-area-bottom-left" id="hoverAreaBottomLeft"></div>
+    
+    <div class="toolbar" id="toolbar">
+        <button id="settingsToggle" onclick="toggleSettingsPanel()" title="Settings">⚙️</button>
+        <button id="modeSwitchButton" onclick="toggleMode()">Switch to Text Editor</button>
+        <button onclick="newDocument()">New</button>
+        <button onclick="loadScript()">Load</button>
+        <button id="navPanelButton" onclick="toggleSceneNavPanel()">Scenes</button>
+        <button id="manageButton" onclick="toggleManagementPanel()">Manage</button>
+        <button onclick="toggleFindReplacePanel()">Find/Replace</button>
+        <button onclick="selectAllAndFocus()">Select All</button>
+        <button class="format-btn" onclick="formatBold()" title="Bold (Ctrl+B)"><strong>B</strong></button>
+        <button class="format-btn" onclick="formatItalic()" title="Italic (Ctrl+I)"><em>I</em></button>
+        <button class="format-btn" onclick="formatUnderline()" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button class="format-btn" onclick="formatStrikethrough()" title="Strikethrough"><s>S</s></button>
+        <button class="format-btn" onclick="formatHighlight()" title="Highlight" style="background: #fbbf24;">🖍️</button>
+        <button class="format-btn" onclick="formatCenter()" title="Center">⊶⊷</button>
+        <button class="format-btn" onclick="addNote()" title="Add Note. Tip: Select text first to anchor it.">📝 Note</button>
+        <button onclick="exportScript()">Export JSON</button>
+        <button id="exportTextButton" onclick="exportAsText()">Export as .fountain</button>
+        <button class="export-pdf" onclick="exportPDF()">Export PDF</button>
+        <button onclick="showHelpPanel()">Help</button>
+        <button onclick="showAboutPanel()">About</button>
+    </div>
+
+    <div class="element-type-indicator" id="typeIndicator">Action</div>
+
+    <div class="container" id="pageContainer">
+        <div class="title-page">
+            <input type="text" id="scriptTitle" placeholder="SCRIPT TITLE" />
+            <input type="text" id="scriptAuthor" placeholder="Written by" style="font-size: 14px;" />
+        </div>
+
+        <div id="script-content" contenteditable="true">
+            <div class="line" data-type="scene">WELCOME TO JOE ORANGE'S WRITING APP</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">This is SCREENWRITING MODE. Press TAB to cycle through element types: Scene → Action → Character → Dialogue → Parenthetical → Transition.</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">GETTING STARTED</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">Click "New" in the toolbar above to start with a blank screenplay. This help text will be replaced.</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">FILE OPERATIONS</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">LOAD - Open .fountain, .txt, or .json files</div>
+            <div class="line" data-type="action">EXPORT JSON - Save with formatting (bold/italic/underline) and all settings preserved</div>
+            <div class="line" data-type="action">EXPORT AS .FOUNTAIN - Save in Fountain screenplay format (plain text, no formatting)</div>
+            <div class="line" data-type="action">EXPORT PDF - Create a professionally formatted PDF</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">FORMATTING</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">Use the orange B, I, U buttons or Ctrl+B, Ctrl+I, Ctrl+U for bold, italic, underline</div>
+            <div class="line" data-type="action">Center button centers the current line</div>
+            <div class="line" data-type="action">📝 Note button creates sticky notes you can drag anywhere and write in</div>
+            <div class="line" data-type="action">NOTE: Formatting and notes only saved in JSON exports, not in .fountain or .txt exports</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">SCREENPLAY FEATURES</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">SCENES - Navigate between scene headings</div>
+            <div class="line" data-type="action">MANAGE - View and delete character names and scene headings from autocomplete</div>
+            <div class="line" data-type="action">FIND/REPLACE - Search and replace text throughout your script</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">IMPORTING</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">You can import .fountain files via Load button or paste Fountain text in Settings → Import Fountain Format</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="scene">CUSTOMIZATION</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">Click Settings (gear icon) to customize:</div>
+            <div class="line" data-type="action">- Retro Display Presets (MS-DOS, Amber Phosphor, Green CRT, etc.)</div>
+            <div class="line" data-type="action">- Background and paper colors</div>
+            <div class="line" data-type="action">- Text size, margins, page width</div>
+            <div class="line" data-type="action">- Fullscreen mode</div>
+            <div class="line" data-type="action"></div>
+            <div class="line" data-type="action">Ready to write? Click "New" to start fresh, or start typing to replace this text!</div>
+        </div>
+
+        <div class="autocomplete-dropdown" id="autocomplete"></div>
+        
+        <div class="settings-panel" id="settingsPanel">
+            <button class="close-panel-btn" onclick="toggleSettingsPanel()">Close</button>
+            <h2>Settings</h2>
+            <div class="setting-group">
+                <div class="toggle-switch">
+                    <label for="pinUIToggle">Pin UI Elements</label>
+                    <label class="switch"><input type="checkbox" id="pinUIToggle" onchange="toggleUIPin(this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-switch">
+                    <label for="screenInfoToggle">Show Word/Page Count</label>
+                    <label class="switch"><input type="checkbox" id="screenInfoToggle" onchange="toggleScreenInfo(this.checked)" checked><span class="slider"></span></label>
+                </div>
+                <div class="toggle-switch">
+                    <label for="pageBreaksToggle">Show Page Breaks</label>
+                    <label class="switch"><input type="checkbox" id="pageBreaksToggle" onchange="togglePageBreaks(this.checked)" checked><span class="slider"></span></label>
+                </div>
+                <div class="toggle-switch">
+                    <label for="sceneNumbersToggle">Show Scene Numbers</label>
+                    <label class="switch"><input type="checkbox" id="sceneNumbersToggle" onchange="toggleSceneNumbers(this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-switch">
+                    <label for="pageNumbersToggle">Show Page Numbers</label>
+                    <label class="switch"><input type="checkbox" id="pageNumbersToggle" onchange="togglePageNumbers(this.checked)"><span class="slider"></span></label>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label>Retro Display Presets</label>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="preset-btn" onclick="applyPreset('msdos')" style="background: #000080; color: #c0c0c0; border: 1px solid #808080;">MS-DOS Blue</button>
+                    <button class="preset-btn" onclick="applyPreset('amber')" style="background: #000000; color: #ffb000; border: 1px solid #ffb000;">Amber Phosphor</button>
+                    <button class="preset-btn" onclick="applyPreset('green')" style="background: #0a0a0a; color: #33ff33; border: 1px solid #33ff33;">Green CRT</button>
+                    <button class="preset-btn" onclick="applyPreset('wordstar')" style="background: #000000; color: #ffffff; border: 1px solid #ffffff;">WordStar B&W</button>
+                    <button class="preset-btn" onclick="applyPreset('paper')" style="background: #fdf6e3; color: #657b83; border: 1px solid #93a1a1;">Paper (Solarized)</button>
+                    <button class="preset-btn" onclick="applyPreset('night')" style="background: #1e1e1e; color: #d4d4d4; border: 1px solid #404040;">Night Mode</button>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label>Background Color</label>
+                <div>
+                    <div class="color-option bg-color" style="background: #f5f5f5;" data-color="#f5f5f5" onclick="changeBackgroundColor('#f5f5f5')"></div>
+                    <div class="color-option bg-color" style="background: #ffffff;" data-color="#ffffff" onclick="changeBackgroundColor('#ffffff')"></div>
+                    <div class="color-option bg-color" style="background: #fef3c7;" data-color="#fef3c7" onclick="changeBackgroundColor('#fef3c7')"></div>
+                    <div class="color-option bg-color" style="background: #dbeafe;" data-color="#dbeafe" onclick="changeBackgroundColor('#dbeafe')"></div>
+                    <div class="color-option bg-color" style="background: #d1fae5;" data-color="#d1fae5" onclick="changeBackgroundColor('#d1fae5')"></div>
+                    <div class="color-option bg-color" style="background: #1f2937;" data-color="#1f2937" onclick="changeBackgroundColor('#1f2937')"></div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>Paper Color</label>
+                <div>
+                    <div class="color-option paper-color" style="background: #f5f5f5;" data-color="#f5f5f5" onclick="changePaperColor('#f5f5f5')"></div>
+                    <div class="color-option paper-color" style="background: #ffffff;" data-color="#ffffff" onclick="changePaperColor('#ffffff')"></div>
+                    <div class="color-option paper-color" style="background: #fef3c7;" data-color="#fef3c7" onclick="changePaperColor('#fef3c7')"></div>
+                    <div class="color-option paper-color" style="background: #dbeafe;" data-color="#dbeafe" onclick="changePaperColor('#dbeafe')"></div>
+                    <div class="color-option paper-color" style="background: #d1fae5;" data-color="#d1fae5" onclick="changePaperColor('#d1fae5')"></div>
+                    <div class="color-option paper-color" style="background: #1f2937;" data-color="#1f2937" onclick="changePaperColor('#1f2937')"></div>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label for="fontSizeSlider">Text Size: <span id="fontSizeValue">16</span>px</label>
+                <input type="range" id="fontSizeSlider" min="12" max="24" value="16" step="1" 
+                       onchange="updateFontSize()" oninput="updateFontSizeDisplay()"
+                       style="width: 100%; cursor: pointer;">
+            </div>
+            
+            <div class="setting-group">
+                <label for="marginSlider">Margin Width: <span id="marginValue">72</span>px</label>
+                <input type="range" id="marginSlider" min="20" max="150" value="72" step="1" 
+                       onchange="updateMargins()" oninput="updateMarginDisplay()"
+                       style="width: 100%; cursor: pointer;">
+            </div>
+
+            <div class="setting-group">
+                <label for="pageWidthSlider">Page Width: <span id="pageWidthValue">816</span>px</label>
+                <input type="range" id="pageWidthSlider" min="600" max="1200" value="816" step="1" 
+                       onchange="updatePageWidth()" oninput="updatePageWidthDisplay()"
+                       style="width: 100%; cursor: pointer;">
+            </div>
+            
+            <div class="setting-group">
+                <label>Sticky Note Colors</label>
+                <div class="toggle-switch" style="margin-bottom: 10px;">
+                    <label for="matchNoteColorToggle">Match Writing Area</label>
+                    <label class="switch"><input type="checkbox" id="matchNoteColorToggle" onchange="toggleMatchNoteColor(this.checked)"><span class="slider"></span></label>
+                </div>
+                <div id="noteColorPicker">
+                    <div class="color-option note-color" style="background: #fef08a; border: 2px solid #ca8a04;" data-bg="#fef08a" data-border="#ca8a04" onclick="changeNoteColor('#fef08a', '#ca8a04')"></div>
+                    <div class="color-option note-color" style="background: #dbeafe; border: 2px solid #2563eb;" data-bg="#dbeafe" data-border="#2563eb" onclick="changeNoteColor('#dbeafe', '#2563eb')"></div>
+                    <div class="color-option note-color" style="background: #d1fae5; border: 2px solid #10b981;" data-bg="#d1fae5" data-border="#10b981" onclick="changeNoteColor('#d1fae5', '#10b981')"></div>
+                    <div class="color-option note-color" style="background: #fecaca; border: 2px solid #ef4444;" data-bg="#fecaca" data-border="#ef4444" onclick="changeNoteColor('#fecaca', '#ef4444')"></div>
+                    <div class="color-option note-color" style="background: #e9d5ff; border: 2px solid #a855f7;" data-bg="#e9d5ff" data-border="#a855f7" onclick="changeNoteColor('#e9d5ff', '#a855f7')"></div>
+                    <div class="color-option note-color" style="background: #1f2937; border: 2px solid #9ca3af;" data-bg="#1f2937" data-border="#9ca3af" onclick="changeNoteColor('#1f2937', '#9ca3af')"></div>
+                    <div class="color-option note-color" style="background: #ffffff; border: 2px solid #d1d5db;" data-bg="#ffffff" data-border="#d1d5db" onclick="changeNoteColor('#ffffff', '#d1d5db')"></div>
+                    <div class="color-option note-color" style="background: #000000; border: 2px solid #6b7280;" data-bg="#000000" data-border="#6b7280" onclick="changeNoteColor('#000000', '#6b7280')"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <button class="fullscreen-btn" onclick="toggleFullscreen()">Toggle Fullscreen Mode</button>
+            </div>
+            <div class="import-fountain-section">
+                <label>Import Fountain Format</label>
+                <textarea id="fountainInput" placeholder="Paste Fountain text here..."></textarea>
+                <button class="import-btn" onclick="importFountain()">Import Fountain</button>
+            </div>
+        </div>
+        
+        <div class="management-panel" id="managementPanel">
+            <button class="close-panel-btn" onclick="toggleManagementPanel()">Close</button>
+            <h2>Manage Script Elements</h2>
+            <div class="management-section">
+                <h3>Characters</h3>
+                <div class="element-list" id="characterList"></div>
+            </div>
+            <div class="management-section">
+                <h3>Scene Headings</h3>
+                <div class="element-list" id="sceneList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="fileInput" style="display: none;" accept=".json,.fountain,.txt" />
+
+    <div class="screen-info" id="screenInfo">
+        <span id="pageCount">Page: 1</span> | <span id="wordCount">Words: 0</span>
+    </div>
+
+    <div class="find-replace-panel" id="findReplacePanel">
+        <button class="close-btn" onclick="toggleFindReplacePanel()">×</button>
+        <input type="text" id="findInput" placeholder="Find...">
+        <input type="text" id="replaceInput" placeholder="Replace with...">
+        <button class="find-btn" onclick="findNext()">Find Next</button>
+        <button class="replace-btn" onclick="replaceCurrent()">Replace</button>
+        <button class="replace-btn" onclick="replaceAll()">Replace All</button>
+    </div>
+
+    <div class="about-overlay" id="aboutOverlay" onclick="hideAboutPanel()">
+        <div class="about-panel" onclick="event.stopPropagation()">
+            <h2>Joe Orange's Writing App</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px; text-align: center;">By author Joe Orange • A writing app for writers, by a writer</p>
+            
+            <h3 style="font-size: 16px; margin-bottom: 10px; text-align: center;">A Note from the Creator</h3>
+            <p>
+                As a writer, I wanted a tool that got out of the way. This app was designed to provide a distraction-free space while still including the key functions I've found genuinely helpful over twenty years of writing.
+            </p>
+            <p>
+                You won't find feature-bloat here—just a clean writing space, easy formatting, and a simple way to jot down notes. It's built to let you jump straight into your story, whether you're working on a novel or a screenplay.
+            </p>
+             <p>
+                I hope you find it helpful. The app is completely free and open-source. If you'd like to show your support, you can visit my website or check out my speculative fiction, which blends sci-fi with a touch of horror.
+            </p>
+            
+            <div style="margin: 20px 0; padding: 15px; background: #fef3c7; border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-weight: bold;">Support & Connect:</p>
+                <p style="margin: 5px 0;"><a href="https://joeorange.com" target="_blank" rel="noopener noreferrer">🌐 Visit JoeOrange.com</a></p>
+                <p style="margin: 5px 0;"><a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank" rel="noopener noreferrer">📚 Check out Joe's Books on Amazon</a></p>
+                <p style="margin: 5px 0;">✉️ Feedback & Questions: <button id="writerContactBtn" onclick="revealWriterContact()" style="background: #2563eb; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">Contact Me</button></p>
+            </div>
+            
+            <button class="close-about-btn" onclick="hideAboutPanel()">Close</button>
+        </div>
+    </div>
+    
+    <div class="help-overlay" id="helpOverlay" onclick="hideHelpPanel()">
+        <div class="help-panel" onclick="event.stopPropagation()">
+            <h2>Joe Orange's Writing App - Help Guide</h2>
+            
+            <h3>Two Modes: Screenwriter & Text Editor</h3>
+            <p>This app has two distinct modes. Switch between them using the <span class="code">Switch to...</span> button in the toolbar.</p>
+            <ul>
+                <li><strong>Screenwriting Mode:</strong> Formatted for professional screenplays. Press the <span class="code">Tab</span> key to cycle through element types (Scene Heading, Action, Character, etc.).</li>
+                <li><strong>Text Editor Mode:</strong> A simple, clean environment for writing novels, articles, or notes. All screenplay-specific formatting is disabled.</li>
+            </ul>
+
+            <h3>Core Features</h3>
+            <ul>
+                <li><strong>File Management:</strong> Use the toolbar buttons to create a <span class="code">New</span> document, <span class="code">Load</span> a file from your computer, or <span class="code">Export</span> your work.</li>
+                <li><strong>Exporting:</strong>
+                    <ul>
+                        <li><span class="code">Export JSON:</span> The best way to save. This preserves all text formatting, sticky notes, and your custom settings.</li>
+                        <li><span class="code">Export as .fountain/.txt:</span> Saves a plain text version of your document, compatible with other software. Formatting and notes are NOT saved.</li>
+                        <li><span class="code">Export PDF:</span> Creates a professionally formatted PDF of your script or document for printing or sharing.</li>
+                    </ul>
+                </li>
+                <li><strong>Sticky Notes (📝):</strong> Add a note anywhere on the page for your own reference.
+                    <br><strong>PRO TIP:</strong> First, select some text with your mouse, then click the note button. The new note will be anchored to your selection!
+                </li>
+            </ul>
+
+            <h3>Navigation & Tools</h3>
+            <ul>
+                <li><strong>Scenes / Chapters Button:</strong> In Screenwriting Mode, this opens a panel to quickly navigate between all your scene headings. In Text Editor Mode, it navigates between chapters. To create a chapter, simply start a line with a hashtag (e.g., <span class="code"># Chapter One</span>).</li>
+                <li><strong>Manage Button:</strong> (Screenwriting Mode only) View and remove character names or scene headings from the autocomplete suggestion list.</li>
+                <li><strong>Find/Replace:</strong> A powerful tool to search for words or phrases and replace them throughout your entire document.</li>
+            </ul>
+
+            <h3>Customization (⚙️ Settings)</h3>
+            <p>Click the gear icon in the toolbar to open the Settings panel. Here you can:</p>
+            <ul>
+                <li>Apply retro display presets (like MS-DOS or Green CRT).</li>
+                <li>Change the background and paper colors.</li>
+                <li>Adjust the text size, margins, and overall page width.</li>
+                <li>Toggle Scene and Page Numbering on-screen and for PDF exports.</li>
+                <li>Enter a distraction-free Fullscreen mode.</li>
+            </ul>
+            
+            <button class="close-help-btn" onclick="hideHelpPanel()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        const scriptContent = document.getElementById('script-content');
+        const pageContainer = document.getElementById('pageContainer');
+        const autocompleteDropdown = document.getElementById('autocomplete');
+        const typeIndicator = document.getElementById('typeIndicator');
+        const elementCycle = ['scene', 'action', 'character', 'dialogue', 'parenthetical', 'transition'];
+        const sceneNavPanel = document.getElementById('sceneNavPanel');
+        const SCENE_KEYWORDS = ['INT.', 'EXT.', 'INT./EXT.', 'DAY', 'NIGHT', 'MORNING', 'AFTERNOON', 'EVENING', 'LATER', 'CONTINUOUS'];
+        let characters = new Set();
+        let sceneLocations = new Set();
+        let autocompleteVisible = false;
+        let autocompleteIndex = -1;
+        let managementPanelOpen = false;
+        let settingsPanelOpen = false;
+        let sceneNavPanelOpen = false;
+        let isFullscreen = false;
+        let uiHideTimeout = null;
+        let isUIPinned = false;
+        let showScreenInfo = true;
+        let showPageBreaks = true;
+        let showSceneNumbers = false;
+        let showPageNumbers = false;
+        let findReplacePanelOpen = false;
+        let lastFoundRange = null;
+        let currentBgColor = '#f5f5f5';
+        let currentPaperColor = '#ffffff';
+        let currentFontSize = '16';
+        let currentMargin = '72';
+        let currentPageWidth = '816';
+        let currentFilename = ''; // Track the current file name
+        let stickyNotes = []; // Array to store all sticky notes
+        let noteIdCounter = 0; // Counter for unique note IDs
+        let currentNoteBgColor = '#fef08a'; // Default yellow note background
+        let currentNoteBorderColor = '#ca8a04'; // Default yellow note border
+        let matchNoteToWritingArea = false; // Match note colors to paper
+
+        let currentMode = 'text-editor'; // Can be 'screenwriting' or 'text'
+        let currentAutocompleteCallback = null; // Store the current autocomplete selection callback
+        let currentAutocompleteLine = null; // Store the current line for autocomplete
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verify critical elements exist
+            if (!autocompleteDropdown) {
+                console.error('CRITICAL: Autocomplete dropdown element not found on initialization!');
+            } else {
+                console.log('Autocomplete dropdown element found successfully');
+            }
+            if (!scriptContent) {
+                console.error('CRITICAL: Script content element not found!');
+            }
+            
+            const savedScript = localStorage.getItem('screenplay');
+            if (savedScript) { loadFromLocalStorage(); } else { switchToTextEditor(); updateAllVisuals(); }
+            loadSettings();
+            
+            const uiHoverAreas = [document.getElementById('toolbar'), document.getElementById('typeIndicator'), document.getElementById('hoverAreaRight'), document.getElementById('hoverAreaBottomLeft'), document.getElementById('screenInfo')];
+            uiHoverAreas.forEach(el => {
+                el.addEventListener('mouseenter', showUI);
+                el.addEventListener('mouseleave', hideUIWithDelay);
+            });
+            ensureContentStructure();
+            
+            console.log('Initialization complete. Current mode:', currentMode);
+        });
+
+        // --- Core Mode-Switching Logic ---
+        function toggleMode() {
+            if (confirm('Switching modes may affect formatting. Continue?')) {
+                currentMode === 'screenwriting' ? switchToTextEditor() : switchToScreenwriting();
+            }
+        }
+
+        function switchToTextEditor() {
+            currentMode = 'text';
+            document.body.classList.add('text-editor-mode');
+            hideAutocomplete();
+            
+            const firstLine = scriptContent.querySelector('.line');
+            if (firstLine && firstLine.textContent.includes('WELCOME TO JOE ORANGE')) {
+                scriptContent.innerHTML = `
+                    <div class="line"><strong>WELCOME TO TEXT EDITOR MODE</strong></div>
+                    <div class="line"></div>
+                    <div class="line">This is TEXT EDITOR MODE - perfect for writing novels, articles, notes, or any general writing.</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>GETTING STARTED</strong></div>
+                    <div class="line"></div>
+                    <div class="line">Click "New" in the toolbar to start with a blank page. This help text will be replaced.</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>FILE OPERATIONS</strong></div>
+                    <div class="line"></div>
+                    <div class="line">LOAD - Open .txt or .json files</div>
+                    <div class="line">EXPORT JSON - Save with formatting (bold/italic/underline/center) and all settings preserved</div>
+                    <div class="line">EXPORT AS .TXT - Save as plain text file (formatting will NOT be preserved)</div>
+                    <div class="line">EXPORT PDF - Create a PDF with your formatting preserved</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>FORMATTING</strong></div>
+                    <div class="line"></div>
+                    <div class="line">Use the orange formatting buttons or keyboard shortcuts:</div>
+                    <div class="line">• <strong>B</strong> or Ctrl+B - Bold text</div>
+                    <div class="line">• <em>I</em> or Ctrl+I - Italic text</div>
+                    <div class="line">• <u>U</u> or Ctrl+U - Underline text</div>
+                    <div class="line">• Center button - Center align the current line</div>
+                    <div class="line">• 📝 Note button - Create draggable sticky notes for writer notes</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>IMPORTANT:</strong> Formatting and notes are only saved when you export as JSON. Plain .txt exports will lose all formatting and notes!</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>CHAPTER NAVIGATION</strong></div>
+                    <div class="line"></div>
+                    <div class="line">Start a line with # to mark it as a chapter heading. Use the "Chapters" button to navigate between them.</div>
+                    <div class="line">Example: # Chapter One</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>OTHER FEATURES</strong></div>
+                    <div class="line"></div>
+                    <div class="line">FIND/REPLACE - Search and replace text throughout your document</div>
+                    <div class="line">SELECT ALL - Select all text (or use Ctrl+A)</div>
+                    <div class="line"></div>
+                    <div class="line"><strong>CUSTOMIZATION (Settings)</strong></div>
+                    <div class="line"></div>
+                    <div class="line">Click the Settings gear icon to customize:</div>
+                    <div class="line">• Retro Display Presets - MS-DOS Blue, Amber Phosphor, Green CRT, Paper mode, Night mode</div>
+                    <div class="line">• Background and paper colors - Choose from various color schemes</div>
+                    <div class="line">• Text size - Adjust for your comfort (12-24px)</div>
+                    <div class="line">• Margins - Customize left/right margins (20-150px)</div>
+                    <div class="line">• Page width - Adjust document width (600-1200px)</div>
+                    <div class="line">• Fullscreen mode - Distraction-free writing</div>
+                    <div class="line">• Pin UI Elements - Keep toolbar always visible</div>
+                    <div class="line"></div>
+                    <div class="line">Ready to write? Click "New" to start fresh, or start typing to replace this text!</div>
+                `;
+            }
+            
+            updateUIVisibility();
+            saveToLocalStorage();
+        }
+
+        function switchToScreenwriting() {
+            // Get the current content as plain text
+            const lines = Array.from(scriptContent.querySelectorAll('.line'));
+            const plainText = lines.map(line => line.textContent).join('\n');
+
+            // Parse the plain text using the Fountain parser
+            const parsedData = parseFountain(plainText);
+            
+            // Rebuild the script content with formatted lines
+            scriptContent.innerHTML = ''; // Clear existing content
+            if (parsedData.lines && parsedData.lines.length > 0) {
+                const newHTML = parsedData.lines.map(line => {
+                    const textContent = line.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    return `<div class="line" data-type="${line.type || 'action'}">${textContent}</div>`;
+                }).join('');
+                scriptContent.innerHTML = newHTML;
+            } else {
+                ensureContentStructure();
+            }
+
+            // Finalize the switch
+            currentMode = 'screenwriting';
+            document.body.classList.remove('text-editor-mode');
+            updateUIVisibility();
+            updateAllVisuals();
+            saveToLocalStorage();
+        }
+
+        function updateUIVisibility() {
+            const isTextMode = currentMode === 'text';
+            const modeSwitchButton = document.getElementById('modeSwitchButton');
+            const navPanelButton = document.getElementById('navPanelButton');
+            const manageButton = document.getElementById('manageButton');
+            const titleInput = document.getElementById('scriptTitle');
+            const exportTextButton = document.getElementById('exportTextButton');
+
+            modeSwitchButton.textContent = isTextMode ? 'Switch to Screenwriter' : 'Switch to Text Editor';
+            manageButton.style.display = isTextMode ? 'none' : 'inline-block';
+            typeIndicator.style.display = isTextMode ? 'none' : '';
+            navPanelButton.textContent = isTextMode ? 'Chapters' : 'Scenes';
+            titleInput.placeholder = isTextMode ? 'DOCUMENT TITLE' : 'SCRIPT TITLE';
+            exportTextButton.textContent = isTextMode ? 'Export as .txt' : 'Export as .fountain';
+            
+            updateNavigationPanel();
+            updateSceneNumbering();
+        }
+
+
+        // --- UTILITY & CORE FUNCTIONS ---
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+        const debouncedUpdateAllVisuals = debounce(updateAllVisuals, 500);
+
+        function getCurrentLine() { const selection = window.getSelection(); if (!selection || selection.rangeCount === 0) return null; const node = selection.getRangeAt(0).startContainer; const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentNode; return element.closest('.line'); }
+        function placeCursor(el, position = 'end') { const range = document.createRange(); const sel = window.getSelection(); if (position === 'end') { range.selectNodeContents(el); range.collapse(false); } else { range.setStart(el, 0); range.collapse(true); } sel.removeAllRanges(); sel.addRange(range); }
+        
+        scriptContent.addEventListener('input', (e) => {
+            const line = getCurrentLine();
+            if (!line) { ensureContentStructure(); return; };
+
+            // This is fast, do it immediately for data safety.
+            saveToLocalStorage();
+            
+            // Autocomplete logic must be immediate for good UX.
+            if(currentMode === 'screenwriting') {
+                if (line.dataset.type === 'character') { 
+                    showCharacterAutocomplete(line); 
+                } 
+                else if (line.dataset.type === 'action' || line.dataset.type === 'scene') { 
+                    showSceneAutocomplete(line);
+                }
+                else { 
+                    hideAutocomplete();
+                }
+            } else {
+                hideAutocomplete();
+            }
+            
+            // Defer expensive visual updates to prevent lag.
+            debouncedUpdateAllVisuals();
+        });
+
+        scriptContent.addEventListener('beforeinput', (e) => { if (e.inputType === 'insertParagraph') { e.preventDefault(); const currentLine = getCurrentLine(); if (currentLine) createNewLine(currentLine); } });
+        
+        scriptContent.addEventListener('keydown', (e) => {
+            const currentLine = getCurrentLine();
+            if (!currentLine) return;
+
+            if (autocompleteVisible) { 
+                if (e.key === 'ArrowDown') { e.preventDefault(); navigateAutocomplete(1); return; } 
+                if (e.key === 'ArrowUp') { e.preventDefault(); navigateAutocomplete(-1); return; } 
+                if (e.key === 'Enter' || e.key === 'Tab') { 
+                    e.preventDefault();
+                    if (autocompleteIndex >= 0) { 
+                        selectAutocomplete(); 
+                    }
+                    return; 
+                } 
+                if (e.key === 'Escape') { hideAutocomplete(); return; } 
+            }
+
+            if (e.key === 'Tab' && currentMode === 'screenwriting') { e.preventDefault(); cycleElementType(currentLine); return; }
+            
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'b' || e.key === 'B') { e.preventDefault(); formatBold(); return; }
+                if (e.key === 'i' || e.key === 'I') { e.preventDefault(); formatItalic(); return; }
+                if (e.key === 'u' || e.key === 'U') { e.preventDefault(); formatUnderline(); return; }
+            }
+            
+            const selection = window.getSelection();
+            if (e.key === 'Backspace' && selection.rangeCount > 0 && selection.getRangeAt(0).collapsed && selection.getRangeAt(0).startOffset === 0) {
+                const prevLine = currentLine.previousElementSibling;
+                if (prevLine && prevLine.classList.contains('line')) { e.preventDefault(); const currentText = currentLine.textContent; const prevText = prevLine.textContent; prevLine.textContent = prevText + currentText; currentLine.remove(); placeCursor(prevLine); }
+            }
+        });
+
+        scriptContent.addEventListener('paste', (e) => { e.preventDefault(); document.execCommand('insertText', false, e.clipboardData.getData('text/plain')); });
+        scriptContent.addEventListener('focusin', (e) => { const line = getCurrentLine(); if(line && currentMode === 'screenwriting') updateTypeIndicator(line.dataset.type); });
+        
+        // Add click handler to ensure cursor positioning works properly after deletions
+        scriptContent.addEventListener('click', (e) => {
+            // Don't interfere if clicking on the autocomplete dropdown
+            if (e.target.closest('#autocomplete')) {
+                return;
+            }
+            
+            const line = getCurrentLine();
+            if (!line) {
+                ensureContentStructure();
+                return;
+            }
+            
+            if (currentMode === 'screenwriting') {
+                updateTypeIndicator(line.dataset.type);
+            }
+        });
+        
+        // --- UI & VISUALS ---
+        function updateAllVisuals() { updateAllLists(); updatePagination(); updateNavigationPanel(); updateScreenInfo(); updateSceneNumbering(); }
+        function toggleSceneNavPanel() { sceneNavPanelOpen = !sceneNavPanelOpen; sceneNavPanel.classList.toggle('open'); }
+        
+        function updateNavigationPanel() {
+            const list = document.getElementById('sceneNavList');
+            const header = document.getElementById('navPanelTitle');
+            list.innerHTML = '';
+            
+            const existingInfo = sceneNavPanel.querySelector('.nav-panel-info');
+            if (existingInfo) existingInfo.remove();
+
+            if (currentMode === 'text') {
+                header.textContent = 'Chapter Navigation';
+                const info = document.createElement('div');
+                info.className = 'nav-panel-info';
+                info.textContent = 'Use # at the start of a line to mark a chapter for navigation.';
+                sceneNavPanel.appendChild(info);
+
+                let hasChapters = false;
+                scriptContent.querySelectorAll('.line').forEach(line => {
+                    const text = line.textContent.trim();
+                    if (text.startsWith('#')) {
+                        hasChapters = true;
+                        const li = document.createElement('li');
+                        li.className = 'scene-nav-item';
+                        li.textContent = text.substring(1).trim() || 'Untitled Chapter';
+                        li.onclick = () => { line.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+                        list.appendChild(li);
+                    }
+                });
+                if (!hasChapters) list.innerHTML = '<div class="empty-message">No chapters marked yet.</div>';
+
+            } else { 
+                header.textContent = 'Scene Navigation';
+                const scenes = scriptContent.querySelectorAll('.line[data-type="scene"]');
+                if (scenes.length > 0) {
+                    scenes.forEach(scene => {
+                        const li = document.createElement('li');
+                        li.className = 'scene-nav-item';
+                        li.textContent = scene.textContent || 'Untitled Scene';
+                        li.onclick = () => { scene.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+                        list.appendChild(li);
+                    });
+                } else {
+                    list.innerHTML = '<div class="empty-message">No scenes yet.</div>';
+                }
+            }
+        }
+
+        function updatePagination() {
+            document.querySelectorAll('.page-break').forEach(br => br.remove());
+            document.querySelectorAll('.page-number-on-screen').forEach(num => num.remove());
+
+            const lines = Array.from(scriptContent.children).filter(el => el.classList.contains('line'));
+            const LINES_PER_PAGE = 55;
+            let lineCount = 0;
+            let pageNum = 1;
+            
+            if (showPageNumbers && lines.length > 0) {
+                const pageNumDiv = document.createElement('div');
+                pageNumDiv.className = 'page-number-on-screen';
+                pageNumDiv.textContent = `${pageNum}.`;
+                pageNumDiv.style.top = '30px'; 
+                pageContainer.appendChild(pageNumDiv);
+            }
+
+            lines.forEach((line, index) => {
+                let linesUsed = 1;
+                if (currentMode === 'screenwriting') {
+                    const type = line.dataset.type;
+                    if (type === 'scene' || type === 'character') linesUsed = 2;
+                    if (type === 'action' && line.textContent.trim() === '') linesUsed = 0;
+                }
+                
+                if (lineCount + linesUsed > LINES_PER_PAGE) {
+                    pageNum++;
+                    const pageBreak = document.createElement('hr');
+                    pageBreak.className = 'page-break';
+                    pageBreak.setAttribute('data-page-num', `End Page ${pageNum - 1}`);
+                    const prevLine = lines[index - 1];
+                    if (currentMode === 'screenwriting' && (line.dataset.type === 'dialogue' || line.dataset.type === 'parenthetical' || (prevLine && prevLine.dataset.type === 'character'))) {
+                        if (prevLine) scriptContent.insertBefore(pageBreak, prevLine);
+                    } else { scriptContent.insertBefore(pageBreak, line); }
+                    
+                    if (showPageNumbers) {
+                        const pageNumDiv = document.createElement('div');
+                        pageNumDiv.className = 'page-number-on-screen';
+                        pageNumDiv.textContent = `${pageNum}.`;
+                        // Position relative to the page break element
+                        pageNumDiv.style.top = `${pageBreak.offsetTop - 30}px`; 
+                        pageContainer.appendChild(pageNumDiv);
+                    }
+
+                    lineCount = 0;
+                }
+                lineCount += linesUsed;
+            });
+        }
+        async function exportPDF() {
+            try {
+                if (typeof window.jspdf === 'undefined') {
+                    alert('jsPDF library is still loading. Please wait a moment and try again.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const title = document.getElementById('scriptTitle').value || 'document';
+                const author = document.getElementById('scriptAuthor').value || '';
+                const indicator = document.getElementById('typeIndicator');
+                
+                indicator.textContent = "Generating PDF...";
+                indicator.classList.add('visible');
+                
+                const doc = new jsPDF('p', 'pt', 'letter');
+                const pageWidth = 612;
+                const pageHeight = 792;
+                const margin = 72; // Left margin for text
+                const rightMargin = 72;
+                const topMargin = 72;
+                const contentWidth = pageWidth - margin - rightMargin;
+                
+                let yPosition = topMargin;
+                const lineHeight = 12;
+                const fontSize = 12;
+                doc.setFont('courier');
+                doc.setFontSize(fontSize);
+                
+                if (title) {
+                    doc.setFontSize(18);
+                    const titleWidth = doc.getTextWidth(title);
+                    doc.text(title, (pageWidth - titleWidth) / 2, pageHeight / 2 - 40);
+                    
+                    if (author) {
+                        doc.setFontSize(14);
+                        const authorText = 'by ' + author;
+                        const authorWidth = doc.getTextWidth(authorText);
+                        doc.text(authorText, (pageWidth - authorWidth) / 2, pageHeight / 2);
+                    }
+                    
+                    doc.addPage();
+                    yPosition = topMargin;
+                    doc.setFontSize(fontSize);
+                }
+                
+                const lines = scriptContent.querySelectorAll('.line');
+                let sceneCounter = 1;
+                
+                lines.forEach((line, index) => {
+                    // Get text content but remove scene numbers if they are displayed
+                    let text = line.textContent.trim();
+                    
+                    if (!text && currentMode === 'screenwriting') return;
+                    
+                    const type = line.dataset.type || 'text';
+                    let xPosition = margin;
+                    let maxWidth = contentWidth;
+                    
+                    if (currentMode === 'screenwriting') {
+                        if (type === 'scene') {
+                             if (yPosition > topMargin) yPosition += lineHeight * 1.5;
+                             if(showSceneNumbers) {
+                                const sceneNumText = `${sceneCounter}.`;
+                                doc.text(sceneNumText, margin - 10, yPosition);
+                                doc.text(sceneNumText, pageWidth - rightMargin + 10, yPosition);
+                                sceneCounter++;
+                             }
+                        }
+
+                        switch(type) {
+                            case 'action': xPosition = margin; maxWidth = contentWidth; if (index > 0) yPosition += lineHeight * 0.5; break;
+                            case 'character': if (yPosition > topMargin) yPosition += lineHeight * 1.5; xPosition = margin + (contentWidth * 0.35); maxWidth = contentWidth * 0.3; break;
+                            case 'dialogue': xPosition = margin + (contentWidth * 0.2); maxWidth = contentWidth * 0.6; break;
+                            case 'parenthetical': xPosition = margin + (contentWidth * 0.28); maxWidth = contentWidth * 0.44; break;
+                            case 'transition': xPosition = margin + (contentWidth * 0.6); maxWidth = contentWidth * 0.4; if (yPosition > topMargin) yPosition += lineHeight * 1.5; break;
+                        }
+                    }
+                    
+                    const words = text.split(' ');
+                    let currentLine = '';
+                    
+                    words.forEach((word, i) => {
+                        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                        const testWidth = doc.getTextWidth(testLine);
+                        
+                        if (testWidth > maxWidth && currentLine) {
+                            if (yPosition + lineHeight > pageHeight - margin) { doc.addPage(); yPosition = topMargin; }
+                            doc.text(currentLine, xPosition, yPosition);
+                            yPosition += lineHeight;
+                            currentLine = word;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    });
+                    
+                    if (currentLine) {
+                        if (yPosition + lineHeight > pageHeight - margin) { doc.addPage(); yPosition = topMargin; }
+                        doc.text(currentLine, xPosition, yPosition);
+                        yPosition += lineHeight;
+                    }
+                });
+                
+                // Add page numbers if toggled on
+                if (showPageNumbers) {
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        const pageNumText = `${i}.`;
+                        doc.text(pageNumText, pageWidth - rightMargin - doc.getTextWidth(pageNumText), topMargin / 2);
+                    }
+                }
+                
+                doc.save(`${title || 'document'}.pdf`);
+                
+                indicator.classList.remove('visible');
+                if(currentMode === 'screenwriting') {
+                    const currentLine = getCurrentLine();
+                    updateTypeIndicator(currentLine?.dataset.type || 'action');
+                }
+                
+            } catch (error) {
+                console.error('PDF Export Error:', error);
+                alert('Error generating PDF: ' + error.message);
+                const indicator = document.getElementById('typeIndicator');
+                indicator.classList.remove('visible');
+                if(currentMode === 'screenwriting') {
+                    const currentLine = getCurrentLine();
+                    updateTypeIndicator(currentLine?.dataset.type || 'action');
+                }
+            }
+        }
+        function ensureContentStructure() { if (scriptContent.children.length === 0 || !scriptContent.querySelector('.line')) { scriptContent.innerHTML = '<div class="line" data-type="action"></div>'; placeCursor(scriptContent.firstChild); } }
+        function newDocument() { if (confirm('Are you sure? This will clear the current document.')) { document.getElementById('scriptTitle').value = ''; document.getElementById('scriptAuthor').value = ''; scriptContent.innerHTML = currentMode === 'screenwriting' ? '<div class="line" data-type="scene">INT. NEW SCENE - DAY</div><div class="line" data-type="action"></div>' : '<div class="line"></div>'; updateAllVisuals(); saveToLocalStorage(); placeCursor(scriptContent.querySelector('.line:last-child')); } }
+        function selectAllAndFocus() { const range = document.createRange(); range.selectNodeContents(scriptContent); window.getSelection().removeAllRanges(); window.getSelection().addRange(range); }
+        
+        // --- FORMATTING FUNCTIONS ---
+        function formatBold() { document.execCommand('bold', false, null); saveToLocalStorage(); }
+        function formatItalic() { document.execCommand('italic', false, null); saveToLocalStorage(); }
+        function formatUnderline() { document.execCommand('underline', false, null); saveToLocalStorage(); }
+        function formatStrikethrough() { document.execCommand('strikeThrough', false, null); saveToLocalStorage(); }
+        
+        function formatCenter() {
+            const line = getCurrentLine();
+            if (!line) return;
+            line.style.textAlign = line.style.textAlign === 'center' ? '' : 'center';
+            saveToLocalStorage();
+        }
+        
+        function formatHighlight() {
+            let highlightColor = '#fef08a';
+            if (currentPaperColor === '#1f2937' || currentPaperColor === '#000000' || currentPaperColor === '#0a0a0a') { highlightColor = '#fbbf24'; }
+            else if (currentPaperColor === '#000080') { highlightColor = '#22d3ee'; }
+            else { highlightColor = '#fef08a'; }
+            document.execCommand('hiliteColor', false, highlightColor);
+            saveToLocalStorage();
+        }
+        
+        // --- STICKY NOTES FUNCTIONS ---
+        function addNote() {
+            const selection = window.getSelection();
+            let anchorId = null;
+            let noteX = window.innerWidth / 2 + 100;
+            let noteY;
+            
+            if (selection.rangeCount && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                anchorId = 'anchor-' + noteIdCounter;
+                const span = document.createElement('span');
+                span.id = anchorId;
+                span.className = 'note-anchor';
+                span.style.backgroundColor = '#fef08a33';
+                try { range.surroundContents(span); } catch (e) { const fragment = range.extractContents(); span.appendChild(fragment); range.insertNode(span); }
+                selection.removeAllRanges();
+                const rect = span.getBoundingClientRect();
+                noteX = rect.right + 20;
+                noteY = rect.top + window.scrollY - 50;
+            } else {
+                noteY = window.scrollY + 150;
+                const indicator = document.getElementById('typeIndicator');
+                const originalText = indicator.textContent;
+                const originalVisibility = indicator.classList.contains('visible');
+                indicator.textContent = "Tip: Select text first to anchor a note!";
+                indicator.classList.add('visible');
+                setTimeout(() => {
+                    indicator.textContent = originalText;
+                    if (!originalVisibility) {
+                        indicator.classList.remove('visible');
+                    } else if (currentMode === 'screenwriting') {
+                         const currentLine = getCurrentLine();
+                         if(currentLine) updateTypeIndicator(currentLine.dataset.type);
+                    }
+                }, 3000);
+            }
+            
+            const noteId = 'note-' + noteIdCounter++;
+            const note = { id: noteId, anchorId: anchorId, content: '', x: noteX, y: noteY };
+            stickyNotes.push(note);
+            renderNote(note);
+            saveToLocalStorage();
+        }
+        
+        function renderNote(note) {
+            const noteEl = document.createElement('div');
+            noteEl.className = 'sticky-note';
+            noteEl.id = note.id;
+            noteEl.style.left = note.x + 'px';
+            noteEl.style.top = note.y + 'px';
+            noteEl.style.backgroundColor = currentNoteBgColor;
+            noteEl.style.borderColor = currentNoteBorderColor;
+            
+            const isDark = ['#1f2937', '#000000', '#0a0a0a'].includes(currentNoteBgColor);
+            if (isDark) { noteEl.classList.add('dark-note'); }
+            
+            noteEl.innerHTML = `
+                <div class="sticky-note-header">
+                    <span class="sticky-note-drag-handle">✋ Drag to move</span>
+                    <button class="sticky-note-delete" onclick="deleteNote('${note.id}')">✕</button>
+                </div>
+                <textarea class="sticky-note-content" placeholder="Write your note here..." oninput="updateNoteContent('${note.id}', this.value)">${note.content || ''}</textarea>
+            `;
+            
+            document.body.appendChild(noteEl);
+            makeDraggable(noteEl, note);
+        }
+        
+        function makeDraggable(element, note) {
+            let isDragging = false, initialX, initialY;
+            const header = element.querySelector('.sticky-note-drag-handle');
+            header.addEventListener('mousedown', dragStart);
+            function dragStart(e) { initialX = e.clientX - note.x; initialY = e.clientY - note.y; isDragging = true; element.style.cursor = 'grabbing'; document.addEventListener('mousemove', drag); document.addEventListener('mouseup', dragEnd); }
+            function drag(e) { if (!isDragging) return; e.preventDefault(); note.x = e.clientX - initialX; note.y = e.clientY - initialY; element.style.left = note.x + 'px'; element.style.top = note.y + 'px'; }
+            function dragEnd() { isDragging = false; element.style.cursor = 'move'; document.removeEventListener('mousemove', drag); document.removeEventListener('mouseup', dragEnd); saveToLocalStorage(); }
+        }
+        
+        function updateNoteContent(noteId, content) {
+            const note = stickyNotes.find(n => n.id === noteId);
+            if (note) { note.content = content; saveToLocalStorage(); }
+        }
+        
+        function deleteNote(noteId) {
+            const note = stickyNotes.find(n => n.id === noteId);
+            if (note) {
+                const anchor = document.getElementById(note.anchorId);
+                if (anchor) { const parent = anchor.parentNode; while (anchor.firstChild) { parent.insertBefore(anchor.firstChild, anchor); } parent.removeChild(anchor); }
+            }
+            stickyNotes = stickyNotes.filter(n => n.id !== noteId);
+            const noteEl = document.getElementById(noteId);
+            if (noteEl) noteEl.remove();
+            saveToLocalStorage();
+        }
+        
+        function renderAllNotes() { document.querySelectorAll('.sticky-note').forEach(el => el.remove()); stickyNotes.forEach(note => renderNote(note)); }
+        
+        // --- PAGE BREAKS & NUMBERING TOGGLES ---
+        function togglePageBreaks(show) { showPageBreaks = show; document.body.classList.toggle('hide-page-breaks', !show); saveSettings(); }
+        function togglePageNumbers(show) { showPageNumbers = show; updatePagination(); saveSettings(); }
+        function toggleSceneNumbers(show) { showSceneNumbers = show; updateSceneNumbering(); saveSettings(); }
+
+        function updateSceneNumbering() {
+            // First, strip all numbers to get a clean slate
+            scriptContent.querySelectorAll('.line[data-type="scene"]').forEach(line => {
+                line.querySelectorAll('.scene-number').forEach(n => n.remove());
+            });
+
+            // If the setting is on, iterate again and add them
+            if (showSceneNumbers && currentMode === 'screenwriting') {
+                let sceneCounter = 1;
+                scriptContent.querySelectorAll('.line[data-type="scene"]').forEach(line => {
+                    const leftNum = document.createElement('span');
+                    leftNum.className = 'scene-number left';
+                    leftNum.textContent = `${sceneCounter}.`;
+                    
+                    const rightNum = document.createElement('span');
+                    rightNum.className = 'scene-number right';
+                    rightNum.textContent = `${sceneCounter}.`;
+
+                    line.insertBefore(leftNum, line.firstChild);
+                    line.appendChild(rightNum);
+
+                    sceneCounter++;
+                });
+            }
+        }
+        
+        function cycleElementType(line) { if (currentMode !== 'screenwriting') return; const currentType = line.dataset.type; const currentIndex = elementCycle.indexOf(currentType); const nextType = elementCycle[(currentIndex + 1) % elementCycle.length]; line.dataset.type = nextType; updateTypeIndicator(nextType); if (['scene', 'character', 'transition'].includes(nextType)) { line.textContent = line.textContent.toUpperCase(); } saveToLocalStorage(); }
+
+        function createNewLine(currentLine) {
+            const newLine = document.createElement('div');
+            newLine.className = 'line';
+            if (currentMode === 'screenwriting') {
+                let nextType = 'action';
+                const currentType = currentLine.dataset.type;
+                if (currentType === 'scene') nextType = 'action';
+                else if (currentType === 'character' || currentType === 'parenthetical') nextType = 'dialogue';
+                newLine.dataset.type = nextType;
+                updateTypeIndicator(nextType);
+            }
+            currentLine.parentNode.insertBefore(newLine, currentLine.nextSibling);
+            placeCursor(newLine, 'start');
+        }
+
+        function updateTypeIndicator(type) { typeIndicator.textContent = { scene: 'Scene Heading', action: 'Action', character: 'Character', dialogue: 'Dialogue', parenthetical: 'Parenthetical', transition: 'Transition' }[type] || 'Action'; }
+        
+        // --- AUTOCOMPLETE LOGIC ---
+        function showCharacterAutocomplete(line) {
+            const text = line.textContent.trim().toUpperCase();
+            
+            if (text.length === 0) { hideAutocomplete(); return; }
+            
+            // Build character list excluding the current line
+            const existingCharacters = new Set();
+            scriptContent.querySelectorAll('.line[data-type="character"]').forEach(charLine => {
+                if (charLine !== line) { // Exclude current line
+                    const name = charLine.textContent.trim().toUpperCase().replace(/\s*\(.*\)\s*$/, '');
+                    if (name) existingCharacters.add(name);
+                }
+            });
+            
+            const matches = Array.from(existingCharacters).filter(char => char.startsWith(text) && char !== text);
+            
+            if (matches.length === 0) { hideAutocomplete(); return; }
+            displayAutocomplete(line, matches, (line, item) => { line.textContent = item.textContent; hideAutocomplete(); createNewLine(line); });
+        }
+
+        function showSceneAutocomplete(line) {
+            const text = line.textContent.trim().toUpperCase();
+            
+            const sceneOptions = ['INT.', 'EXT.', 'INT./EXT.', 'EXT./INT.', 'I/E.'];
+            let matches = [];
+            
+            // Check if we should show scene prefix options
+            // Only show prefixes if the text is short and looks like we're typing a prefix
+            const matchingPrefix = sceneOptions.find(opt => opt.startsWith(text));
+            const textIsPrefix = text.length <= 10 && matchingPrefix && (text.length < 4 || text.endsWith('.'));
+            
+            if (textIsPrefix) { 
+                matches = sceneOptions.filter(opt => opt.startsWith(text)); 
+            }
+            else { 
+                // Build scene list excluding the current line
+                const existingScenes = new Set();
+                scriptContent.querySelectorAll('.line[data-type="scene"]').forEach(sceneLine => {
+                    if (sceneLine !== line) { // Exclude current line
+                        const sceneText = sceneLine.textContent.trim().toUpperCase();
+                        if (sceneText.length > 4) existingScenes.add(sceneText);
+                    }
+                });
+                matches = Array.from(existingScenes).filter(scene => scene.startsWith(text) && scene !== text).slice(0, 5); 
+            }
+            
+            if (matches.length === 0 || (matches.length === 1 && matches[0] === text)) { 
+                hideAutocomplete(); 
+                return; 
+            }
+            displayAutocomplete(line, matches, (line, item) => { const selectedText = item.textContent; line.textContent = sceneOptions.includes(selectedText) ? selectedText + ' ' : selectedText; line.dataset.type = 'scene'; updateTypeIndicator('scene'); hideAutocomplete(); if (sceneOptions.includes(selectedText)) placeCursor(line); else createNewLine(line); });
+        }
+
+        function displayAutocomplete(line, matches, onSelect) {
+            if (!autocompleteDropdown) {
+                console.error('Autocomplete dropdown element not found!');
+                return;
+            }
+            
+            currentAutocompleteLine = line;
+            currentAutocompleteCallback = onSelect;
+            
+            autocompleteDropdown.innerHTML = '';
+            matches.forEach((match, index) => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.dataset.index = index;
+                div.textContent = match;
+                div.onclick = function() {
+                    if (currentAutocompleteCallback && currentAutocompleteLine) {
+                        currentAutocompleteCallback(currentAutocompleteLine, this);
+                    }
+                };
+                autocompleteDropdown.appendChild(div);
+            });
+            
+            const rect = line.getBoundingClientRect();
+            autocompleteDropdown.style.left = rect.left + 'px';
+            autocompleteDropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+            autocompleteDropdown.style.display = 'block';
+            autocompleteVisible = true;
+            autocompleteIndex = 0;
+            
+            const firstItem = autocompleteDropdown.querySelector('.autocomplete-item');
+            if (firstItem) {
+                firstItem.classList.add('selected');
+            }
+        }
+
+        function hideAutocomplete() { 
+            autocompleteDropdown.style.display = 'none'; 
+            autocompleteVisible = false; 
+            autocompleteIndex = -1; 
+            currentAutocompleteCallback = null;
+            currentAutocompleteLine = null;
+        }
+        
+        function navigateAutocomplete(direction) {
+            const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+            if (items.length === 0) return;
+            items[autocompleteIndex]?.classList.remove('selected');
+            autocompleteIndex = (autocompleteIndex + direction + items.length) % items.length;
+            const selectedItem = items[autocompleteIndex];
+            selectedItem.classList.add('selected');
+            selectedItem.scrollIntoView({ block: 'nearest' });
+        }
+
+        function selectAutocomplete() {
+            const selectedItem = autocompleteDropdown.querySelector('.autocomplete-item.selected') || autocompleteDropdown.querySelector('.autocomplete-item');
+            if (selectedItem) { selectedItem.click(); }
+        }
+        
+        function updateAllLists() { if (currentMode === 'screenwriting') { updateCharacterList(); updateSceneList(); } }
+        function updateCharacterList() { characters.clear(); scriptContent.querySelectorAll('.line[data-type="character"]').forEach(line => { const name = line.textContent.trim().toUpperCase().replace(/\s*\(.*\)\s*$/, ''); if (name) characters.add(name); }); if (managementPanelOpen) updateCharacterListDisplay(); }
+        function updateSceneList() { sceneLocations.clear(); scriptContent.querySelectorAll('.line[data-type="scene"]').forEach(line => { const sceneText = line.textContent.trim().toUpperCase(); if (sceneText.length > 4) sceneLocations.add(sceneText); }); if (managementPanelOpen) updateSceneListDisplay(); }
+        function toggleFindReplacePanel() { findReplacePanelOpen = !findReplacePanelOpen; document.getElementById('findReplacePanel').classList.toggle('open'); if (findReplacePanelOpen) document.getElementById('findInput').focus(); else { clearHighlights(); lastFoundRange = null; } }
+        function clearHighlights() { scriptContent.querySelectorAll('.line').forEach(line => { line.innerHTML = line.textContent; }); }
+        
+        function findNext() {
+            const findText = document.getElementById('findInput').value;
+            if (!findText) return;
+            clearHighlights();
+            const lines = Array.from(scriptContent.querySelectorAll('.line'));
+            let found = false;
+            let startIndex = 0;
+            if (lastFoundRange && lastFoundRange.line) { startIndex = lines.indexOf(lastFoundRange.line) + 1; if (startIndex >= lines.length) startIndex = 0; }
+            const searchOrder = [...lines.slice(startIndex), ...lines.slice(0, startIndex)];
+            for (const line of searchOrder) {
+                const text = line.textContent;
+                const index = text.toLowerCase().indexOf(findText.toLowerCase());
+                if (index !== -1) {
+                    const beforeText = text.substring(0, index);
+                    const matchText = text.substring(index, index + findText.length);
+                    const afterText = text.substring(index + findText.length);
+                    line.innerHTML = `${beforeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}<span class="highlight">${matchText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>${afterText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    lastFoundRange = { line: line, index: index, length: findText.length };
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) { alert('No matches found'); lastFoundRange = null; }
+        }
+        
+        function replaceCurrent() {
+            if (!lastFoundRange) { findNext(); return; }
+            const replaceText = document.getElementById('replaceInput').value;
+            const line = lastFoundRange.line;
+            const text = line.textContent;
+            line.textContent = text.substring(0, lastFoundRange.index) + replaceText + text.substring(lastFoundRange.index + lastFoundRange.length);
+            lastFoundRange = null;
+            saveToLocalStorage();
+            findNext();
+        }
+        
+        function replaceAll() {
+            const findText = document.getElementById('findInput').value;
+            const replaceText = document.getElementById('replaceInput').value;
+            if (!findText) return;
+            let replaceCount = 0;
+            const regex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            scriptContent.querySelectorAll('.line').forEach(line => { const matches = line.textContent.match(regex); if (matches) { replaceCount += matches.length; line.textContent = line.textContent.replace(regex, replaceText); } });
+            if (replaceCount > 0) { alert(`Replaced ${replaceCount} occurrence(s)`); saveToLocalStorage(); } else { alert('No matches found'); }
+            clearHighlights();
+            lastFoundRange = null;
+        }
+        
+        // --- FILE HANDLING ---
+        function getScriptData() { return { mode: currentMode, title: document.getElementById('scriptTitle').value, author: document.getElementById('scriptAuthor').value, filename: currentFilename, lines: Array.from(scriptContent.querySelectorAll('.line')).map(line => ({ type: line.dataset.type || 'text', text: line.textContent, html: line.innerHTML, align: line.style.textAlign || '' })), notes: stickyNotes, settings: { backgroundColor: currentBgColor, paperColor: currentPaperColor, fontSize: currentFontSize, marginWidth: currentMargin, pageWidth: currentPageWidth, fullscreen: isFullscreen, uiPinned: isUIPinned, screenInfoVisible: showScreenInfo, pageBreaksVisible: showPageBreaks, sceneNumbersVisible: showSceneNumbers, pageNumbersVisible: showPageNumbers } }; }
+        
+        function loadScriptData(data) {
+            document.getElementById('scriptTitle').value = data.title || '';
+            document.getElementById('scriptAuthor').value = data.author || '';
+            if (data.filename) { currentFilename = data.filename; }
+            scriptContent.innerHTML = ''; 
+            if (data.lines && data.lines.length > 0) { scriptContent.innerHTML = data.lines.map(line => { const alignStyle = line.align ? ` style="text-align: ${line.align}"` : ''; const content = line.html || line.text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); return `<div class="line" data-type="${line.type || ''}"${alignStyle}>${content}</div>`; }).join(''); }
+            data.mode === 'text' ? switchToTextEditor() : switchToScreenwriting();
+            if (data.settings) {
+                if (data.settings.backgroundColor) changeBackgroundColor(data.settings.backgroundColor);
+                if (data.settings.paperColor) changePaperColor(data.settings.paperColor);
+                if (data.settings.fontSize) { document.getElementById('fontSizeSlider').value = data.settings.fontSize; updateFontSize(); }
+                if (data.settings.marginWidth) { document.getElementById('marginSlider').value = data.settings.marginWidth; updateMargins(); }
+                if (data.settings.pageWidth) { document.getElementById('pageWidthSlider').value = data.settings.pageWidth; updatePageWidth(); }
+                if (data.settings.fullscreen) toggleFullscreen();
+                if (data.settings.uiPinned) { isUIPinned = true; document.getElementById('pinUIToggle').checked = true; showUI(); }
+                if (data.settings.screenInfoVisible !== undefined) { showScreenInfo = data.settings.screenInfoVisible; document.getElementById('screenInfoToggle').checked = showScreenInfo; toggleScreenInfo(showScreenInfo); }
+                if (data.settings.pageBreaksVisible !== undefined) { showPageBreaks = data.settings.pageBreaksVisible; document.getElementById('pageBreaksToggle').checked = showPageBreaks; togglePageBreaks(showPageBreaks); }
+                if (data.settings.sceneNumbersVisible !== undefined) { showSceneNumbers = data.settings.sceneNumbersVisible; document.getElementById('sceneNumbersToggle').checked = showSceneNumbers; toggleSceneNumbers(showSceneNumbers); }
+                if (data.settings.pageNumbersVisible !== undefined) { showPageNumbers = data.settings.pageNumbersVisible; document.getElementById('pageNumbersToggle').checked = showPageNumbers; togglePageNumbers(showPageNumbers); }
+            }
+            if (data.notes && data.notes.length > 0) { stickyNotes = data.notes; noteIdCounter = Math.max(...stickyNotes.map(n => parseInt(n.id.split('-')[1]) || 0)) + 1; renderAllNotes(); }
+            updateAllVisuals();
+        }
+        
+        function loadTextContent(textContent) {
+            const lines = textContent.split('\n');
+            if (lines[0]?.toLowerCase().startsWith('title:')) { document.getElementById('scriptTitle').value = lines.shift().substring(6).trim(); }
+            if (lines[0]?.toLowerCase().startsWith('author:')) { document.getElementById('scriptAuthor').value = lines.shift().substring(7).trim(); }
+            if (lines[0]?.trim() === '') { lines.shift(); }
+            scriptContent.innerHTML = lines.map(lineText => `<div class="line">${lineText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('');
+            switchToTextEditor();
+            updateAllVisuals();
+        }
+
+        function saveToLocalStorage() { localStorage.setItem('screenplay', JSON.stringify(getScriptData())); }
+        function loadFromLocalStorage() { const saved = localStorage.getItem('screenplay'); if (saved) loadScriptData(JSON.parse(saved)); }
+        
+        function exportScript() { 
+            const data = getScriptData(); 
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); 
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob); 
+            const filename = currentFilename || (data.title || 'document').replace(/ /g, '_');
+            a.download = `${filename}.json`; 
+            a.click(); 
+            URL.revokeObjectURL(a.href); 
+        }
+        
+        function loadScript() { document.getElementById('fileInput').click(); }
+        
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const fileNameWithExt = file.name;
+            const lastDotIndex = fileNameWithExt.lastIndexOf('.');
+            currentFilename = lastDotIndex > 0 ? fileNameWithExt.substring(0, lastDotIndex) : fileNameWithExt;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const content = ev.target.result;
+                const fileName = file.name.toLowerCase();
+                try {
+                    if (fileName.endsWith('.json')) { loadScriptData(JSON.parse(content)); }
+                    else if (fileName.endsWith('.fountain')) { loadScriptData(parseFountain(content)); }
+                    else { loadTextContent(content); }
+                } catch (err) { console.error("Error loading document:", err); alert('Error loading document: ' + err.message); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        function exportAsText() {
+            const title = document.getElementById('scriptTitle').value || 'document';
+            const author = document.getElementById('scriptAuthor').value;
+            let filename = currentFilename || title.replace(/ /g, '_') || 'document';
+            const extension = currentMode === 'screenwriting' ? '.fountain' : '.txt';
+            let fileContent = '';
+            if (title) fileContent += `Title: ${title}\n`;
+            if (author) fileContent += `Author: ${author}\n`;
+            if (title || author) fileContent += '\n';
+            const lines = Array.from(scriptContent.querySelectorAll('.line'));
+            if (currentMode === 'screenwriting') { fileContent += lines.map(line => { const text = line.textContent; if (!text.trim()) return ''; switch(line.dataset.type) { case 'scene': case 'character': case 'transition': return text.toUpperCase(); default: return text; } }).join('\n\n'); }
+            else { fileContent += lines.map(line => line.textContent).join('\n'); }
+            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-transparent' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${filename}${extension}`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function showUI() { if (uiHideTimeout) clearTimeout(uiHideTimeout); document.querySelectorAll('.toolbar, .screen-info').forEach(el => el.classList.add('visible')); if (currentMode === 'screenwriting') { typeIndicator.classList.add('visible'); } }
+        function hideUIWithDelay() { if (isUIPinned) return; uiHideTimeout = setTimeout(() => { document.querySelectorAll('.toolbar, .element-type-indicator, .screen-info').forEach(el => el.classList.remove('visible')); }, 2000); }
+        function toggleManagementPanel() { managementPanelOpen = !managementPanelOpen; document.getElementById('managementPanel').classList.toggle('open'); if (managementPanelOpen) updateManagementPanel(); }
+        function updateManagementPanel() { updateCharacterListDisplay(); updateSceneListDisplay(); }
+        function updateCharacterListDisplay() { const list = document.getElementById('characterList'); const sorted = Array.from(characters).sort(); list.innerHTML = sorted.length ? sorted.map(char => `<div class="element-item"><span class="element-name">${char}</span><button class="delete-btn" onclick="deleteCharacter('${char.replace(/'/g, "\\'")}')">Delete</button></div>`).join('') : '<div class="empty-message">No characters yet</div>'; }
+        function updateSceneListDisplay() { const list = document.getElementById('sceneList'); const sorted = Array.from(sceneLocations).sort(); list.innerHTML = sorted.length ? sorted.map(scene => `<div class="element-item"><span class="element-name">${scene}</span><button class="delete-btn" onclick="deleteScene('${scene.replace(/'/g, "\\'")}')">Delete</button></div>`).join('') : '<div class="empty-message">No scenes yet</div>'; }
+        function deleteCharacter(charName) { characters.delete(charName); updateCharacterListDisplay(); saveToLocalStorage(); }
+        function deleteScene(sceneName) { sceneLocations.delete(sceneName); updateSceneListDisplay(); saveToLocalStorage(); }
+        function toggleSettingsPanel() { settingsPanelOpen = !settingsPanelOpen; document.getElementById('settingsPanel').classList.toggle('open'); }
+        function changeBackgroundColor(color) { currentBgColor = color; document.body.style.backgroundColor = color; updateColorSelection(); saveSettings(); }
+        function changePaperColor(color, textColor = null) { 
+            currentPaperColor = color; 
+            const container = document.querySelector('.container'); 
+            container.style.backgroundColor = color; 
+            if (textColor) { container.style.color = textColor; } else { const isDark = ['#1f2937', '#000000', '#0a0a0a', '#1e1e1e'].includes(color); container.style.color = isDark ? '#fff' : '#000'; }
+            updateColorSelection(); 
+            saveSettings(); 
+        }
+        
+        function applyPreset(preset) {
+            const presets = { 'msdos': { bg: '#000080', paper: '#000080', text: '#c0c0c0' }, 'amber': { bg: '#000000', paper: '#000000', text: '#ffb000' }, 'green': { bg: '#0a0a0a', paper: '#0a0a0a', text: '#33ff33' }, 'wordstar': { bg: '#000000', paper: '#000000', text: '#ffffff' }, 'paper': { bg: '#fdf6e3', paper: '#fdf6e3', text: '#657b83' }, 'night': { bg: '#1e1e1e', paper: '#1e1e1e', text: '#d4d4d4' } };
+            const p = presets[preset];
+            if (p) { changeBackgroundColor(p.bg); changePaperColor(p.paper, p.text); }
+        }
+        
+        function changeNoteColor(bgColor, borderColor) { currentNoteBgColor = bgColor; currentNoteBorderColor = borderColor; matchNoteToWritingArea = false; document.getElementById('matchNoteColorToggle').checked = false; updateNoteColorSelection(); applyNoteColorsToAll(); saveSettings(); }
+        function toggleMatchNoteColor(match) { matchNoteToWritingArea = match; if (match) { currentNoteBgColor = currentPaperColor; currentNoteBorderColor = currentPaperColor === '#1f2937' ? '#9ca3af' : '#d1d5db'; } updateNoteColorSelection(); applyNoteColorsToAll(); saveSettings(); }
+        function updateNoteColorSelection() { document.querySelectorAll('.color-option.note-color').forEach(o => { o.classList.toggle('selected', o.dataset.bg === currentNoteBgColor && !matchNoteToWritingArea); }); }
+        function applyNoteColorsToAll() { document.querySelectorAll('.sticky-note').forEach(note => { note.style.backgroundColor = currentNoteBgColor; note.style.borderColor = currentNoteBorderColor; const isDark = ['#1f2937', '#000000', '#0a0a0a'].includes(currentNoteBgColor); note.classList.toggle('dark-note', isDark); }); }
+        
+        function updateColorSelection() { document.querySelectorAll('.color-option.bg-color').forEach(o => o.classList.toggle('selected', o.dataset.color === currentBgColor)); document.querySelectorAll('.color-option.paper-color').forEach(o => o.classList.toggle('selected', o.dataset.color === currentPaperColor)); updateNoteColorSelection(); }
+        function updateFontSizeDisplay() { document.getElementById('fontSizeValue').textContent = document.getElementById('fontSizeSlider').value; }
+        function updateFontSize() { const size = document.getElementById('fontSizeSlider').value; currentFontSize = size; document.getElementById('fontSizeValue').textContent = size; scriptContent.style.fontSize = size + 'px'; saveSettings(); updatePagination(); }
+        function updateMarginDisplay() { document.getElementById('marginValue').textContent = document.getElementById('marginSlider').value; }
+        function updateMargins() { const size = document.getElementById('marginSlider').value; currentMargin = size; document.getElementById('marginValue').textContent = size; document.querySelector('.container').style.paddingLeft = size + 'px'; document.querySelector('.container').style.paddingRight = size + 'px'; saveSettings(); }
+        function updatePageWidthDisplay() { document.getElementById('pageWidthValue').textContent = document.getElementById('pageWidthSlider').value; }
+        function updatePageWidth() { const size = document.getElementById('pageWidthSlider').value; currentPageWidth = size; document.getElementById('pageWidthValue').textContent = size; document.querySelector('.container').style.maxWidth = size + 'px'; saveSettings(); updatePagination(); }
+        function toggleFullscreen() { isFullscreen = !isFullscreen; document.body.classList.toggle('fullscreen'); saveSettings(); }
+        function saveSettings() { localStorage.setItem('screenplaySettings', JSON.stringify({ backgroundColor: currentBgColor, paperColor: currentPaperColor, fontSize: currentFontSize, marginWidth: currentMargin, pageWidth: currentPageWidth, fullscreen: isFullscreen, uiPinned: isUIPinned, screenInfoVisible: showScreenInfo, pageBreaksVisible: showPageBreaks, sceneNumbersVisible: showSceneNumbers, pageNumbersVisible: showPageNumbers, noteBgColor: currentNoteBgColor, noteBorderColor: currentNoteBorderColor, matchNoteColors: matchNoteToWritingArea })); }
+        function loadSettings() { const saved = localStorage.getItem('screenplaySettings'); if (!saved) return; const settings = JSON.parse(saved); if (settings.backgroundColor) changeBackgroundColor(settings.backgroundColor); if (settings.paperColor) changePaperColor(settings.paperColor); if (settings.fontSize) { document.getElementById('fontSizeSlider').value = settings.fontSize; updateFontSize(); } if (settings.marginWidth) { document.getElementById('marginSlider').value = settings.marginWidth; updateMargins(); } if (settings.pageWidth) { document.getElementById('pageWidthSlider').value = settings.pageWidth; updatePageWidth(); } if (settings.fullscreen) toggleFullscreen(); if (settings.uiPinned) { isUIPinned = true; document.getElementById('pinUIToggle').checked = true; showUI(); } if (settings.screenInfoVisible === false) { showScreenInfo = false; document.getElementById('screenInfoToggle').checked = false; toggleScreenInfo(false); } if (settings.pageBreaksVisible === false) { showPageBreaks = false; document.getElementById('pageBreaksToggle').checked = false; togglePageBreaks(false); } if (settings.sceneNumbersVisible) { showSceneNumbers = true; document.getElementById('sceneNumbersToggle').checked = true; toggleSceneNumbers(true); } if (settings.pageNumbersVisible) { showPageNumbers = true; document.getElementById('pageNumbersToggle').checked = true; togglePageNumbers(true); } if (settings.noteBgColor) { currentNoteBgColor = settings.noteBgColor; currentNoteBorderColor = settings.noteBorderColor; } if (settings.matchNoteColors) { matchNoteToWritingArea = settings.matchNoteColors; document.getElementById('matchNoteColorToggle').checked = true; } updateNoteColorSelection(); }
+        function toggleUIPin(isChecked) { isUIPinned = isChecked; if (isUIPinned) showUI(); else hideUIWithDelay(); saveSettings(); }
+        function toggleScreenInfo(isChecked) { showScreenInfo = isChecked; const infoEl = document.getElementById('screenInfo'); infoEl.classList.toggle('visible', showScreenInfo); if (showScreenInfo) updateScreenInfo(); saveSettings(); }
+        function updateScreenInfo() { if (!showScreenInfo) return; const text = scriptContent.textContent.trim(); const words = text ? text.split(/\s+/).length : 0; const pages = document.querySelectorAll('.page-break').length + 1; document.getElementById('wordCount').textContent = `Words: ${words}`; document.getElementById('pageCount').textContent = `Page: ${pages}`; }
+        function importFountain() {
+            const fountainText = document.getElementById('fountainInput').value;
+            if (!fountainText.trim()) { alert('Please paste Fountain text first.'); return; }
+            loadScriptData(parseFountain(fountainText));
+            document.getElementById('fountainInput').value = '';
+            toggleSettingsPanel();
+        }
+        
+        function parseFountain(text) {
+            const lines = text.split('\n');
+            const scriptLines = [];
+            let title = '', author = '', inTitlePage = true, lastLineType = null;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i], trimmed = line.trim();
+                if (inTitlePage) {
+                    if (trimmed === '') { inTitlePage = false; continue; }
+                    if (trimmed.toLowerCase().startsWith('title:')) { title = trimmed.substring(6).trim(); continue; }
+                    if (trimmed.toLowerCase().startsWith('author:')) { author = trimmed.substring(trimmed.indexOf(':') + 1).trim(); continue; }
+                    continue;
+                }
+                
+                let lineType = 'action';
+
+                if (trimmed === '') {
+                    scriptLines.push({ type: 'action', text: '' });
+                    lastLineType = 'empty';
+                    continue;
+                }
+                
+                if (/^(INT|EXT|I\/E)[\.\s]/i.test(trimmed) || trimmed.endsWith(" - DAY") || trimmed.endsWith(" - NIGHT")) { lineType = 'scene'; }
+                else if (trimmed.startsWith('(') && trimmed.endsWith(')')) { lineType = 'parenthetical'; }
+                else if (/^>[^<]+<$/.test(trimmed) || /^[A-Z\s]+TO:$/.test(trimmed) || /^(FADE|CUT|DISSOLVE)/.test(trimmed)) { lineType = 'transition'; }
+                else if (lastLineType === 'empty' && /^[A-Z][A-Z\s0-9'’]*(\s*\(.*\))?$/.test(trimmed)) { lineType = 'character'; }
+                else if (lastLineType === 'character' || lastLineType === 'parenthetical' || lastLineType === 'dialogue') { lineType = 'dialogue'; }
+                
+                scriptLines.push({ type: lineType, text: trimmed });
+                lastLineType = lineType;
+            }
+            return { mode: 'screenwriting', title, author, lines: scriptLines };
+        }
+        
+        // --- ABOUT & HELP PANELS ---
+        function showAboutPanel() { document.getElementById('aboutOverlay').style.display = 'flex'; }
+        function hideAboutPanel() { document.getElementById('aboutOverlay').style.display = 'none'; }
+        function revealWriterContact() {
+            const btn = document.getElementById('writerContactBtn');
+            const parts = ['JoeOrangeAuthor', 'proton', 'me'];
+            const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+            btn.textContent = email;
+            btn.style.cursor = 'text';
+            btn.style.userSelect = 'text';
+            btn.style.background = '#fef3c7';
+            btn.style.color = '#1f2937';
+            btn.onclick = null;
+        }
+        function showHelpPanel() { document.getElementById('helpOverlay').style.display = 'flex'; }
+        function hideHelpPanel() { document.getElementById('helpOverlay').style.display = 'none'; }
+    </script>
+</body>
+</html>
