@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Courier New', Courier, monospace;
-            background: #f5f5f5;
+            background: #1a1a2e;
             padding: 20px;
             transition: background-color 0.3s ease;
             overflow-y: scroll;
@@ -41,8 +41,9 @@
             min-height: 90vh;
         }
 
-        .toolbar { position: fixed; top: 20px; right: 20px; display: flex; flex-wrap: wrap; gap: 10px; z-index: 1000; transition: opacity 0.3s ease; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); opacity: 0; pointer-events: none; }
+        .toolbar { position: fixed; top: 20px; right: 20px; display: flex; flex-wrap: wrap; gap: 10px; z-index: 1000; transition: opacity 0.3s ease; background: rgba(15, 15, 35, 0.97); padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; }
         .toolbar.visible { opacity: 1; pointer-events: auto; }
+        .toolbar-hint { position: fixed; top: 20px; right: 20px; padding: 8px 14px; background: rgba(15, 15, 35, 0.7); color: #ff8c42; border-radius: 5px; font-size: 12px; letter-spacing: 1px; z-index: 999; display: none; cursor: default; font-family: 'Courier New', Courier, monospace; }
 
         .toolbar button { padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
         .toolbar button:hover { background: #1d4ed8; }
@@ -231,8 +232,9 @@
     
     <div class="hover-area-right" id="hoverAreaRight"></div>
     <div class="hover-area-bottom-left" id="hoverAreaBottomLeft"></div>
-    
-    <div class="toolbar" id="toolbar">
+    <div class="toolbar-hint" id="toolbarHint">Toolbar appears on hover</div>
+
+    <div class="toolbar visible" id="toolbar">
         <button id="settingsToggle" onclick="toggleSettingsPanel()" title="Settings">⚙️</button>
         <button id="modeSwitchButton" onclick="toggleMode()">Switch to Text Editor</button>
         <button onclick="newDocument()">New</button>
@@ -253,6 +255,7 @@
         <button class="export-pdf" onclick="exportPDF()">Export PDF</button>
         <button onclick="showHelpPanel()">Help</button>
         <button onclick="showAboutPanel()">About</button>
+        <button onclick="hideToolbarManually()" style="background: #c0392b;">Hide Toolbar</button>
     </div>
 
     <div class="element-type-indicator" id="typeIndicator">Action</div>
@@ -540,7 +543,7 @@
         let sceneNavPanelOpen = false;
         let isFullscreen = false;
         let uiHideTimeout = null;
-        let isUIPinned = false;
+        let isUIPinned = true;
         let showScreenInfo = true;
         let showPageBreaks = true;
         let showSceneNumbers = false;
@@ -1466,7 +1469,7 @@
             URL.revokeObjectURL(a.href);
         }
 
-        function showUI() { if (uiHideTimeout) clearTimeout(uiHideTimeout); document.querySelectorAll('.toolbar, .screen-info').forEach(el => el.classList.add('visible')); if (currentMode === 'screenwriting') { typeIndicator.classList.add('visible'); } }
+        function showUI() { if (uiHideTimeout) clearTimeout(uiHideTimeout); hideToolbarHint(); document.querySelectorAll('.toolbar, .screen-info').forEach(el => el.classList.add('visible')); if (currentMode === 'screenwriting') { typeIndicator.classList.add('visible'); } }
         function hideUIWithDelay() { if (isUIPinned) return; uiHideTimeout = setTimeout(() => { document.querySelectorAll('.toolbar, .element-type-indicator, .screen-info').forEach(el => el.classList.remove('visible')); }, 2000); }
         function toggleManagementPanel() { managementPanelOpen = !managementPanelOpen; document.getElementById('managementPanel').classList.toggle('open'); if (managementPanelOpen) updateManagementPanel(); }
         function updateManagementPanel() { updateCharacterListDisplay(); updateSceneListDisplay(); }
@@ -1506,7 +1509,9 @@
         function toggleFullscreen() { isFullscreen = !isFullscreen; document.body.classList.toggle('fullscreen'); saveSettings(); }
         function saveSettings() { localStorage.setItem('screenplaySettings', JSON.stringify({ backgroundColor: currentBgColor, paperColor: currentPaperColor, fontSize: currentFontSize, marginWidth: currentMargin, pageWidth: currentPageWidth, fullscreen: isFullscreen, uiPinned: isUIPinned, screenInfoVisible: showScreenInfo, pageBreaksVisible: showPageBreaks, sceneNumbersVisible: showSceneNumbers, pageNumbersVisible: showPageNumbers, noteBgColor: currentNoteBgColor, noteBorderColor: currentNoteBorderColor, matchNoteColors: matchNoteToWritingArea })); }
         function loadSettings() { const saved = localStorage.getItem('screenplaySettings'); if (!saved) return; const settings = JSON.parse(saved); if (settings.backgroundColor) changeBackgroundColor(settings.backgroundColor); if (settings.paperColor) changePaperColor(settings.paperColor); if (settings.fontSize) { document.getElementById('fontSizeSlider').value = settings.fontSize; updateFontSize(); } if (settings.marginWidth) { document.getElementById('marginSlider').value = settings.marginWidth; updateMargins(); } if (settings.pageWidth) { document.getElementById('pageWidthSlider').value = settings.pageWidth; updatePageWidth(); } if (settings.fullscreen) toggleFullscreen(); if (settings.uiPinned) { isUIPinned = true; document.getElementById('pinUIToggle').checked = true; showUI(); } if (settings.screenInfoVisible === false) { showScreenInfo = false; document.getElementById('screenInfoToggle').checked = false; toggleScreenInfo(false); } if (settings.pageBreaksVisible === false) { showPageBreaks = false; document.getElementById('pageBreaksToggle').checked = false; togglePageBreaks(false); } if (settings.sceneNumbersVisible) { showSceneNumbers = true; document.getElementById('sceneNumbersToggle').checked = true; toggleSceneNumbers(true); } if (settings.pageNumbersVisible) { showPageNumbers = true; document.getElementById('pageNumbersToggle').checked = true; togglePageNumbers(true); } if (settings.noteBgColor) { currentNoteBgColor = settings.noteBgColor; currentNoteBorderColor = settings.noteBorderColor; } if (settings.matchNoteColors) { matchNoteToWritingArea = settings.matchNoteColors; document.getElementById('matchNoteColorToggle').checked = true; } updateNoteColorSelection(); }
-        function toggleUIPin(isChecked) { isUIPinned = isChecked; if (isUIPinned) showUI(); else hideUIWithDelay(); saveSettings(); }
+        function toggleUIPin(isChecked) { isUIPinned = isChecked; if (isUIPinned) { hideToolbarHint(); showUI(); } else hideUIWithDelay(); saveSettings(); }
+        function hideToolbarManually() { isUIPinned = false; document.getElementById('pinUIToggle').checked = false; document.querySelectorAll('.toolbar, .element-type-indicator, .screen-info').forEach(el => el.classList.remove('visible')); document.getElementById('toolbarHint').style.display = 'block'; saveSettings(); }
+        function hideToolbarHint() { document.getElementById('toolbarHint').style.display = 'none'; }
         function toggleScreenInfo(isChecked) { showScreenInfo = isChecked; const infoEl = document.getElementById('screenInfo'); infoEl.classList.toggle('visible', showScreenInfo); if (showScreenInfo) updateScreenInfo(); saveSettings(); }
         function updateScreenInfo() { if (!showScreenInfo) return; const text = scriptContent.textContent.trim(); const words = text ? text.split(/\s+/).length : 0; const pages = document.querySelectorAll('.page-break').length + 1; document.getElementById('wordCount').textContent = `Words: ${words}`; document.getElementById('pageCount').textContent = `Page: ${pages}`; }
         function importFountain() {
