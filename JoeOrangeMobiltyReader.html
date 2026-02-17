@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joe Orange Mobility Reader</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://xenova.github.io/unarchiver.js/dist/unarchiver.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #1e1e1e; --bg2: #2a2a2a; --bg3: #333;
+  --fg: #e0e0e0; --fg2: #aaa;
+  --accent: #5b9bd5; --accent-hover: #7bb3e0;
+  --bar-bg: #252525; --btn-bg: #3a3a3a; --btn-hover: #4a4a4a;
+  --text-bg: #1e1e1e; --text-fg: #d4d4d4;
+}
+.light {
+  --bg: #f5f5f5; --bg2: #e8e8e8; --bg3: #ddd;
+  --fg: #222; --fg2: #666;
+  --accent: #2b7de9; --accent-hover: #1a6dd4;
+  --bar-bg: #e0e0e0; --btn-bg: #ccc; --btn-hover: #bbb;
+  --text-bg: #fafafa; --text-fg: #222;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; user-select: none; }
+
+/* HOME */
+#home { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:20px; }
+#home h1 { font-size:2.5em; font-weight:300; }
+#home .subtitle { color:var(--fg2); font-size:0.95em; margin-bottom:10px; }
+
+#drop-zone { width:500px; max-width:90vw; height:200px; border:2px dashed var(--fg2); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; cursor:pointer; transition: border-color 0.2s, background 0.2s; }
+#drop-zone:hover, #drop-zone.drag-over { border-color:var(--accent); background:rgba(91,155,213,0.08); }
+#drop-zone .icon { font-size:2.5em; opacity:0.5; }
+#drop-zone .label { color:var(--fg2); font-size:1.1em; }
+#drop-zone .formats { color:var(--fg2); font-size:0.8em; opacity:0.7; }
+#file-input { display:none; }
+
+#resume-bar { display:none; margin-top:8px; padding:12px 24px; background:var(--bg2); border:1px solid var(--bg3); border-radius:10px; text-align:center; }
+#resume-bar .resume-info { color:var(--fg2); font-size:0.9em; margin-bottom:8px; }
+#resume-bar button { background:var(--accent); color:#fff; border:none; border-radius:4px; padding:6px 18px; font-size:14px; cursor:pointer; margin:0 4px; }
+#resume-bar button:hover { background:var(--accent-hover); }
+#resume-bar .btn-secondary { background:var(--btn-bg); color:var(--fg); }
+#resume-bar .btn-secondary:hover { background:var(--btn-hover); }
+
+#home .shortcuts-hint { color:var(--fg2); font-size:0.8em; margin-top:20px; text-align:center; line-height:1.8; opacity:0.6; }
+
+/* TOOLBAR */
+#toolbar { display:none; height:44px; background:var(--bar-bg); border-bottom:1px solid var(--bg3); align-items:center; padding:0 10px; gap:6px; flex-shrink:0; }
+#toolbar.visible { display:flex; }
+.tb-btn { background:var(--btn-bg); color:var(--fg); border:none; border-radius:4px; padding:5px 14px; font-size:13px; cursor:pointer; white-space:nowrap; transition:background 0.15s; }
+.tb-btn:hover { background:var(--btn-hover); }
+.tb-spacer { flex:1; }
+#tb-info { color:var(--fg2); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Mode toggle */
+.mode-toggle { display:flex; background:var(--bg3); border-radius:5px; overflow:hidden; }
+.mode-toggle button { background:transparent; color:var(--fg2); border:none; padding:5px 14px; font-size:13px; cursor:pointer; white-space:nowrap; transition:background 0.15s, color 0.15s; }
+.mode-toggle button:hover { background:var(--btn-hover); }
+.mode-toggle button.active { background:var(--accent); color:#fff; }
+
+/* READER */
+#reader { display:none; flex-direction:column; height:100vh; }
+#reader.visible { display:flex; }
+#content-area { flex:1; position:relative; overflow:hidden; background:var(--bg); cursor:pointer; }
+
+#comic-canvas { position:absolute; top:0; left:0; width:100%; height:100%; display:none; }
+#text-display { position:absolute; top:0; left:0; width:100%; height:100%; display:none; overflow:hidden; background:var(--text-bg); }
+#text-inner { padding:5% 10% 8% 10%; font-family:Georgia,'Times New Roman',serif; font-size:22px; line-height:1.7; color:var(--text-fg); max-width:900px; margin:0 auto; }
+#text-inner.wide-mode { padding:3% 3% 6% 3%; max-width:none; }
+#text-inner p { margin:0; }
+#text-inner p.indent { text-indent:2em; }
+#text-inner p.scene-break { height:1.2em; }
+
+#scroll-display { position:absolute; top:0; left:0; width:100%; height:100%; display:none; overflow:hidden; background:var(--text-bg); }
+#scroll-inner { position:absolute; top:0; left:0; right:0; padding:5% 10% 8% 10%; font-family:Georgia,'Times New Roman',serif; font-size:22px; line-height:1.7; color:var(--text-fg); white-space:pre-wrap; max-width:900px; margin:0 auto; }
+#scroll-inner.wide-mode { padding:3% 3% 6% 3%; max-width:none; }
+#scroll-comic-strip { position:absolute; top:0; left:0; right:0; display:none; }
+#scroll-comic-strip img { display:block; width:100%; }
+
+/* OVERLAYS */
+#timer-overlay { position:absolute; bottom:16px; right:16px; background:rgba(0,0,0,0.6); color:#fff; padding:6px 14px; border-radius:8px; font-size:22px; font-family:monospace; pointer-events:none; z-index:10; }
+#pause-overlay { display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.75); color:#fff; padding:20px 44px; border-radius:14px; text-align:center; pointer-events:none; z-index:10; transition:opacity 0.5s; }
+#pause-overlay .pause-title { font-size:48px; font-family:monospace; font-weight:bold; }
+#pause-overlay .pause-hint { font-size:16px; margin-top:8px; opacity:0.7; font-family:sans-serif; }
+#pause-overlay.fade-out { opacity:0; }
+#page-overlay { position:absolute; bottom:16px; left:16px; background:rgba(0,0,0,0.6); color:#fff; padding:6px 14px; border-radius:8px; font-size:16px; font-family:monospace; pointer-events:none; z-index:10; }
+
+/* SCRUB BAR */
+#scrub-bar {
+  position:absolute; top:8px; right:50px; bottom:8px; width:12px; z-index:15; cursor:pointer;
+  background:rgba(128,128,128,0.15); border-radius:6px;
+}
+#scrub-bar:hover { background:rgba(128,128,128,0.3); }
+#scrub-thumb {
+  position:absolute; top:0; left:1px; right:1px; height:40px; min-height:20px;
+  background:var(--accent); border-radius:6px; opacity:0.6; transition:opacity 0.15s;
+}
+#scrub-bar:hover #scrub-thumb, #scrub-thumb.dragging { opacity:0.9; }
+
+/* PROGRESS */
+#progress-bar { height:3px; background:var(--bg3); flex-shrink:0; }
+#progress-fill { height:100%; background:var(--accent); width:0%; transition:width 0.3s; }
+
+/* SETTINGS */
+#settings-panel { display:none; position:fixed; top:0; right:0; width:360px; max-width:90vw; height:100vh; background:var(--bg2); border-left:1px solid var(--bg3); z-index:100; overflow-y:auto; padding:24px; flex-direction:column; gap:18px; }
+#settings-panel.visible { display:flex; }
+#settings-panel h2 { font-size:1.3em; font-weight:500; margin-bottom:4px; }
+#settings-panel h3 { font-size:0.95em; font-weight:500; color:var(--accent); margin-top:6px; padding-top:10px; border-top:1px solid var(--bg3); }
+.setting-group { display:flex; flex-direction:column; gap:8px; }
+.setting-group label { font-size:0.9em; color:var(--fg2); }
+.setting-group input[type="range"] { width:100%; accent-color:var(--accent); }
+.setting-group input[type="number"] { background:var(--bg3); color:var(--fg); border:1px solid var(--bg3); border-radius:4px; padding:6px 10px; font-size:14px; width:100px; }
+.setting-group select { background:var(--bg3); color:var(--fg); border:1px solid var(--bg3); border-radius:4px; padding:6px 10px; font-size:14px; }
+.setting-row { display:flex; align-items:center; justify-content:space-between; }
+.toggle { position:relative; width:44px; height:24px; background:var(--bg3); border-radius:12px; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+.toggle.on { background:var(--accent); }
+.toggle::after { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform 0.2s; }
+.toggle.on::after { transform:translateX(20px); }
+#settings-close { position:absolute; top:12px; left:12px; background:var(--btn-bg); border:none; color:#e85050; font-size:28px; font-weight:bold; cursor:pointer; width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; line-height:1; }
+#settings-close:hover { background:var(--btn-hover); color:#ff6666; }
+#settings-panel h2 { margin-left:44px; }
+
+.save-btns { display:flex; gap:8px; margin-top:4px; }
+.save-btns button { background:var(--btn-bg); color:var(--fg); border:none; border-radius:4px; padding:6px 14px; font-size:13px; cursor:pointer; flex:1; }
+.save-btns button:hover { background:var(--btn-hover); }
+
+/* LOADING */
+#loading { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+#loading.visible { display:flex; }
+#loading .spinner { width:40px; height:40px; border:3px solid var(--bg3); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+#loading .load-text { color:var(--fg2); font-size:1em; }
+
+/* ABOUT */
+.about-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:300; display:none; justify-content:center; align-items:center; overflow-y:auto; padding:20px; }
+.about-overlay.visible { display:flex; }
+.about-panel { background:var(--bg2); color:var(--fg); padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.4); width:90%; max-width:600px; max-height:90vh; overflow-y:auto; position:relative; }
+.about-panel h2 { margin:0 0 5px 0; color:var(--accent); text-align:center; }
+.about-panel .about-subtitle { font-size:14px; color:var(--fg2); margin-bottom:20px; text-align:center; }
+.about-panel h3 { color:var(--accent); margin-top:20px; margin-bottom:10px; font-size:16px; text-align:center; }
+.about-panel p { margin-bottom:14px; line-height:1.6; }
+.about-panel a { color:var(--accent); text-decoration:none; font-weight:bold; }
+.about-panel a:hover { text-decoration:underline; }
+.about-panel .support-box { margin:20px 0; padding:15px; background:var(--bg3); border-radius:8px; text-align:center; }
+.about-panel .support-box p { margin:5px 0; }
+.about-panel .close-about { background:var(--accent); color:#fff; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-size:14px; margin:15px auto 0; display:block; }
+.about-panel .close-about:hover { background:var(--accent-hover); }
+</style>
+</head>
+<body>
+
+<div id="home">
+  <h1>Joe Orange Mobility Reader</h1>
+  <p class="subtitle">Comics &amp; Books — auto-advancing reader</p>
+  <div id="drop-zone">
+    <div class="icon">&#128214;</div>
+    <div class="label">Drop a file here or click to browse</div>
+    <div class="formats">CBR &bull; CBZ &bull; EPUB &bull; PDF &bull; TXT</div>
+  </div>
+  <input type="file" id="file-input" accept=".cbr,.cbz,.epub,.pdf,.txt,.text,.htm,.html">
+  <div id="resume-bar">
+    <div class="resume-info" id="resume-info"></div>
+    <button id="btn-resume">Resume reading</button>
+    <button class="btn-secondary" id="btn-clear-save">Clear</button>
+  </div>
+  <div class="shortcuts-hint">
+    Space = pause &bull; F = fullscreen &bull; Esc = exit fullscreen<br>
+    &larr; &rarr; = prev/next page &bull; S = settings &bull; Click = pause/resume
+  </div>
+  <button class="tb-btn" id="btn-about-home" style="margin-top:10px; padding:8px 24px; font-size:14px;">About</button>
+</div>
+
+<div id="reader">
+  <div id="toolbar">
+    <span id="tb-appname" style="color:var(--accent); font-size:13px; font-weight:500; white-space:nowrap; margin-right:10px;">Joe Orange Mobility Reader</span>
+    <button class="tb-btn" id="btn-file" title="Open a new file">&#128193; File</button>
+    <button class="tb-btn" id="btn-pause">Pause</button>
+    <button class="tb-btn" id="btn-prev">&#9664;</button>
+    <button class="tb-btn" id="btn-next">&#9654;</button>
+    <span id="tb-info" style="margin-left:8px;"></span>
+    <input type="number" id="page-jump" min="1" title="Jump to page" style="width:100px; background:var(--bg3); color:var(--fg); border:1px solid var(--bg3); border-radius:4px; padding:5px 10px; font-size:14px; text-align:center; margin-left:8px;">
+    <span class="tb-spacer"></span>
+    <div class="mode-toggle">
+      <button id="btn-mode-seconds" class="active">Seconds</button>
+      <button id="btn-mode-scroll">Scroll</button>
+    </div>
+    <button class="tb-btn" id="btn-about-toolbar">About</button>
+    <button class="tb-btn" id="btn-fullscreen">Fullscreen</button>
+    <button class="tb-btn" id="btn-settings">Settings</button>
+  </div>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="content-area">
+    <canvas id="comic-canvas"></canvas>
+    <div id="text-display"><div id="text-inner"></div></div>
+    <div id="scroll-display">
+      <div id="scroll-inner"></div>
+      <div id="scroll-comic-strip"></div>
+    </div>
+    <div id="scrub-bar"><div id="scrub-thumb"></div></div>
+    <div id="timer-overlay">5s</div>
+    <div id="pause-overlay">
+      <div class="pause-title">PAUSED</div>
+      <div class="pause-hint">Click or press Space to resume</div>
+    </div>
+    <div id="page-overlay"></div>
+  </div>
+</div>
+
+<div id="settings-panel">
+  <button id="settings-close">&times;</button>
+  <h2>Settings</h2>
+
+  <h3>Timing</h3>
+
+  <div class="setting-group" id="sg-delay">
+    <label>Seconds per half-page (comics)</label>
+    <div class="setting-row">
+      <input type="range" id="set-delay" min="1" max="60" step="0.5" value="5">
+      <input type="number" id="set-delay-num" min="1" max="300" step="0.5" value="5" style="margin-left:10px">
+    </div>
+  </div>
+
+  <div class="setting-group" id="sg-text-timing">
+    <label>Text page timing mode</label>
+    <select id="set-text-timing-mode">
+      <option value="wpm">Reading speed (words per minute)</option>
+      <option value="fixed">Fixed seconds per page</option>
+    </select>
+  </div>
+
+  <div class="setting-group" id="sg-wpm">
+    <label>Words per minute</label>
+    <div class="setting-row">
+      <input type="range" id="set-wpm" min="50" max="600" step="10" value="250">
+      <input type="number" id="set-wpm-num" min="10" max="2000" step="10" value="250" style="margin-left:10px">
+    </div>
+  </div>
+
+  <div class="setting-group" id="sg-text-fixed">
+    <label>Seconds per page</label>
+    <div class="setting-row">
+      <input type="range" id="set-text-delay" min="2" max="120" step="1" value="15">
+      <input type="number" id="set-text-delay-num" min="1" max="600" step="1" value="15" style="margin-left:10px">
+    </div>
+  </div>
+
+  <div class="setting-group" id="sg-scroll-speed">
+    <label>Scroll speed (pixels per second)</label>
+    <div class="setting-row">
+      <input type="range" id="set-scroll-speed" min="5" max="80" step="1" value="15">
+      <input type="number" id="set-scroll-speed-num" min="1" max="200" step="1" value="15" style="margin-left:10px">
+    </div>
+  </div>
+
+  <h3>Display</h3>
+
+  <div class="setting-group">
+    <label>Font size (text mode)</label>
+    <div class="setting-row">
+      <input type="range" id="set-fontsize" min="14" max="48" step="1" value="22">
+      <input type="number" id="set-fontsize-num" min="10" max="72" step="1" value="22" style="margin-left:10px">
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <label>Wide text (fill screen edge to edge)</label>
+      <div class="toggle" id="toggle-wide"></div>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <label>Theme</label>
+    <select id="set-theme">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
+  </div>
+
+  <h3>Overlays</h3>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <label>Show countdown timer</label>
+      <div class="toggle on" id="toggle-timer"></div>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <label>Timer position</label>
+    <select id="set-timer-pos">
+      <option value="bottom-right">Bottom right</option>
+      <option value="bottom-left">Bottom left</option>
+      <option value="top-right">Top right</option>
+      <option value="top-left">Top left</option>
+    </select>
+  </div>
+
+  <div class="setting-group">
+    <label>Timer size</label>
+    <div class="setting-row">
+      <input type="range" id="set-timer-size" min="14" max="48" step="1" value="22">
+      <input type="number" id="set-timer-size-num" min="10" max="72" step="1" value="22" style="margin-left:10px">
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <label>Show page info</label>
+      <div class="toggle on" id="toggle-pageinfo"></div>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <label>Show progress bar</label>
+      <div class="toggle on" id="toggle-progress"></div>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <label>Show scroll bar</label>
+      <div class="toggle on" id="toggle-scrubbar"></div>
+    </div>
+  </div>
+
+  <h3>Bookmarks</h3>
+  <div class="setting-group">
+    <div class="save-btns">
+      <button id="btn-save-bookmark">Save bookmark</button>
+      <button id="btn-export-bookmark">Export JSON</button>
+    </div>
+    <div class="save-btns">
+      <button id="btn-import-bookmark">Import JSON</button>
+    </div>
+    <input type="file" id="import-input" accept=".json" style="display:none">
+  </div>
+</div>
+
+<div class="about-overlay" id="aboutOverlay" onclick="this.classList.remove('visible')">
+  <div class="about-panel" onclick="event.stopPropagation()">
+    <h2>Joe Orange Mobility Reader</h2>
+    <p class="about-subtitle">By author Joe Orange</p>
+    <h3>A Note from the Creator</h3>
+    <p>I had the idea for this program after thinking about people with mobility issues who love to read. Turning a page or scrolling a screen might seem like a small thing, but for some people it's a real barrier. The Mobility Reader takes care of that — it advances the text and turns the pages for you, so all you have to do is sit back and enjoy your book or comic.</p>
+    <p>The app is completely free and open-source. I hope you find it useful, whether you need hands-free reading or simply prefer a more relaxed way to read.</p>
+    <p>When I'm not building tools, I write speculative fiction — sci-fi with a touch of horror. If that sounds like your kind of thing, you can find my books and everything else over at <a href="https://joeorange.com" target="_blank" rel="noopener noreferrer">JoeOrange.com</a>.</p>
+    <div class="support-box">
+      <p style="font-weight:bold; margin-bottom:10px;">Connect:</p>
+      <p><a href="https://joeorange.com" target="_blank" rel="noopener noreferrer">JoeOrange.com</a></p>
+      <p><a href="https://www.amazon.com/stores/Joe-Orange/author/B0CGLH1HX7" target="_blank" rel="noopener noreferrer">Joe's Books on Amazon</a></p>
+      <p>Feedback &amp; Questions: <a href="mailto:JoeOrangeAuthor@proton.me">JoeOrangeAuthor@proton.me</a></p>
+    </div>
+    <button class="close-about" onclick="document.getElementById('aboutOverlay').classList.remove('visible')">Close</button>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="load-text">Loading...</div>
+</div>
+
+<script>
+// STATE
+const state = {
+  mode: null, viewMode: "page", fileType: null, fileName: "",
+  comicImages: [], comicHalves: [],
+  fullText: "", textPages: [],
+  currentIndex: 0, totalSlides: 0,
+  paused: false, timer: 0, currentDelay: 5,
+  scrollY: 0, scrollContentHeight: 0,
+  isFullscreen: false, pauseFadeTimer: 0,
+  settings: {
+    delay: 5, wpm: 250, textTimingMode: "wpm", textFixedDelay: 15,
+    scrollSpeed: 15, fontSize: 22, wideMode: false,
+    showTimer: true, timerPos: "bottom-right", timerSize: 22,
+    showPageInfo: true, showProgress: true, showScrubBar: true, theme: "dark"
+  }
+};
+
+// ELEMENTS
+const $ = id => document.getElementById(id);
+const home = $('home'), reader = $('reader'), toolbar = $('toolbar');
+const contentArea = $('content-area');
+const comicCanvas = $('comic-canvas'), ctx = comicCanvas.getContext('2d');
+const textDisplay = $('text-display'), textInner = $('text-inner');
+const scrollDisplay = $('scroll-display'), scrollInner = $('scroll-inner');
+const scrollComicStrip = $('scroll-comic-strip');
+const timerOverlay = $('timer-overlay'), pauseOverlay = $('pause-overlay');
+const pageOverlay = $('page-overlay');
+const progressFill = $('progress-fill'), progressBar = $('progress-bar');
+const settingsPanel = $('settings-panel');
+const loadingEl = $('loading'), fileInput = $('file-input'), dropZone = $('drop-zone');
+
+// SETTINGS
+function loadSettings() {
+  try { const s = localStorage.getItem('autoReaderSettings'); if (s) Object.assign(state.settings, JSON.parse(s)); } catch(e) {}
+  applySettings();
+}
+function saveSettings() { localStorage.setItem('autoReaderSettings', JSON.stringify(state.settings)); }
+
+function applySettings() {
+  const s = state.settings;
+  $('set-delay').value = s.delay; $('set-delay-num').value = s.delay;
+  $('set-wpm').value = s.wpm; $('set-wpm-num').value = s.wpm;
+  $('set-text-timing-mode').value = s.textTimingMode;
+  $('set-text-delay').value = s.textFixedDelay; $('set-text-delay-num').value = s.textFixedDelay;
+  $('set-scroll-speed').value = s.scrollSpeed; $('set-scroll-speed-num').value = s.scrollSpeed;
+  $('set-fontsize').value = s.fontSize; $('set-fontsize-num').value = s.fontSize;
+  $('set-theme').value = s.theme;
+  $('set-timer-pos').value = s.timerPos;
+  $('set-timer-size').value = s.timerSize; $('set-timer-size-num').value = s.timerSize;
+
+  $('toggle-timer').classList.toggle('on', s.showTimer);
+  $('toggle-pageinfo').classList.toggle('on', s.showPageInfo);
+  $('toggle-progress').classList.toggle('on', s.showProgress);
+  $('toggle-wide').classList.toggle('on', s.wideMode);
+  $('toggle-scrubbar').classList.toggle('on', s.showScrubBar);
+  $('scrub-bar').style.display = s.showScrubBar ? '' : 'none';
+
+  document.body.classList.toggle('light', s.theme === 'light');
+  timerOverlay.style.display = s.showTimer ? '' : 'none';
+  pageOverlay.style.display = s.showPageInfo ? '' : 'none';
+  progressBar.style.display = s.showProgress ? '' : 'none';
+
+  // Timer position
+  timerOverlay.style.bottom = ''; timerOverlay.style.top = '';
+  timerOverlay.style.left = ''; timerOverlay.style.right = '';
+  if (s.timerPos.includes('bottom')) timerOverlay.style.bottom = '16px'; else timerOverlay.style.top = '16px';
+  if (s.timerPos.includes('right')) timerOverlay.style.right = '16px'; else timerOverlay.style.left = '16px';
+  timerOverlay.style.fontSize = s.timerSize + 'px';
+
+  // Text timing: show only the relevant sub-setting
+  const ttVisible = $('sg-text-timing').style.display !== 'none';
+  $('sg-wpm').style.display = (ttVisible && s.textTimingMode === 'wpm') ? '' : 'none';
+  $('sg-text-fixed').style.display = (ttVisible && s.textTimingMode === 'fixed') ? '' : 'none';
+
+  textInner.style.fontSize = s.fontSize + 'px';
+  scrollInner.style.fontSize = s.fontSize + 'px';
+  textInner.classList.toggle('wide-mode', s.wideMode);
+  scrollInner.classList.toggle('wide-mode', s.wideMode);
+}
+
+function setupSettingsListeners() {
+  const pairs = [
+    ['set-delay','set-delay-num','delay'], ['set-wpm','set-wpm-num','wpm'],
+    ['set-text-delay','set-text-delay-num','textFixedDelay'],
+    ['set-scroll-speed','set-scroll-speed-num','scrollSpeed'],
+    ['set-fontsize','set-fontsize-num','fontSize'],
+    ['set-timer-size','set-timer-size-num','timerSize'],
+  ];
+  pairs.forEach(([rId, nId, key]) => {
+    $(rId).addEventListener('input', () => { const v=parseFloat($(rId).value); $(nId).value=v; state.settings[key]=v; saveSettings(); applySettings(); onSettingChanged(key); });
+    $(nId).addEventListener('change', () => { const v=parseFloat($(nId).value); $(rId).value=v; state.settings[key]=v; saveSettings(); applySettings(); onSettingChanged(key); });
+  });
+
+  const toggles = {'toggle-timer':'showTimer','toggle-pageinfo':'showPageInfo','toggle-progress':'showProgress','toggle-scrubbar':'showScrubBar','toggle-wide':'wideMode'};
+  Object.entries(toggles).forEach(([id,key]) => {
+    $(id).addEventListener('click', () => { state.settings[key]=!state.settings[key]; saveSettings(); applySettings(); if(key==='wideMode') onSettingChanged('wideMode'); });
+  });
+
+  $('set-theme').addEventListener('change', () => { state.settings.theme=$('set-theme').value; saveSettings(); applySettings(); });
+  $('set-text-timing-mode').addEventListener('change', () => { state.settings.textTimingMode=$('set-text-timing-mode').value; saveSettings(); applySettings(); onSettingChanged('textTimingMode'); });
+  $('set-timer-pos').addEventListener('change', () => { state.settings.timerPos=$('set-timer-pos').value; saveSettings(); applySettings(); });
+  $('settings-close').addEventListener('click', () => settingsPanel.classList.remove('visible'));
+}
+
+function onSettingChanged(key) {
+  if ((key==='fontSize'||key==='wideMode') && state.mode==='text' && state.viewMode==='page') {
+    paginateText(); state.currentIndex=Math.min(state.currentIndex,state.totalSlides-1); showCurrentSlide();
+  }
+  if (key==='delay' && state.mode==='comic' && state.viewMode==='page') {
+    state.currentDelay=state.settings.delay; state.timer=Math.min(state.timer,state.currentDelay);
+  }
+  if ((key==='wpm'||key==='textFixedDelay'||key==='textTimingMode') && state.mode==='text' && state.viewMode==='page') recalcTextDelay();
+}
+
+// BOOKMARKS
+function autoSaveBookmark() {
+  if (!state.mode || !state.fileName) return;
+  const bm = {
+    fileName: state.fileName, mode: state.mode, viewMode: state.viewMode,
+    currentIndex: state.currentIndex, scrollY: state.scrollY,
+    totalSlides: state.totalSlides, timestamp: Date.now()
+  };
+  localStorage.setItem('autoReaderBookmark', JSON.stringify(bm));
+}
+
+function loadBookmark() {
+  try { const s = localStorage.getItem('autoReaderBookmark'); return s ? JSON.parse(s) : null; } catch(e) { return null; }
+}
+
+function showResumeBar() {
+  const bm = loadBookmark();
+  if (!bm) { $('resume-bar').style.display = 'none'; return; }
+  const pct = bm.totalSlides > 0 ? Math.round((bm.currentIndex / bm.totalSlides) * 100) : 0;
+  $('resume-info').textContent = `"${bm.fileName}" — ${pct}% (page ${bm.currentIndex + 1} of ${bm.totalSlides})`;
+  $('resume-bar').style.display = '';
+}
+
+function exportBookmark() {
+  autoSaveBookmark();
+  const bm = loadBookmark();
+  if (!bm) { alert('No bookmark to export'); return; }
+  const blob = new Blob([JSON.stringify(bm, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = bm.fileName.replace(/\.[^.]+$/, '') + '_bookmark.json';
+  a.click();
+}
+
+function importBookmark(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const bm = JSON.parse(reader.result);
+      if (bm.fileName && bm.currentIndex !== undefined) {
+        localStorage.setItem('autoReaderBookmark', JSON.stringify(bm));
+        showResumeBar();
+        alert(`Bookmark loaded for "${bm.fileName}". Open that file to resume.`);
+      }
+    } catch(e) { alert('Invalid bookmark file'); }
+  };
+  reader.readAsText(file);
+}
+
+// FILE LOADING
+function showLoading(msg) { loadingEl.querySelector('.load-text').textContent=msg||'Loading...'; loadingEl.classList.add('visible'); }
+function hideLoading() { loadingEl.classList.remove('visible'); }
+
+async function handleFile(file) {
+  const name = file.name.toLowerCase();
+  state.fileName = file.name;
+
+  if (name.endsWith('.cbz')) { state.fileType='cbz'; state.mode='comic'; showLoading('Extracting comic...'); await loadCBZ(file); }
+  else if (name.endsWith('.cbr')) { state.fileType='cbr'; state.mode='comic'; showLoading('Extracting comic...'); await loadCBR(file); }
+  else if (name.endsWith('.epub')) { state.fileType='epub'; state.mode='text'; showLoading('Loading book...'); await loadEPUB(file); }
+  else if (name.endsWith('.pdf')) { state.fileType='pdf'; state.mode='text'; showLoading('Loading PDF...'); await loadPDF(file); }
+  else if (name.endsWith('.txt')||name.endsWith('.text')||name.endsWith('.html')||name.endsWith('.htm')) { state.fileType='txt'; state.mode='text'; showLoading('Loading text...'); await loadTXT(file); }
+  else { alert('Unsupported file type.\nSupported: CBR, CBZ, EPUB, PDF, TXT'); return; }
+
+  hideLoading();
+
+  // Check for saved bookmark
+  const bm = loadBookmark();
+  if (bm && bm.fileName === state.fileName && bm.currentIndex > 0) {
+    if (confirm(`Resume "${state.fileName}" from page ${bm.currentIndex + 1}?`)) {
+      startReader(bm);
+      return;
+    }
+  }
+  startReader();
+}
+
+async function loadCBZ(file) {
+  const data = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(data);
+  const imageExts = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
+  const entries = [];
+  zip.forEach((path, entry) => { if (!entry.dir && imageExts.test(path)) entries.push({path, entry}); });
+  entries.sort((a,b) => naturalSort(a.path, b.path));
+
+  state.comicImages = [];
+  for (let i = 0; i < entries.length; i++) {
+    showLoading(`Loading page ${i+1} of ${entries.length}...`);
+    const blob = await entries[i].entry.async('blob');
+    state.comicImages.push(await loadImageFromURL(URL.createObjectURL(blob)));
+  }
+  buildComicHalves();
+}
+
+async function loadCBR(file) {
+  try {
+    const archive = await Unarchiver.open(file);
+    const imageExts = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
+    const imageEntries = archive.entries.filter(e => e.is_file && imageExts.test(e.name));
+    imageEntries.sort((a,b) => naturalSort(a.name, b.name));
+
+    state.comicImages = [];
+    for (let i = 0; i < imageEntries.length; i++) {
+      showLoading(`Loading page ${i+1} of ${imageEntries.length}...`);
+      const fileObj = await imageEntries[i].read();
+      state.comicImages.push(await loadImageFromURL(URL.createObjectURL(fileObj)));
+    }
+    Unarchiver.close(archive);
+    buildComicHalves();
+  } catch(err) {
+    hideLoading();
+    alert('Failed to open CBR file: ' + err.message);
+    throw err;
+  }
+}
+
+function buildComicHalves() {
+  state.comicHalves = [];
+  for (const img of state.comicImages) {
+    state.comicHalves.push({img, half:'top'});
+    state.comicHalves.push({img, half:'bottom'});
+  }
+  state.totalSlides = state.comicHalves.length;
+}
+
+async function loadEPUB(file) {
+  const data = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(data);
+
+  let opfPath = '';
+  const container = zip.file('META-INF/container.xml');
+  if (container) { const xml = await container.async('string'); const m = xml.match(/full-path="([^"]+)"/); if (m) opfPath = m[1]; }
+
+  let spine = [], basePath = '';
+  if (opfPath) {
+    basePath = opfPath.substring(0, opfPath.lastIndexOf('/') + 1);
+    const opf = await zip.file(opfPath)?.async('string');
+    if (opf) {
+      const manifest = {};
+      let m; const ir = /<item\s[^>]*id="([^"]*)"[^>]*href="([^"]*)"[^>]*>/g;
+      while ((m = ir.exec(opf)) !== null) manifest[m[1]] = m[2];
+      const sr = /<itemref\s[^>]*idref="([^"]*)"/g;
+      while ((m = sr.exec(opf)) !== null) { if (manifest[m[1]]) spine.push(basePath + manifest[m[1]]); }
+    }
+  }
+  if (spine.length === 0) {
+    zip.forEach((path, entry) => { if (!entry.dir && /\.(html?|xhtml)$/i.test(path)) spine.push(path); });
+    spine.sort((a,b) => naturalSort(a,b));
+  }
+
+  let allText = [];
+  for (const path of spine) { const f = zip.file(path); if (!f) continue; const h = await f.async('string'); const t = stripHTML(h); if (t.trim()) allText.push(t.trim()); }
+  state.fullText = allText.join('\n\n');
+}
+
+async function loadPDF(file) {
+  const data = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data}).promise;
+  const parts = [];
+  for (let i=1; i<=pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    let lastY=null, lineText=''; const lines=[];
+    for (const item of content.items) {
+      if (lastY!==null && Math.abs(item.transform[5]-lastY)>2) { lines.push(lineText); lineText=''; }
+      lineText += item.str; lastY = item.transform[5];
+    }
+    if (lineText) lines.push(lineText);
+    if (lines.length) parts.push(lines.join('\n'));
+  }
+  state.fullText = parts.join('\n\n');
+}
+
+async function loadTXT(file) { state.fullText = await file.text(); }
+
+function loadImageFromURL(src) {
+  return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; });
+}
+
+function stripHTML(raw) {
+  let t = raw;
+  t = t.replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '');
+  t = t.replace(/<\/(p|div|blockquote|article|section|aside|figure|figcaption|header|footer|main|nav)>/gi, '\n\n');
+  t = t.replace(/<\/(h[1-6])>/gi, '\n\n');
+  t = t.replace(/<br\s*\/?>/gi, '\n');
+  t = t.replace(/<\/li>/gi, '\n');
+  t = t.replace(/<\/tr>/gi, '\n');
+  t = t.replace(/<[^>]+>/g, '');
+  const ta = document.createElement('textarea'); ta.innerHTML = t; t = ta.value;
+  t = t.replace(/[^\S\n]+/g, ' ');
+  t = t.split('\n').map(l => l.trim()).join('\n');
+  t = t.replace(/\n{3,}/g, '\n\n');
+  return t.trim();
+}
+
+function naturalSort(a, b) {
+  const re=/(\d+)/g, ap=a.split(re), bp=b.split(re);
+  for (let i=0; i<Math.max(ap.length,bp.length); i++) {
+    const x=ap[i]||'', y=bp[i]||'';
+    if (/^\d+$/.test(x)&&/^\d+$/.test(y)) { const d=parseInt(x)-parseInt(y); if(d) return d; }
+    else { const d=x.toLowerCase().localeCompare(y.toLowerCase()); if(d) return d; }
+  }
+  return 0;
+}
+
+// TEXT PAGINATION
+function paginateText() {
+  const area = contentArea.getBoundingClientRect();
+  const fs = state.settings.fontSize, lh = fs * 1.7;
+  const wide = state.settings.wideMode;
+  const padX = wide ? area.width*0.02 : area.width*0.1;
+  const padY = wide ? area.height*0.02 : area.height*0.06;
+  const usableH = area.height - padY*2, usableW = area.width - padX*2;
+  const linesPerPage = Math.max(1, Math.floor(usableH / lh));
+
+  const allLines = wrapText(state.fullText, usableW, fs);
+
+  // Each line is {text, type} where type is 'text', 'blank', 'first-after-break'
+  state.textPages = [];
+  for (let i=0; i<allLines.length; i+=linesPerPage) {
+    state.textPages.push(allLines.slice(i, i+linesPerPage));
+  }
+  if (!state.textPages.length) state.textPages = [[{text:'', type:'text'}]];
+  state.totalSlides = state.textPages.length;
+}
+
+function wrapText(text, maxW, fontSize) {
+  const measure = document.createElement('canvas').getContext('2d');
+  measure.font = fontSize + 'px Georgia, "Times New Roman", serif';
+
+  const lines = [];
+  const paragraphs = text.split('\n');
+  let afterBlank = true; // track if previous was a blank line (scene break)
+
+  for (let pi=0; pi<paragraphs.length; pi++) {
+    const para = paragraphs[pi];
+    if (!para.trim()) {
+      lines.push({text:'', type:'blank'});
+      afterBlank = true;
+      continue;
+    }
+
+    const words = para.split(/\s+/).filter(w=>w);
+    if (!words.length) { lines.push({text:'', type:'blank'}); afterBlank=true; continue; }
+
+    let isFirst = true;
+    let current = words[0];
+    for (let i=1; i<words.length; i++) {
+      const test = current + ' ' + words[i];
+      if (measure.measureText(test).width <= maxW) { current = test; }
+      else {
+        const type = isFirst ? (afterBlank ? 'first-after-break' : 'indent') : 'text';
+        lines.push({text: current, type});
+        current = words[i];
+        isFirst = false;
+      }
+    }
+    const type = isFirst ? (afterBlank ? 'first-after-break' : 'indent') : 'text';
+    lines.push({text: current, type});
+    afterBlank = false;
+  }
+  return lines;
+}
+
+// READER
+function startReader(bookmark) {
+  home.style.display = 'none';
+  reader.classList.add('visible');
+  toolbar.classList.add('visible');
+
+  state.paused = false;
+  state.pauseFadeTimer = 0;
+  state.viewMode = bookmark?.viewMode || 'page';
+  state.currentIndex = 0;
+
+  if (state.mode === 'comic') {
+    state.currentDelay = state.settings.delay;
+    state.timer = state.currentDelay;
+    $('sg-delay').style.display = '';
+    $('sg-text-timing').style.display = 'none';
+    $('sg-wpm').style.display = 'none';
+    $('sg-text-fixed').style.display = 'none';
+  } else {
+    paginateText();
+    $('sg-delay').style.display = 'none';
+    $('sg-text-timing').style.display = '';
+  }
+
+  if (bookmark) {
+    state.currentIndex = Math.min(bookmark.currentIndex, state.totalSlides - 1);
+    state.scrollY = bookmark.scrollY || 0;
+  }
+
+  if (state.mode === 'text') recalcTextDelay();
+  applySettings();
+  updateModeButton();
+  showCurrentSlide();
+  updateUI();
+  lastTime = 0;
+  requestAnimationFrame(tick);
+}
+
+// DISPLAY
+function showCurrentSlide() {
+  comicCanvas.style.display='none'; textDisplay.style.display='none';
+  scrollDisplay.style.display='none'; scrollComicStrip.style.display='none';
+  if (state.viewMode==='scroll') { showScrollMode(); return; }
+  if (state.mode==='comic') showComicHalf(); else showTextPage();
+}
+
+function showComicHalf() {
+  const h = state.comicHalves[state.currentIndex]; if(!h) return;
+  const area = contentArea.getBoundingClientRect();
+  comicCanvas.width=area.width; comicCanvas.height=area.height;
+  comicCanvas.style.display='block';
+  const img=h.img, srcY=h.half==='top'?0:img.naturalHeight/2, srcH=img.naturalHeight/2;
+  ctx.clearRect(0,0,area.width,area.height);
+  ctx.drawImage(img, 0,srcY,img.naturalWidth,srcH, 0,0,area.width,area.height);
+}
+
+function showTextPage() {
+  const pageLines = state.textPages[state.currentIndex];
+  if (!pageLines) return;
+  textDisplay.style.display = 'block';
+  textInner.innerHTML = '';
+  for (const line of pageLines) {
+    const p = document.createElement('p');
+    if (line.type === 'blank') {
+      p.className = 'scene-break';
+    } else {
+      p.textContent = line.text;
+      if (line.type === 'indent') p.className = 'indent';
+      // 'first-after-break' and 'text' get no indent
+    }
+    textInner.appendChild(p);
+  }
+}
+
+function showScrollMode() {
+  scrollDisplay.style.display='block';
+  if (state.mode==='text') {
+    scrollInner.style.display=''; scrollComicStrip.style.display='none';
+    scrollInner.textContent = state.fullText;
+    requestAnimationFrame(() => { state.scrollContentHeight=scrollInner.scrollHeight; });
+  } else {
+    scrollInner.style.display='none'; scrollComicStrip.style.display='block';
+    if (!scrollComicStrip.children.length) {
+      for (const img of state.comicImages) { const el=document.createElement('img'); el.src=img.src; scrollComicStrip.appendChild(el); }
+    }
+    requestAnimationFrame(() => { state.scrollContentHeight=scrollComicStrip.scrollHeight; });
+  }
+}
+
+function updateScrollPosition() {
+  const area=contentArea.getBoundingClientRect();
+  const maxScroll=Math.max(0, state.scrollContentHeight-area.height);
+  if (state.scrollY>maxScroll) state.scrollY=maxScroll;
+  const el = state.mode==='text' ? scrollInner : scrollComicStrip;
+  el.style.transform = `translateY(${-state.scrollY}px)`;
+  if (state.scrollY>=maxScroll && maxScroll>0) state.paused=true;
+}
+
+function resizeHandler() {
+  if (!state.mode) return;
+  if (state.viewMode==='page') {
+    if (state.mode==='text') { const oi=state.currentIndex; paginateText(); state.currentIndex=Math.min(oi,state.totalSlides-1); }
+    showCurrentSlide();
+  } else showScrollMode();
+}
+
+// TIMING
+function recalcTextDelay() {
+  if (state.mode!=='text'||state.viewMode!=='page') return;
+  if (state.settings.textTimingMode==='fixed') {
+    state.currentDelay = state.settings.textFixedDelay;
+  } else {
+    const lines = state.textPages[state.currentIndex] || [];
+    const words = lines.reduce((n,l) => n + l.text.split(/\s+/).filter(w=>w).length, 0);
+    state.currentDelay = Math.max(2, (words / state.settings.wpm) * 60);
+  }
+  state.timer = state.currentDelay;
+}
+
+let lastTime = 0;
+function tick(timestamp) {
+  if (!state.mode) return;
+  if (!lastTime) lastTime=timestamp;
+  const dt = Math.min((timestamp-lastTime)/1000, 0.1);
+  lastTime = timestamp;
+
+  if (state.pauseFadeTimer > 0) {
+    state.pauseFadeTimer -= dt;
+    if (state.pauseFadeTimer<=0) { state.pauseFadeTimer=0; pauseOverlay.style.display='none'; resetPauseText(); }
+    else if (state.pauseFadeTimer<0.5) pauseOverlay.classList.add('fade-out');
+  }
+
+  if (!state.paused) {
+    if (state.viewMode==='scroll') {
+      state.scrollY += state.settings.scrollSpeed * dt;
+      updateScrollPosition();
+    } else {
+      state.timer -= dt;
+      if (state.timer<=0) {
+        state.currentIndex++;
+        if (state.currentIndex>=state.totalSlides) {
+          state.currentIndex=state.totalSlides-1; state.paused=true;
+          showPauseIndicator(false);
+        } else {
+          if (state.mode==='text') recalcTextDelay();
+          else { state.currentDelay=state.settings.delay; state.timer=state.currentDelay; }
+          showCurrentSlide();
+        }
+      }
+    }
+  }
+
+  // Auto-save every ~2 seconds
+  if (Math.floor(timestamp/2000) !== Math.floor((timestamp-dt*1000)/2000)) autoSaveBookmark();
+
+  updateUI();
+  requestAnimationFrame(tick);
+}
+
+function showPauseIndicator(autoFade) {
+  pauseOverlay.classList.remove('fade-out'); pauseOverlay.style.display=''; pauseOverlay.style.opacity='1';
+  state.pauseFadeTimer = autoFade ? 2.5 : 0;
+}
+
+function resetPauseText() {
+  pauseOverlay.querySelector('.pause-title').textContent='PAUSED';
+  pauseOverlay.querySelector('.pause-hint').textContent='Click or press Space to resume';
+}
+
+function updateUI() {
+  if (state.viewMode==='page') {
+    const secs=Math.max(1,Math.ceil(state.timer));
+    timerOverlay.textContent=secs+'s';
+    timerOverlay.style.display=state.settings.showTimer?'':'none';
+  } else timerOverlay.style.display='none';
+
+  $('btn-pause').textContent = state.paused ? 'Play' : 'Pause';
+
+  if (state.viewMode==='page') {
+    if (state.mode==='comic') {
+      const pn=Math.floor(state.currentIndex/2)+1, half=state.comicHalves[state.currentIndex]?.half||'';
+      pageOverlay.textContent=`${pn}/${state.comicImages.length} ${half}`;
+      $('tb-info').textContent=`${state.fileName} \u2014 Page ${pn}/${state.comicImages.length} (${half}) | ${state.settings.delay}s`;
+    } else {
+      pageOverlay.textContent=`${state.currentIndex+1}/${state.totalSlides}`;
+      const ti = state.settings.textTimingMode==='fixed' ? `${state.settings.textFixedDelay}s/page` : `${state.settings.wpm} wpm`;
+      $('tb-info').textContent=`${state.fileName} \u2014 Page ${state.currentIndex+1}/${state.totalSlides} | ${ti}`;
+    }
+  } else {
+    const area=contentArea.getBoundingClientRect();
+    const mx=Math.max(1,state.scrollContentHeight-area.height);
+    const pct=Math.min(100,Math.round((state.scrollY/mx)*100));
+    pageOverlay.textContent=`${pct}%`;
+    $('tb-info').textContent=`${state.fileName} \u2014 Scroll ${pct}% | ${state.settings.scrollSpeed} px/s`;
+  }
+  pageOverlay.style.display=state.settings.showPageInfo?'':'none';
+
+  // Update page jump placeholder
+  if (document.activeElement !== $('page-jump')) {
+    if (state.mode === 'comic') {
+      $('page-jump').placeholder = Math.floor(state.currentIndex / 2) + 1;
+      $('page-jump').max = state.comicImages.length;
+    } else {
+      $('page-jump').placeholder = state.currentIndex + 1;
+      $('page-jump').max = state.totalSlides;
+    }
+    $('page-jump').value = '';
+  }
+
+  if (state.viewMode==='page') progressFill.style.width=((state.currentIndex+1)/state.totalSlides*100)+'%';
+  else {
+    const area=contentArea.getBoundingClientRect();
+    const mx=Math.max(1,state.scrollContentHeight-area.height);
+    progressFill.style.width=Math.min(100,(state.scrollY/mx)*100)+'%';
+  }
+
+  updateScrubThumb();
+}
+
+function updateModeButton() {
+  $('btn-mode-seconds').classList.toggle('active', state.viewMode==='page');
+  $('btn-mode-scroll').classList.toggle('active', state.viewMode==='scroll');
+  $('sg-scroll-speed').style.display = state.viewMode==='scroll' ? '' : 'none';
+  if (state.viewMode==='page') {
+    $('sg-delay').style.display = state.mode==='comic' ? '' : 'none';
+    $('sg-text-timing').style.display = state.mode==='text' ? '' : 'none';
+  } else {
+    $('sg-delay').style.display='none'; $('sg-text-timing').style.display='none';
+    $('sg-wpm').style.display='none'; $('sg-text-fixed').style.display='none';
+  }
+  applySettings();
+}
+
+function toggleViewMode() {
+  if (state.viewMode==='page') { state.viewMode='scroll'; state.scrollY=0; }
+  else { state.viewMode='page'; if (state.mode==='text') { paginateText(); state.currentIndex=Math.min(state.currentIndex,state.totalSlides-1); recalcTextDelay(); } state.timer=state.currentDelay; }
+  updateModeButton(); showCurrentSlide();
+}
+
+// CONTROLS
+function togglePause() {
+  state.paused=!state.paused;
+  if (state.paused) { showPauseIndicator(false); }
+  else {
+    pauseOverlay.querySelector('.pause-title').textContent='RESUMED';
+    pauseOverlay.querySelector('.pause-hint').textContent='';
+    pauseOverlay.style.display=''; pauseOverlay.classList.remove('fade-out');
+    state.pauseFadeTimer=1.5;
+  }
+}
+
+function prevSlide() {
+  if (state.viewMode==='scroll') { state.scrollY=Math.max(0,state.scrollY-200); updateScrollPosition(); return; }
+  if (state.currentIndex>0) { state.currentIndex--; if(state.mode==='text') recalcTextDelay(); else { state.currentDelay=state.settings.delay; state.timer=state.currentDelay; } showCurrentSlide(); }
+}
+
+function nextSlide() {
+  if (state.viewMode==='scroll') { state.scrollY+=200; updateScrollPosition(); return; }
+  if (state.currentIndex<state.totalSlides-1) { state.currentIndex++; if(state.mode==='text') recalcTextDelay(); else { state.currentDelay=state.settings.delay; state.timer=state.currentDelay; } showCurrentSlide(); }
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+document.addEventListener('fullscreenchange', () => {
+  state.isFullscreen=!!document.fullscreenElement;
+  if (state.isFullscreen) toolbar.classList.remove('visible');
+  else if (state.mode) toolbar.classList.add('visible');
+  setTimeout(resizeHandler, 100);
+});
+
+// SCRUB BAR
+const scrubBar = $('scrub-bar'), scrubThumb = $('scrub-thumb');
+let scrubDragging = false;
+
+function scrubTo(y) {
+  const rect = scrubBar.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (y - rect.top) / rect.height));
+  if (state.viewMode === 'page') {
+    state.currentIndex = Math.round(ratio * (state.totalSlides - 1));
+    if (state.mode === 'text') recalcTextDelay();
+    else { state.currentDelay = state.settings.delay; state.timer = state.currentDelay; }
+    showCurrentSlide();
+  } else {
+    const area = contentArea.getBoundingClientRect();
+    const maxScroll = Math.max(0, state.scrollContentHeight - area.height);
+    state.scrollY = ratio * maxScroll;
+    updateScrollPosition();
+  }
+}
+
+function updateScrubThumb() {
+  if (!state.settings.showScrubBar) return;
+  let ratio = 0;
+  if (state.viewMode === 'page') {
+    ratio = state.totalSlides > 1 ? state.currentIndex / (state.totalSlides - 1) : 0;
+  } else {
+    const area = contentArea.getBoundingClientRect();
+    const maxScroll = Math.max(1, state.scrollContentHeight - area.height);
+    ratio = state.scrollY / maxScroll;
+  }
+  ratio = Math.max(0, Math.min(1, ratio));
+  const barH = scrubBar.getBoundingClientRect().height;
+  const thumbH = Math.max(20, Math.min(80, barH * 0.05));
+  scrubThumb.style.height = thumbH + 'px';
+  scrubThumb.style.top = (ratio * (barH - thumbH)) + 'px';
+}
+
+scrubBar.addEventListener('mousedown', e => {
+  e.preventDefault();
+  scrubDragging = true;
+  scrubThumb.classList.add('dragging');
+  scrubTo(e.clientY);
+});
+document.addEventListener('mousemove', e => { if (scrubDragging) { e.preventDefault(); scrubTo(e.clientY); } });
+document.addEventListener('mouseup', () => { scrubDragging = false; scrubThumb.classList.remove('dragging'); });
+
+// Prevent content click from firing when scrubbing
+scrubBar.addEventListener('click', e => e.stopPropagation());
+
+// EVENTS
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) {
+    if (state.mode) { state.comicImages=[]; state.comicHalves=[]; state.fullText=''; state.textPages=[]; scrollComicStrip.innerHTML=''; }
+    handleFile(fileInput.files[0]);
+  }
+});
+
+$('btn-file').addEventListener('click', () => { fileInput.value=''; fileInput.click(); });
+
+$('page-jump').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = parseInt($('page-jump').value);
+    if (!isNaN(val) && val >= 1) {
+      if (state.viewMode === 'page') {
+        const maxPage = state.mode === 'comic' ? state.comicImages.length : state.totalSlides;
+        // For comics, each page = 2 halves (top+bottom), jump to top of that page
+        if (state.mode === 'comic') {
+          const pageIdx = Math.min(val, state.comicImages.length) - 1;
+          state.currentIndex = pageIdx * 2;
+        } else {
+          state.currentIndex = Math.min(val, state.totalSlides) - 1;
+        }
+        if (state.mode === 'text') recalcTextDelay();
+        else { state.currentDelay = state.settings.delay; state.timer = state.currentDelay; }
+        showCurrentSlide();
+      }
+    }
+    $('page-jump').blur();
+  }
+});
+
+$('page-jump').addEventListener('focus', () => { state.paused = true; showPauseIndicator(false); });
+$('btn-pause').addEventListener('click', togglePause);
+$('btn-prev').addEventListener('click', prevSlide);
+$('btn-next').addEventListener('click', nextSlide);
+$('btn-fullscreen').addEventListener('click', toggleFullscreen);
+$('btn-mode-seconds').addEventListener('click', () => { if (state.viewMode!=='page') toggleViewMode(); });
+$('btn-mode-scroll').addEventListener('click', () => { if (state.viewMode!=='scroll') toggleViewMode(); });
+$('btn-settings').addEventListener('click', () => settingsPanel.classList.toggle('visible'));
+
+$('btn-save-bookmark').addEventListener('click', () => { autoSaveBookmark(); alert('Bookmark saved!'); });
+$('btn-export-bookmark').addEventListener('click', exportBookmark);
+$('btn-import-bookmark').addEventListener('click', () => $('import-input').click());
+$('import-input').addEventListener('change', () => { if($('import-input').files.length) importBookmark($('import-input').files[0]); });
+
+$('btn-resume').addEventListener('click', () => {
+  const bm = loadBookmark();
+  if (bm) {
+    alert(`Open the file "${bm.fileName}" to resume from page ${bm.currentIndex + 1}.`);
+    fileInput.value=''; fileInput.click();
+  }
+});
+$('btn-clear-save').addEventListener('click', () => { localStorage.removeItem('autoReaderBookmark'); showResumeBar(); });
+$('btn-about-home').addEventListener('click', () => $('aboutOverlay').classList.add('visible'));
+$('btn-about-toolbar').addEventListener('click', () => $('aboutOverlay').classList.add('visible'));
+
+contentArea.addEventListener('click', e => {
+  if (settingsPanel.classList.contains('visible')) return;
+  if (e.target===contentArea||e.target===comicCanvas||e.target===textDisplay||e.target===textInner||
+      e.target===scrollDisplay||e.target===scrollInner||e.target===scrollComicStrip||e.target.closest('#scroll-comic-strip')||
+      e.target.closest('#text-inner')) togglePause();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  switch(e.key) {
+    case ' ': e.preventDefault(); if(state.mode) togglePause(); break;
+    case 'f': case 'F': if(state.mode) toggleFullscreen(); break;
+    case 'Escape':
+      if (settingsPanel.classList.contains('visible')) settingsPanel.classList.remove('visible');
+      else if (state.isFullscreen) document.exitFullscreen();
+      break;
+    case 'ArrowLeft': if(state.mode) prevSlide(); break;
+    case 'ArrowRight': if(state.mode) nextSlide(); break;
+    case 's': case 'S': if(state.mode) settingsPanel.classList.toggle('visible'); break;
+  }
+});
+
+window.addEventListener('resize', () => { clearTimeout(window._rt); window._rt=setTimeout(resizeHandler, 150); });
+
+// INIT
+loadSettings();
+setupSettingsListeners();
+showResumeBar();
+if (typeof pdfjsLib!=='undefined') pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+</body>
+</html>
