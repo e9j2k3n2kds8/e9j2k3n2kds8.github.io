@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Tools - Joe Orange</title>
+    <meta name="description" content="Free browser-based tools for readers and writers by author Joe Orange. No install, no account, no data collection.">
+    <meta name="author" content="Joe Orange">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://joeorange.com/free-tools.html">
+    <meta property="og:title" content="Free Tools - Joe Orange">
+    <meta property="og:description" content="Free browser-based tools for readers and writers. No install, no account, no data collection.">
+    <meta property="og:image" content="https://joeorange.com/bootstrap-cover.jpg">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle 4s infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: #ff8c42;
+            text-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
+            animation: glow 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 140, 66, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 140, 66, 0.8), 0 0 40px rgba(255, 140, 66, 0.6); }
+        }
+
+        header p { color: #a0a0a0; font-style: italic; font-size: 1.1em; letter-spacing: 1px; }
+
+        nav { text-align: center; padding: 15px 0 30px; }
+        nav a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 1em;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        nav a:hover { color: #ff6b35; transform: translateY(-2px); }
+
+        .intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            color: #c0c0c0;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 140, 66, 0.08) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .tool-card:hover::before { opacity: 1; }
+        .tool-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 140, 66, 0.6);
+            box-shadow: 0 15px 35px rgba(255, 140, 66, 0.15);
+        }
+
+        .tool-icon { font-size: 2.5em; margin-bottom: 15px; }
+
+        .tool-card h2 {
+            color: #ff8c42;
+            font-size: 1.4em;
+            font-weight: 400;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .tool-card p {
+            color: #c0c0c0;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .tag-list { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag {
+            background: rgba(255, 140, 66, 0.12);
+            color: #ff8c42;
+            border: 1px solid rgba(255, 140, 66, 0.3);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.78em;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
+            padding: 10px 22px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 140, 66, 0.5); }
+
+        .btn-secondary {
+            display: inline-block;
+            background: rgba(255, 140, 66, 0.1);
+            color: #ff8c42;
+            border: 1px solid rgba(255, 140, 66, 0.4);
+            padding: 10px 22px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: rgba(255, 140, 66, 0.2); transform: translateY(-2px); }
+
+        .notice {
+            text-align: center;
+            margin: 0 auto 60px;
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(255, 140, 66, 0.05);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 10px;
+            color: #a0a0a0;
+            font-size: 0.9em;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255, 140, 66, 0.3);
+        }
+        footer p { color: #888; font-size: 0.9em; }
+        footer a { color: #ff8c42; text-decoration: none; }
+        footer a:hover { color: #ff6b35; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2.2em; letter-spacing: 4px; }
+            .tools-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <h1>FREE TOOLS</h1>
+            <p>By author Joe Orange</p>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="index.html#books">Books</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <p class="intro">
+            A small collection of browser-based tools I built for myself — and decided to share. No installation, no account, no data collected. Everything runs locally in your browser.
+        </p>
+
+        <div class="tools-grid">
+
+            <!-- Mobility Reader -->
+            <div class="tool-card">
+                <div class="tool-icon">📖</div>
+                <h2>Mobility Reader</h2>
+                <p>Auto-advances pages and scrolls through text so you don't have to. Built for readers with mobility limitations, or anyone who wants a hands-free reading experience.</p>
+                <div class="tag-list">
+                    <span class="tag">EPUB</span>
+                    <span class="tag">PDF</span>
+                    <span class="tag">CBR / CBZ</span>
+                    <span class="tag">TXT</span>
+                    <span class="tag">Accessibility</span>
+                </div>
+                <div class="btn-group">
+                    <a href="mobility-reader.html" class="btn-primary">Learn More</a>
+                    <a href="JoeOrangeMobilityReader.html" class="btn-secondary">Open App</a>
+                </div>
+            </div>
+
+            <!-- Joe Orange Writer -->
+            <div class="tool-card">
+                <div class="tool-icon">✍️</div>
+                <h2>Joe Orange Writer</h2>
+                <p>A distraction-free writing app for screenwriters and novelists. Supports Fountain format, PDF export, sticky notes, scene navigation, and retro display presets.</p>
+                <div class="tag-list">
+                    <span class="tag">Screenwriting</span>
+                    <span class="tag">Fountain</span>
+                    <span class="tag">PDF Export</span>
+                    <span class="tag">Sticky Notes</span>
+                </div>
+                <div class="btn-group">
+                    <a href="JoeOrangeWriter.html" class="btn-primary">Open App</a>
+                    <a href="JoeOrangeWriter.html" class="btn-secondary" download>Download</a>
+                </div>
+            </div>
+
+            <!-- Joe Orange Canvas -->
+            <div class="tool-card">
+                <div class="tool-icon">🎨</div>
+                <h2>Joe Orange Canvas</h2>
+                <p>A visual thinking space for writers. Pin images, sketch story structure, map characters, drop in PDFs — a freeform canvas for ideas before the words start.</p>
+                <div class="tag-list">
+                    <span class="tag">Drawing</span>
+                    <span class="tag">Images</span>
+                    <span class="tag">PDF</span>
+                    <span class="tag">Vision Board</span>
+                </div>
+                <div class="btn-group">
+                    <a href="JoeOrangeCanvas.html" class="btn-primary">Open App</a>
+                    <a href="JoeOrangeCanvas.html" class="btn-secondary" download>Download</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="notice">
+            All tools are completely free and open-source. They run entirely in your browser — nothing is uploaded, stored, or tracked. You can also download any of them as a single HTML file for offline use.
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Joe Orange &nbsp;·&nbsp; <a href="index.html">JoeOrange.com</a></p>
+    </footer>
+
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
