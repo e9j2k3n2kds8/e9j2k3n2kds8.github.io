@@ -172,24 +172,11 @@
             font-size: 1em;
         }
 
-        nav .nav-primary {
-            display: block;
-            margin-bottom: 25px;
-        }
-
-        nav .nav-secondary-row {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
+        nav.nav-secondary {
             margin-top: 25px;
         }
 
-        nav .nav-secondary-right {
-            display: flex;
-            gap: 25px;
-        }
-
-        nav a.nav-secondary:hover {
+        nav.nav-secondary a {
             color: #aaa;
         }
 
@@ -783,13 +770,11 @@
                     <a href="#faq">FAQ</a>
                     <a href="#contact">Contact</a>
                 </span>
-                <span class="nav-secondary-row">
-                    <a href="tv-favourites.html" class="nav-secondary">TV Anthology Episodes</a>
-                    <span class="nav-secondary-right">
-                        <a href="free-tools.html" class="nav-secondary">Free Tools</a>
-                        <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" class="nav-secondary" target="_blank">Free Book</a>
-                    </span>
-                </span>
+            </nav>
+            <nav class="nav-secondary">
+                <a href="tv-favourites.html">TV Anthology Episodes</a>
+                <a href="free-tools.html">Free Tools</a>
+                <a href="https://preview.mailerlite.io/forms/2069138/177793877559739697/share" target="_blank">Free Book</a>
             </nav>
         </div>
     </header>
