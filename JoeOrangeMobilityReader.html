@@ -178,12 +178,13 @@ body { background: var(--bg); color: var(--fg); font-family: -apple-system, Blin
   <div id="toolbar">
     <span id="tb-appname" style="color:var(--accent); font-size:13px; font-weight:500; white-space:nowrap; margin-right:10px;">Joe Orange Mobility Reader</span>
     <button class="tb-btn" id="btn-file" title="Open a new file">&#128193; File</button>
-    <button class="tb-btn" id="btn-pause">Pause</button>
     <button class="tb-btn" id="btn-prev">&#9664;</button>
     <button class="tb-btn" id="btn-next">&#9654;</button>
     <span id="tb-info" style="margin-left:8px;"></span>
     <input type="number" id="page-jump" min="1" title="Jump to page" style="width:100px; background:var(--bg3); color:var(--fg); border:1px solid var(--bg3); border-radius:4px; padding:5px 10px; font-size:14px; text-align:center; margin-left:8px;">
     <span class="tb-spacer"></span>
+    <span id="tb-hint" style="font-size:13px; white-space:nowrap; padding:0 10px; color:var(--fg2);">Click screen to pause</span>
+    <button class="tb-btn" id="btn-pause">Pause</button>
     <div class="mode-toggle">
       <button id="btn-mode-seconds" class="active">Seconds</button>
       <button id="btn-mode-scroll">Scroll</button>
@@ -924,6 +925,9 @@ function updateUI() {
   } else timerOverlay.style.display='none';
 
   $('btn-pause').textContent = state.paused ? 'Play' : 'Pause';
+  const hintEl = $('tb-hint');
+  hintEl.textContent = state.paused ? '⏸ PAUSED' : 'Click screen to pause';
+  hintEl.style.color = state.paused ? 'var(--accent)' : 'var(--fg2)';
 
   if (state.viewMode==='page') {
     if (state.mode==='comic') {
