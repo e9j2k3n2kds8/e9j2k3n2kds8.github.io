@@ -693,7 +693,9 @@ function paginateText() {
   const padX = wide ? area.width*0.02 : area.width*0.1;
   const padYTop = wide ? 20 : 40;
   const padYBottom = wide ? 60 : 100;
-  const usableH = area.height - padYTop - padYBottom, usableW = area.width - padX*2;
+  const usableH = area.height - padYTop - padYBottom;
+  const innerW = wide ? area.width : Math.min(900, area.width);
+  const usableW = innerW - padX*2;
   const linesPerPage = Math.max(1, Math.floor(usableH / lh));
 
   const allLines = wrapText(state.fullText, usableW, fs);
