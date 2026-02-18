@@ -69,8 +69,8 @@ body { background: var(--bg); color: var(--fg); font-family: -apple-system, Blin
 
 #comic-canvas { position:absolute; top:0; left:0; width:100%; height:100%; display:none; }
 #text-display { position:absolute; top:0; left:0; width:100%; height:100%; display:none; overflow:hidden; background:var(--text-bg); }
-#text-inner { padding:8% 10% 12% 10%; font-family:Georgia,'Times New Roman',serif; font-size:22px; line-height:1.7; color:var(--text-fg); max-width:900px; margin:0 auto; }
-#text-inner.wide-mode { padding:4% 3% 8% 3%; max-width:none; }
+#text-inner { padding:40px 10% 100px 10%; font-family:Georgia,'Times New Roman',serif; font-size:22px; line-height:1.7; color:var(--text-fg); max-width:900px; margin:0 auto; }
+#text-inner.wide-mode { padding:20px 3% 60px 3%; max-width:none; }
 #text-inner p { margin:0; }
 #text-inner p.indent { text-indent:2em; }
 #text-inner p.scene-break { height:1.2em; }
@@ -691,8 +691,9 @@ function paginateText() {
   const fs = state.settings.fontSize, lh = fs * 1.7;
   const wide = state.settings.wideMode;
   const padX = wide ? area.width*0.02 : area.width*0.1;
-  const padY = wide ? area.height*0.06 : area.height*0.10;
-  const usableH = area.height - padY*2, usableW = area.width - padX*2;
+  const padYTop = wide ? 20 : 40;
+  const padYBottom = wide ? 60 : 100;
+  const usableH = area.height - padYTop - padYBottom, usableW = area.width - padX*2;
   const linesPerPage = Math.max(1, Math.floor(usableH / lh));
 
   const allLines = wrapText(state.fullText, usableW, fs);
