@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joe Orange's Recommendations — Overlooked Sci-Fi, Horror & Strange Fiction</title>
+    <meta name="description" content="A curated list of overlooked and obscure sci-fi, horror, and strange fiction — films, TV episodes and books recommended by author Joe Orange. For people who've already seen everything.">
+    <meta name="keywords" content="overlooked sci-fi horror, obscure horror films, Twilight Zone episodes, strange fiction recommendations, underrated horror, cult horror films, sci-fi recommendations">
+    <meta name="author" content="Joe Orange">
+
+    <link rel="canonical" href="https://joeorange.com/recommendations.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://joeorange.com/recommendations.html">
+    <meta property="og:title" content="Joe Orange's Recommendations — Overlooked Sci-Fi, Horror & Strange Fiction">
+    <meta property="og:description" content="A curated list of overlooked films, TV episodes and books for people who've already seen everything. Recommended by speculative fiction author Joe Orange.">
+    <meta property="og:image" content="https://joeorange.com/bootstrap-cover.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Joe Orange's Recommendations — Overlooked Sci-Fi, Horror & Strange Fiction">
+    <meta name="twitter:description" content="Overlooked films, TV episodes and books for people who've already seen everything.">
+    <meta name="twitter:image" content="https://joeorange.com/bootstrap-cover.jpg">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle 4s infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        header h1 {
+            font-size: 3em;
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: #ff8c42;
+            text-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
+            animation: glow 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 140, 66, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 140, 66, 0.8), 0 0 40px rgba(255, 140, 66, 0.6); }
+        }
+
+        header p { color: #a0a0a0; font-style: italic; font-size: 1em; letter-spacing: 1px; }
+
+        nav { text-align: center; padding: 15px 0 30px; }
+        nav a {
+            color: #ff8c42;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 1em;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        nav a:hover { color: #ff6b35; transform: translateY(-2px); }
+
+        .disclaimer {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            padding: 30px 35px;
+            background: rgba(255, 140, 66, 0.05);
+            border: 1px solid rgba(255, 140, 66, 0.25);
+            border-radius: 12px;
+            color: #c0c0c0;
+            font-size: 1.05em;
+            line-height: 1.85;
+            font-style: italic;
+        }
+
+        .disclaimer strong { color: #ff8c42; font-style: normal; }
+
+        .section-title {
+            text-align: center;
+            color: #ff8c42;
+            font-size: 1.4em;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin: 50px 0 25px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 140, 66, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 140, 66, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(255, 140, 66, 0.1);
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-family: 'Georgia', serif;
+            font-size: 0.72em;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 140, 66, 0.4);
+            color: #ff8c42;
+        }
+
+        .year {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .card h2 {
+            color: #fff;
+            font-size: 1.25em;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+
+        .card .series {
+            font-size: 0.85em;
+            color: #888;
+            font-style: italic;
+            margin-top: -6px;
+        }
+
+        .card p {
+            color: #c0c0c0;
+            font-size: 0.95em;
+            line-height: 1.75;
+            flex: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255, 140, 66, 0.3);
+            margin-top: 60px;
+        }
+        footer p { color: #888; font-size: 0.9em; }
+        footer a { color: #ff8c42; text-decoration: none; }
+
+        @media (max-width: 700px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 2em; letter-spacing: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <h1>RECOMMENDATIONS</h1>
+            <p>By Joe Orange</p>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="index.html#books">Books</a>
+                <a href="index.html#faq">FAQ</a>
+                <a href="index.html#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="disclaimer">
+            <p>These are not the ones everyone mentions. You won't find the same fifteen titles that appear on every "best of" list. This is a list for people who watch a lot — the ones who have already worked their way through the obvious and are looking for something they might have missed. Some of these are obscure. Some were buried by bad timing, a limited release, or the simple bad luck of arriving before anyone was paying attention. A few are single episodes from anthology series that most people have never heard of. <strong>The list also includes some Twilight Zone episodes</strong> — because some of them deserve to be talked about more than they are, and they fit here better than anywhere else. The only rule for making this list is that it stayed with me.</p>
+        </div>
+
+        <!-- Films -->
+        <h2 class="section-title">Films</h2>
+        <div class="cards-grid">
+
+            <div class="card">
+                <div class="card-meta">
+                    <span class="badge">Film</span>
+                    <span class="year">2018</span>
+                </div>
+                <h2>Border</h2>
+                <p class="series">Dir. Ali Abbasi · Swedish</p>
+                <p>Weird done right. That's the only way to put it. Border is a film that commits completely to its premise and never flinches, which is rarer than it sounds. The makeup is some of the best I have ever seen — not the Hollywood kind designed to be admired, but the kind that makes you genuinely uneasy without quite knowing why. The characters are the same way. There is an undertone running through the whole film that something is deeply wrong, but the film never telegraphs it. It just lets it sit there. I haven't stopped thinking about it. Won the Un Certain Regard award at Cannes and was nominated for an Academy Award for Best Makeup. Most people still haven't seen it.</p>
+            </div>
+
+        </div>
+
+        <!-- TV Episodes -->
+        <h2 class="section-title">TV Episodes</h2>
+        <div class="cards-grid">
+
+            <div class="card">
+                <div class="card-meta">
+                    <span class="badge">TV Episode</span>
+                    <span class="year">1984</span>
+                </div>
+                <h2>Child's Play</h2>
+                <p class="series">Fox Mystery Theater (Hammer House of Mystery and Suspense)</p>
+                <p>A small number of people. One location. A problem that makes no sense and keeps getting worse. That is the entire formula, and when it works, nothing beats it. This episode works. Mary Crosby — Bing Crosby's daughter — leads a cast dealing with something that I won't spoil, except to say that it escalates in exactly the right way. It's a masterclass in ordinary people facing an extraordinary problem with no good options. A single episode, easy to find, and one that most people have never come across. Exactly the kind of thing this list exists for.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-meta">
+                    <span class="badge">TV Miniseries</span>
+                    <span class="year">1995</span>
+                </div>
+                <h2>The Langoliers</h2>
+                <p class="series">Stephen King · Adapted from Four Past Midnight</p>
+                <p>A lot of people talk about liminal spaces these days — that feeling of being in a place that exists between somewhere and somewhere else. An empty airport at 3am. A shopping mall after closing. A corridor that should have people in it but doesn't. The wrongness isn't in what's there. It's in what's missing. The Langoliers is one of the earliest and best expressions of that feeling on screen. Passengers on a near-empty overnight flight wake up to find the world below has gone quiet in a way that is hard to name but impossible to ignore. Based on Stephen King's novella from Four Past Midnight — a book worth reading on its own — this adaptation is not widely seen and deserves to be. The CGI has dated badly, but the atmosphere hasn't.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Joe Orange &nbsp;·&nbsp; <a href="index.html">JoeOrange.com</a></p>
+    </footer>
+
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
