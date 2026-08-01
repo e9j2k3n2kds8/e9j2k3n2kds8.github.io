@@ -253,6 +253,50 @@
             text-align: center;
         }
 
+        .trailers-section {
+            padding: 60px 20px 0;
+        }
+
+        .trailers-section h2 {
+            text-align: center;
+            color: #ff8c42;
+            font-size: 2em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+        }
+
+        .trailers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            justify-items: center;
+        }
+
+        .trailer-card {
+            text-align: center;
+        }
+
+        .trailer-card h3 {
+            color: #ff8c42;
+            font-size: 1.2em;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .trailer-video {
+            width: auto;
+            height: 420px;
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: block;
+            margin: 0 auto;
+        }
+
         .newsletter-section {
             background: rgba(255, 140, 66, 0.05);
             backdrop-filter: blur(10px);
@@ -775,7 +819,6 @@
             <nav>
                 <span class="nav-primary">
                     <a href="#books">Books</a>
-                    <a href="where-to-get-it.html">Where to Get Them</a>
                     <a href="#about">About</a>
                     <a href="#faq">FAQ</a>
                     <a href="#contact">Contact</a>
@@ -783,7 +826,6 @@
             </nav>
             <nav class="nav-secondary">
                 <a href="tv-favourites.html">TV Stuff</a>
-                <a href="books-and-stories.html">Books &amp; Stories</a>
                 <a href="#newsletter">Free Audiobook</a>
             </nav>
         </div>
@@ -809,6 +851,26 @@
 
         <div class="about">
             <p>Speculative fiction author weaving tales of wonder and the impossible through the fabric of everyday life. Creator of the Strange Detroit series where ordinary people stumble into extraordinary and terrifying circumstances.</p>
+        </div>
+
+        <div class="trailers-section">
+            <h2>Watch the Trailers</h2>
+            <div class="trailers-grid">
+                <div class="trailer-card">
+                    <h3>The Bootstrap Paradox</h3>
+                    <video class="trailer-video" controls preload="metadata" poster="The_Bootstrap_paradox_cover.jpeg">
+                        <source src="bootstrap-trailer.mp4" type="video/mp4">
+                        Your browser does not support the video element.
+                    </video>
+                </div>
+                <div class="trailer-card">
+                    <h3>The Lift</h3>
+                    <video class="trailer-video" controls preload="metadata" poster="The_Lift_Cover.jpeg">
+                        <source src="lift-trailer.mp4" type="video/mp4">
+                        Your browser does not support the video element.
+                    </video>
+                </div>
+            </div>
         </div>
 
         <div class="books-section" id="books">
